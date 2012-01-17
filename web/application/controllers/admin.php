@@ -9,6 +9,9 @@ class Admin extends CI_Controller
 	function __construct()
 	{
 		parent::__construct();
+
+		// set default output template
+		$this->template = 'feed';
 	}
 	
 	function index()
@@ -18,8 +21,20 @@ class Admin extends CI_Controller
 			redirect('/auth/login', 'refresh');
 		}
 		
-		$data['template'] = 'feed';
+		$data['template'] = $this->template;
 		$this->load->view('admin_template', $data);
+	}
+
+	function feed()
+	{
+		$this->template = 'feed';
+		$this->index();
+	}
+
+	function vocabulary()
+	{
+		$this->template = 'vocabulary';
+		$this->index();
 	}
 }
 

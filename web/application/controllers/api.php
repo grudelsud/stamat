@@ -19,6 +19,23 @@ class Api extends CI_Controller
 		}
 	}
 	
+	function get_feed()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+
+		if( $feed_id = $this->input->post('feed_id') ) {
+			$this->load->model('feed_model');
+
+			$result = new stdClass();
+			$result->feed = $this->feed_model->get_feed($feed_id);
+			$result->tags = $this->feed_model->get_tags($feed_id);
+			$this->_return_json_success( $result );
+		}		
+	}
+
 	function get_feeds()
 	{
 		if (!$this->ion_auth->logged_in()) {
@@ -50,6 +67,51 @@ class Api extends CI_Controller
 		} else {
 			$this->_return_json_error('empty fields');
 		}
+	}
+	
+	function get_feed_tags()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+
+		if( $feed_id = $this->input->post('feed_id') ) {
+			$this->load->model('feed_model');
+			$this->_return_json_success( $this->feed_model->get_tags($feed_id) );
+		}
+	}
+	
+	function add_tag()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		
+		$tag = $this->input->post('tag');
+		$parent = $this->input->post('parent_id');
+		
+		if( $tag ) {
+			$this->load->model('vocabulary_model');
+			// TODO: set variable vocabulary_id
+			$id = $this->vocabulary_model->add_tag( 1, $tag, empty( $parent ) ? NULL : $parent );
+			// TODO: return something clever
+			$this->_return_json_success( $id );
+		}
+		
+	}
+
+	function get_vocabulary_tags()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+
+		$this->load->model('vocabulary_model');
+		// TODO: set variable vocabulary_id
+		$this->_return_json_success( $this->vocabulary_model->get_tags( 1 ) );
 	}
 
 	// returns success message in json

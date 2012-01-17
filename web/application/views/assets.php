@@ -7,4 +7,3 @@
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/jquery-ui-1.8.17.custom.min.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/jquery.dataTables.min.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/pages/all.js"></script>
-		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/pages/admin.js"></script>

@@ -11,6 +11,10 @@
 		<?php echo form_submit( 'submit', 'add!' ); ?>
 		<?php echo form_close(); ?>
 	</div>
+	<div id="feed_detail">
+		<div id="feed_controls"></div>
+		<div id="feed_content"></div>
+	</div>
 	<div id="feeds">
 		<table id="feeds_table">
 			<thead>

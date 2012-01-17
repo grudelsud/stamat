@@ -10,6 +10,16 @@ class Feed_model extends CI_Model
 		parent::__construct();
 	}
 	
+	function get_tags( $feed_id )
+	{
+		$this->db->from('feeds as f');
+		$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
+		$this->db->join('tags as t', 't.id = ft.tag_id');
+		$this->db->where('f.id', $feed_id);
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
 	function get_feed( $id )
 	{
 		$this->db->where('id', $id );
@@ -30,7 +40,8 @@ class Feed_model extends CI_Model
 		$this->db->or_where('url', $url );
 		$query = $this->db->get('feeds');
 		if( $query->num_rows() > 0 ) {
-			return $query->result();
+			$row = $query->row();
+			return $row->id;
 		} else {
 			$data = array( 'title'=>$title, 'url'=>$url, 'user_id'=>$user_id );
 			$query = $this->db->insert( 'feeds', $data );

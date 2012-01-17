@@ -138,18 +138,24 @@ a:hover {
 			display: block;
 			padding: 3px 5px;
 			margin: 0 5px 0 0;
-			width: 40px;
 			float: left;
 			border-radius: 5px;
 			-moz-border-radius: 5px;
 		}
 		#admin #header li a:hover {
 			text-decoration: none;
-			background: #999;
+			background: lightyellow;
 		}
 	#admin #content {
 		padding: 10px;
 	}
+		#admin #content #feed_detail {
+			float: right;
+			width: 40%;
+			border: 1px solid lightgrey;
+			padding: 3px;
+			display: none;
+		}
 		#admin #content #feeds {
 			width: 50%;
 		}
@@ -158,7 +164,9 @@ a:hover {
 			}
 			table#feeds_table td {
 				padding: 3px;
-				border: 1px solid lightGrey;
+			}
+			table#feeds_table tr.row_selected td {
+				background: lightyellow;
 			}
 			table#feeds_table .odd {
 				background: #FFF;
