@@ -45,7 +45,8 @@ class Api extends CI_Controller
 			$this->load->model('feed_model');
 			
 			// TODO: should use dynamic user.id here, but ion_auth->user() doesn't seem to work
-			$this->_return_json_success( $this->feed_model->add_feed( $title, $url, 1 ) );
+			$id = $this->feed_model->add_feed( $title, $url, 1 );
+			$this->_return_json_success( $this->feed_model->get_feed( $id ) );
 		} else {
 			$this->_return_json_error('empty fields');
 		}

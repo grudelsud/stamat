@@ -150,3 +150,16 @@ a:hover {
 	#admin #content {
 		padding: 10px;
 	}
+		#admin #content #feeds {
+			width: 50%;
+		}
+			table#feeds_table {
+				width: 100%;
+			}
+			table#feeds_table td {
+				padding: 3px;
+				border: 1px solid lightGrey;
+			}
+			table#feeds_table .odd {
+				background: #FFF;
+			}

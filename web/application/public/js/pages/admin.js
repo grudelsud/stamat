@@ -10,10 +10,26 @@ $(function() {
 
 function load_feeds(data)
 {
-	console.log(data);
+	feeds_table = $('#feeds_table').dataTable({
+		'bProcessing' : true,
+		'bJQueryUI' : true,
+		'aaData' : data.success,
+		'aoColumns' : [
+			{ 'mDataProp': 'id' },
+			{ 'mDataProp': 'title' },
+			{ 'mDataProp': 'url' },
+		],
+	});
 }
 
 function add_feed(data)
 {
-	console.log(data);
+	var row = {};
+	
+	$.each(data.success, function(key,val) {
+		row.id = val.id;
+		row.title = val.title;
+		row.url = val.url;
+		feeds_table.fnAddData( row );
+	});
 }

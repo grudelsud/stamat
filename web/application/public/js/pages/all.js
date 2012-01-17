@@ -1,4 +1,5 @@
 var stamat_api_key = 'rxcvbnoibuvyctxrtcyvbn6oiu';
+var feeds_table = {};
 
 // make an api call
 function api(method, callback, data) {

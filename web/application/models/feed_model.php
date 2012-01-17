@@ -10,6 +10,13 @@ class Feed_model extends CI_Model
 		parent::__construct();
 	}
 	
+	function get_feed( $id )
+	{
+		$this->db->where('id', $id );
+		$query = $this->db->get('feeds');
+		return $query->result();
+	}
+	
 	function get_feeds( $user_id = NULL )
 	{
 		$this->db->where('user_id', $user_id );

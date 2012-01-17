@@ -8,8 +8,19 @@
 		<?php echo form_label( 'URL', 'url' ); ?>
 		<?php echo form_input( array('name'=>'url', 'id'=>'url') ); ?>
 
-		<?php echo form_submit( 'submit', 'go!' ); ?>
+		<?php echo form_submit( 'submit', 'add!' ); ?>
 		<?php echo form_close(); ?>
 	</div>
-	<div id="feeds"></div>
+	<div id="feeds">
+		<table id="feeds_table">
+			<thead>
+				<tr>
+					<th>id</th>
+					<th>title</th>
+					<th>url</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
 </div>
