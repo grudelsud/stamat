@@ -107,6 +107,7 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: 700;
 	text-transform: uppercase;
 	margin-bottom: 5px;
+	padding: 4px 0;
 }
 ul {
 	list-style-type: none;
@@ -164,10 +165,28 @@ a:hover {
 			}
 			table#feeds_table td {
 				padding: 3px;
+				border: 1px solid lightgrey;
 			}
 			table#feeds_table tr.row_selected td {
 				background: lightyellow;
 			}
 			table#feeds_table .odd {
 				background: #FFF;
+			}
+		#admin #content #vocabulary_detail li {
+			display: inline;
+			background: #fff;
+			padding: 3px 5px;
+			margin-right: 5px;
+			border-radius: 5px;
+			-moz-border-radius: 5px;
+		}
+			#admin #content #vocabulary_detail li.selected {
+				background: lightyellow;
+			}
+			#admin #content #vocabulary_detail li.parent_over {
+				background: lightsalmon;
+			}
+			#admin #content #vocabulary_detail li.child_over {
+				background: lightskyblue;
 			}
