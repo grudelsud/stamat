@@ -28,6 +28,4 @@
 			<li class="child_over">child</li>
 		</ul>
 	</div>
-	<div id="vocabularies">
-	</div>
 </div>

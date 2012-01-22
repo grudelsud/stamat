@@ -45,9 +45,24 @@ class Api extends CI_Controller
 		$this->load->model('feed_model');
 		
 		// TODO: should fetch logged user.id here, but bloody ion_auth->user() doesn't seem to work
-		$this->_return_json_success( $this->feed_model->get_feeds( 1 ) );
+		$this->_return_json_success( $this->feed_model->get_feeds( TRUE ) );
 	}
 	
+	function delete_feed()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		$feed_id = $this->input->post('feed_id');
+		if( $feed_id ) {
+			$this->load->model('feed_model');
+			$this->_return_json_success($this->feed_model->delete_feed( $feed_id ));
+		} else {
+			$this->_return_json_error('empty field id');
+		}
+	}
+
 	function add_feed()
 	{
 		if (!$this->ion_auth->logged_in()) {
@@ -69,6 +84,41 @@ class Api extends CI_Controller
 		}
 	}
 	
+	function delete_feed_tags()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		$tag_ids = $this->input->post('tag_id');
+		
+		if( $tag_ids ) {
+			$this->load->model('feed_model');
+			$result = $this->feed_model->delete_tags( explode(',', $tag_ids) );
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('both feed and tags must be selected');
+		}		
+	}
+
+	function add_feed_tag()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		$feed_id = $this->input->post('feed_id');
+		$tag_ids = $this->input->post('tag_id');
+		
+		if( $feed_id && $tag_ids ) {
+			$this->load->model('feed_model');
+			$result = $this->feed_model->add_tags( $feed_id, explode(',', $tag_ids) );
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('both feed and tags must be selected');
+		}
+	}
+
 	function get_feed_tags()
 	{
 		if (!$this->ion_auth->logged_in()) {

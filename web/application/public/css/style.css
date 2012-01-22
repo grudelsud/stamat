@@ -150,18 +150,18 @@ a:hover {
 	#admin #content {
 		padding: 10px;
 	}
-		#admin #content #feed_detail {
+		#admin #content #feed_container {
+			float: left;
+			width: 45%;
+		}
+		#admin #content #vocabulary_container {
 			float: right;
-			width: 40%;
-			border: 1px solid lightgrey;
-			padding: 3px;
-			display: none;
+			width: 45%;
 		}
-		#admin #content #feeds {
-			width: 50%;
-		}
-			table#feeds_table {
-				width: 100%;
+			#admin #content #feed_detail {
+				border: 1px solid lightgrey;
+				padding: 3px;
+				display: none;
 			}
 			table#feeds_table td {
 				padding: 3px;
@@ -173,6 +173,7 @@ a:hover {
 			table#feeds_table .odd {
 				background: #FFF;
 			}
+		#admin #content #feed_content li,
 		#admin #content #vocabulary_detail li {
 			display: inline;
 			background: #fff;
@@ -181,8 +182,17 @@ a:hover {
 			border-radius: 5px;
 			-moz-border-radius: 5px;
 		}
+		#admin #content #vocabulary_detail li:hover {
+			background: lightyellow;
+		}
+			#admin #content #feed_content li,
+			#admin #content #vocabulary_detail #root li, 
+			#admin #content #vocabulary_detail #children li {
+				cursor: pointer;
+			}
+			#admin #content #feed_tags li.selected,
 			#admin #content #vocabulary_detail li.selected {
-				background: lightyellow;
+				background: lightgreen;
 			}
 			#admin #content #vocabulary_detail li.parent_over {
 				background: lightsalmon;
