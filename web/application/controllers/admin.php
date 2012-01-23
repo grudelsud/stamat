@@ -11,7 +11,7 @@ class Admin extends CI_Controller
 		parent::__construct();
 
 		// set default output template
-		$this->template = 'feed';
+		$this->data['template'] = 'feed';
 	}
 	
 	function index()
@@ -20,20 +20,29 @@ class Admin extends CI_Controller
 		{
 			redirect('/auth/login', 'refresh');
 		}
-		
-		$data['template'] = $this->template;
-		$this->load->view('admin_template', $data);
+		$this->load->view('admin_template', $this->data);
 	}
 
 	function feed()
 	{
-		$this->template = 'feed';
+		$this->data['template'] = 'feed';
 		$this->index();
 	}
 
 	function vocabulary()
 	{
-		$this->template = 'vocabulary';
+		$this->data['template'] = 'vocabulary';
+		$this->index();
+	}
+
+	function items()
+	{
+		$this->data['template'] = 'items';
+		$this->load->library('rss_parser');
+		
+		$this->rss_parser->set_feed_url('http://www.digg.com/rss/indexdig.xml');
+		$this->data['feed'] = $this->rss_parser->get_feed();
+		
 		$this->index();
 	}
 }
