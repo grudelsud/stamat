@@ -1,0 +1,3 @@
+[submodule "web/application/libraries/simplepie"]
+	path = web/application/libraries/simplepie
+	url = https://github.com/simplepie/simplepie.git
