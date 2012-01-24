@@ -9,26 +9,23 @@ class Feed_model extends CI_Model
 	{
 		parent::__construct();
 	}
-	
-	function get_tags( $feed_id )
+
+	function add_feed( $title, $url, $user_id )
 	{
-		$this->db->select('ft.id, ft.tag_id, t.name');
-		$this->db->from('feeds_tags as ft');
-		$this->db->join('feeds as f', 'f.id = ft.feed_id');
-		$this->db->join('tags as t', 't.id = ft.tag_id');
-		$this->db->where('f.id', $feed_id);
-		$query = $this->db->get();
-		return $query->result();
-	}
-	
-	function delete_tags( $tag_ids )
-	{
-		foreach( $tag_ids as $tag_id ) {
-			$this->db->delete('feeds_tags', array('id'=>$tag_id));
+		$this->db->where('title', $title );
+		$this->db->or_where('url', $url );
+		$query = $this->db->get('feeds');
+		if( $query->num_rows() > 0 ) {
+			$row = $query->row();
+			return $row->id;
+		} else {
+			$data = array( 'title'=>$title, 'url'=>$url, 'user_id'=>$user_id );
+			$query = $this->db->insert( 'feeds', $data );
+			return $this->db->insert_id();
 		}
-		return true;
 	}
 	
+	// add feed/tag associations, to add tags in general use vocabulary_model->add_tags
 	function add_tags( $feed_id, $tag_ids )
 	{
 		$result = array();
@@ -82,25 +79,31 @@ class Feed_model extends CI_Model
 		}
 	}
 	
+	function get_tags( $feed_id )
+	{
+		$this->db->select('ft.id, ft.tag_id, t.name');
+		$this->db->from('feeds_tags as ft');
+		$this->db->join('feeds as f', 'f.id = ft.feed_id');
+		$this->db->join('tags as t', 't.id = ft.tag_id');
+		$this->db->where('f.id', $feed_id);
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
 	function delete_feed( $feed_id )
 	{
 		$this->db->delete('feeds', array('id'=>$feed_id));
+		$this->db->delete('feeds_tags', array('feed_id'=>$feed_id));
 		return true;
 	}
 
-	function add_feed( $title, $url, $user_id )
+	// delete feed/tag associations, to delete the tag itself use vocabulary_model->delete_tags
+	function delete_tags( $tag_ids )
 	{
-		$this->db->where('title', $title );
-		$this->db->or_where('url', $url );
-		$query = $this->db->get('feeds');
-		if( $query->num_rows() > 0 ) {
-			$row = $query->row();
-			return $row->id;
-		} else {
-			$data = array( 'title'=>$title, 'url'=>$url, 'user_id'=>$user_id );
-			$query = $this->db->insert( 'feeds', $data );
-			return $this->db->insert_id();
+		foreach( $tag_ids as $tag_id ) {
+			$this->db->delete('feeds_tags', array('id'=>$tag_id));
 		}
+		return true;
 	}
 }
 

@@ -19,6 +19,7 @@
 		<h1>children tags</h1>
 		<ul id="children">
 		</ul>
+		<div id="tag_controls"><button type="button" class="delete">delete selected tags</button></div>
 		<hr/>
 		<h1>colour codes</h1>
 		<ul>

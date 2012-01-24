@@ -11,23 +11,23 @@ class RSS_Parser {
 	{
 		$this->feed = new SimplePie();
 
-		$CI =& get_instance();
-		
-		$dbdriver = $CI->db->dbdriver;
-		$username = $CI->db->username;
-		$password = $CI->db->password;
-		$hostname = $CI->db->hostname;
-		$port = $CI->db->port;
-		$database = $CI->db->database;
-		
-		$dsn = $dbdriver.'://'.$username.':'.$password.'@'.$hostname.':'.$port.'/'.$database;
+		// $CI =& get_instance();
+		// 
+		// $dbdriver = $CI->db->dbdriver;
+		// $username = $CI->db->username;
+		// $password = $CI->db->password;
+		// $hostname = $CI->db->hostname;
+		// $port = $CI->db->port;
+		// $database = $CI->db->database;
+		// 
+		// $dsn = $dbdriver.'://'.$username.':'.$password.'@'.$hostname.':'.$port.'/'.$database;
 		// $this->feed->set_cache_location( $dsn );
 	}
 
 	function set_feed_url( $url )
 	{
 		$this->feed->set_feed_url($url);
-		// $this->feed->enable_cache(true);
+		$this->feed->enable_cache(false);
 		$this->feed->init();
 	}
 

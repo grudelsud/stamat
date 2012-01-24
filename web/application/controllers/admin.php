@@ -38,11 +38,6 @@ class Admin extends CI_Controller
 	function items()
 	{
 		$this->data['template'] = 'items';
-		$this->load->library('rss_parser');
-		
-		$this->rss_parser->set_feed_url('http://www.digg.com/rss/indexdig.xml');
-		$this->data['feed'] = $this->rss_parser->get_feed();
-		
 		$this->index();
 	}
 }

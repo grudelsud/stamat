@@ -1,6 +1,3 @@
-var feeds_table = {};
-var selected_feed = {};
-
 $(function() {
 	// on page ready load feeds in feed table
 	api( 'get_feeds', load_feeds );
@@ -75,37 +72,18 @@ $(function() {
 	});
 });
 
-// remove from db and feed table
-function delete_feed( id )
+// add row to feed table
+function add_feed(data)
 {
-	$('#dialog').dialog('close');
-	// prepare post object
-	var data = {};
-	data.feed_id = id;
-
-	api('delete_feed', function() {
-		var $feed_detail = $('#feed_detail');
-		$feed_detail.hide();
-		feeds_table.fnDeleteRow(selected_feed.position);
-	}, data);
-}
-
-function delete_feed_tags()
-{
-	$('#dialog').dialog('close');
-
-	var $feed_tags = $('#feed_tags li.selected');
-	var id_array = new Array();
-	$.each($feed_tags, function(key,val) {
-		id_array[key] = $(val).attr('id').replace('feed_tag_', '');
+	var row = {};
+	
+	$.each(data.success, function(key,val) {
+		row.id = val.id;
+		row.title = val.title;
+		row.tags = '';
+		row.url = val.url;
+		feeds_table.fnAddData( row );
 	});
-	// prepare post object
-	var data = {};
-	data.tag_id = id_array.join(',');
-	// TODO: update feed table accordingly as well
-	api('delete_feed_tags', function() {
-		$('#feed_tags li.selected').remove();
-	}, data);
 }
 
 // add tags to selected feed
@@ -170,32 +148,35 @@ function show_feed_details( id )
 	}, 'feed_id='+id );
 }
 
-// load content in feed table
-function load_feeds(data)
+// remove from db and feed table
+function delete_feed( id )
 {
-	feeds_table = $('#feeds_table').dataTable({
-		'bProcessing' : true,
-		'bJQueryUI' : true,
-		'aaData' : data.success,
-		'aoColumns' : [
-			{ 'mDataProp': 'id' },
-			{ 'mDataProp': 'title' },
-			{ 'mDataProp': 'tags' },
-			{ 'mDataProp': 'url' },
-		],
-	});
+	$('#dialog').dialog('close');
+	// prepare post object
+	var data = {};
+	data.feed_id = id;
+
+	api('delete_feed', function() {
+		var $feed_detail = $('#feed_detail');
+		$feed_detail.hide();
+		feeds_table.fnDeleteRow(selected_feed.position);
+	}, data);
 }
 
-// add row to feed table
-function add_feed(data)
+function delete_feed_tags()
 {
-	var row = {};
-	
-	$.each(data.success, function(key,val) {
-		row.id = val.id;
-		row.title = val.title;
-		row.tags = '';
-		row.url = val.url;
-		feeds_table.fnAddData( row );
+	$('#dialog').dialog('close');
+
+	var $feed_tags = $('#feed_tags li.selected');
+	var id_array = new Array();
+	$.each($feed_tags, function(key,val) {
+		id_array[key] = $(val).attr('id').replace('feed_tag_', '');
 	});
+	// prepare post object
+	var data = {};
+	data.tag_id = id_array.join(',');
+	// TODO: update feed table accordingly as well
+	api('delete_feed_tags', function() {
+		$('#feed_tags li.selected').remove();
+	}, data);
 }

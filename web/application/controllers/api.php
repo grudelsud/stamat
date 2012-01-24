@@ -19,6 +19,68 @@ class Api extends CI_Controller
 		}
 	}
 	
+	function load_feed_items()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		
+		$url = $this->input->post('url');
+		
+		if( $url ) {
+			$this->load->library('rss_parser');
+
+			$this->rss_parser->set_feed_url( $url );
+			$feed = $this->rss_parser->get_feed();
+			
+			$result = array();
+			foreach ($feed->get_items() as $item) {
+				$result_item = new stdClass();
+
+				$result_item->title = $item->get_title();
+				$result_item->permalink = $item->get_permalink();
+				$result_item->description = $item->get_description();
+				$result_item->date = $item->get_date('j F Y - g:i a');
+								
+				$result[] = $result_item;
+			}
+			
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('empty url');
+		}
+	}
+	
+	/**
+	 * Feed related CRUD functions (no update)
+	 * 
+	 * add_feed - add feed to database
+	 * get_feed - read feed + tag details by id
+	 * get_feeds - get full feed list
+	 * delete_feed - delete feed by id
+	 */
+	function add_feed()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		
+		$title = $this->input->post('title');
+		$url = $this->input->post('url');
+		
+		if( $title && $url ) {
+			$this->load->model('feed_model');
+			
+			// TODO: should use dynamic user.id here, but ion_auth->user() doesn't seem to work
+			$id = $this->feed_model->add_feed( $title, $url, 1 );
+			$this->_return_json_success( $this->feed_model->get_feed( $id ) );
+		} else {
+			$this->_return_json_error('empty fields');
+		}
+	}
+	
 	function get_feed()
 	{
 		if (!$this->ion_auth->logged_in()) {
@@ -63,44 +125,13 @@ class Api extends CI_Controller
 		}
 	}
 
-	function add_feed()
-	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-		
-		$title = $this->input->post('title');
-		$url = $this->input->post('url');
-		
-		if( $title && $url ) {
-			$this->load->model('feed_model');
-			
-			// TODO: should use dynamic user.id here, but ion_auth->user() doesn't seem to work
-			$id = $this->feed_model->add_feed( $title, $url, 1 );
-			$this->_return_json_success( $this->feed_model->get_feed( $id ) );
-		} else {
-			$this->_return_json_error('empty fields');
-		}
-	}
-	
-	function delete_feed_tags()
-	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-		$tag_ids = $this->input->post('tag_id');
-		
-		if( $tag_ids ) {
-			$this->load->model('feed_model');
-			$result = $this->feed_model->delete_tags( explode(',', $tag_ids) );
-			$this->_return_json_success( $result );
-		} else {
-			$this->_return_json_error('both feed and tags must be selected');
-		}		
-	}
-
+	/**
+	 * Feed/tag related CRUD functions (no update)
+	 * 
+	 * add_feed_tag - add feed / tag association to database
+	 * get_feed_tags - read  tags associated to feed by feed_id
+	 * delete_feed_tags - delete feed association by comma separated tag_id
+	 */
 	function add_feed_tag()
 	{
 		if (!$this->ion_auth->logged_in()) {
@@ -132,6 +163,30 @@ class Api extends CI_Controller
 		}
 	}
 	
+	function delete_feed_tags()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		$tag_ids = $this->input->post('tag_id');
+		
+		if( $tag_ids ) {
+			$this->load->model('feed_model');
+			$result = $this->feed_model->delete_tags( explode(',', $tag_ids) );
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('select tags 1st');
+		}		
+	}
+
+	/**
+	 * Vocabulary/tag related CRUD functions (no update)
+	 * 
+	 * add_tag - add tag to database
+	 * get_vocabulary_tags - read tags associated to vocabulary by vocabulary_id
+	 * delete_tags - delete tags by comma separated tag_id
+	 */
 	function add_tag()
 	{
 		if (!$this->ion_auth->logged_in()) {
@@ -162,6 +217,23 @@ class Api extends CI_Controller
 		$this->load->model('vocabulary_model');
 		// TODO: set variable vocabulary_id
 		$this->_return_json_success( $this->vocabulary_model->get_tags( 1 ) );
+	}
+
+	function delete_tags()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		$tag_ids = $this->input->post('tag_id');
+		
+		if( $tag_ids ) {
+			$this->load->model('vocabulary_model');
+			$result = $this->vocabulary_model->delete_tags( explode(',', $tag_ids) );
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('select tags 1st');
+		}
 	}
 
 	// returns success message in json

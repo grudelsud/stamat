@@ -175,10 +175,9 @@ a:hover {
 			}
 		#admin #content #feed_content li,
 		#admin #content #vocabulary_detail li {
-			display: inline;
 			background: #fff;
 			padding: 3px 5px;
-			margin-right: 5px;
+			margin: 3px 5px;
 			border-radius: 5px;
 			-moz-border-radius: 5px;
 		}
@@ -200,3 +199,13 @@ a:hover {
 			#admin #content #vocabulary_detail li.child_over {
 				background: lightskyblue;
 			}
+		#admin #content #feed_content #item {
+			padding: 20px;
+		}
+		#admin #content #feed_content #item .footer {
+			font-size: 0.85em;
+			padding: 3px;
+			margin: 5px 0;
+			clear: both;
+			border-top: 1px solid lightgrey;
+		}
