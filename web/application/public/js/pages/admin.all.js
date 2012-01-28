@@ -99,6 +99,6 @@ function api(method, callback, data) {
 		dataType : 'JSON',
 		success  : callback,
 		type     : 'POST',
-		url      : '/api/'+method
+		url      : base_url+'index.php/api/'+method
 	});
 }

@@ -20,7 +20,7 @@
  */
 switch ($_SERVER['SERVER_NAME']) {
 case 'stamat.net':
-	$enviroment = 'development';
+	$environment = 'development';
 	break;
 case 'londondroids.com':
 default:
@@ -28,7 +28,7 @@ default:
 }
 
 	define('ENVIRONMENT', $environment);
-/*
+	/*
  *---------------------------------------------------------------
  * ERROR REPORTING
  *---------------------------------------------------------------

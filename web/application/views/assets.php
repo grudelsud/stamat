@@ -6,3 +6,7 @@
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/jquery-ui-1.8.17.custom.min.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript">
+			var base_url = '<?php echo BASE_URL; ?>';
+			var assets_url = '<?php echo ASSETS_URL; ?>';
+		</script>
