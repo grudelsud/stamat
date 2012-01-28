@@ -18,6 +18,15 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
+switch ($_SERVER['SERVER_NAME']) {
+case 'stamat.net':
+	$enviroment = 'development';
+	break;
+case 'londondroids.com':
+default:
+	$environment = 'production';
+}
+
 	define('ENVIRONMENT', 'development');
 /*
  *---------------------------------------------------------------
