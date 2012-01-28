@@ -154,6 +154,9 @@ a:hover {
 			float: left;
 			width: 45%;
 		}
+			#admin #content #feeds {
+				margin: 10px 0;
+			}
 		#admin #content #vocabulary_container {
 			float: right;
 			width: 45%;
@@ -173,8 +176,13 @@ a:hover {
 			table#feeds_table .odd {
 				background: #FFF;
 			}
+		#admin #content #feed_content ul,
+		#admin #content #vocabulary_detail ul {
+			margin: 6px 0;
+		}
 		#admin #content #feed_content li,
 		#admin #content #vocabulary_detail li {
+			display: inline;
 			background: #fff;
 			padding: 3px 5px;
 			margin: 3px 5px;
@@ -187,6 +195,7 @@ a:hover {
 			#admin #content #feed_content li,
 			#admin #content #vocabulary_detail #root li, 
 			#admin #content #vocabulary_detail #children li {
+				line-height: 2em;
 				cursor: pointer;
 			}
 			#admin #content #feed_tags li.selected,
@@ -202,6 +211,9 @@ a:hover {
 		#admin #content #feed_content #item {
 			padding: 20px;
 		}
+			#admin #content #feed_content #item img {
+				margin: 0 10px 0 0;
+			}
 		#admin #content #feed_content #item .footer {
 			font-size: 0.85em;
 			padding: 3px;
