@@ -21,14 +21,13 @@ class Api extends CI_Controller
 	
 	function load_feed_items()
 	{
-		// if (!$this->ion_auth->logged_in()) {
-		// 	$this->_return_json_error('please login first');
-		// 	return;
-		// }
-		// 
-		// $url = $this->input->post('url');
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+		
+		$url = $this->input->post('url');
 
-		$url = 'http://www.repubblica.it/rss/homepage/rss2.0.xml';
 		if( $url ) {
 			$this->load->library('rss_parser');
 
