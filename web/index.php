@@ -27,7 +27,7 @@ default:
 	$environment = 'production';
 }
 
-	define('ENVIRONMENT', 'development');
+	define('ENVIRONMENT', $environment);
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
