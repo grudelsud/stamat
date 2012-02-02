@@ -19,6 +19,41 @@ class Api extends CI_Controller
 		}
 	}
 	
+	/**
+	 * Feed Items CRUD (no update)
+	 */
+	function fetch_store_all_feeds()
+	{
+		$result = array();
+		$this->load->model('feed_model');
+		$feeds = $this->feed_model->get_feeds();
+		foreach( $feeds as $feed ) {
+			$this->load->library('rss_parser');
+			$this->rss_parser->set_feed_url( $feed->url );
+			$feed_content = $this->rss_parser->get_feed();
+
+			foreach ($feed_content->get_items() as $item) {
+				$item_md5id = md5( $item->get_id() );
+				$this->db->where('item_md5id', $item_md5id);
+				$query = $this->db->get('feeditems');
+				if( $query->num_rows() == 0 ) {
+					$data = array(
+						'feed_id' => $feed->id,
+						'item_md5id' => $item_md5id,
+						'title' => $item->get_title(),
+						'permalink' => $item->get_permalink(),
+						'date' => $item->get_date('Y-m-d H:i:s'),
+						'description' => $item->get_description(),
+						'abstract' => substr(strip_tags($item->get_description()), 0, 499)
+					);
+					$this->db->insert('feeditems', $data);
+					$result[] = $item_md5id;
+				}
+			}
+		}
+		$this->_return_json_success( $result );
+	}
+
 	function load_feed_items()
 	{
 		if (!$this->ion_auth->logged_in()) {

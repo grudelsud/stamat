@@ -12,6 +12,9 @@
 			<?php echo form_submit( 'submit', 'add feed' ); ?>
 			<?php echo form_close(); ?>
 		</div>
+		<div id="fetch_feeds">
+			<button type="button" class="fetch">cache all feeds to database</button>
+		</div>
 		<div id="feeds">
 			<table width="100%" id="feeds_table">
 				<thead>

@@ -49,6 +49,7 @@ class Feed_model extends CI_Model
 		return $result;
 	}
 
+	// get feed by id
 	function get_feed( $id )
 	{
 		$this->db->where('id', $id );
@@ -56,6 +57,10 @@ class Feed_model extends CI_Model
 		return $query->result();
 	}
 	
+	// returns list of feeds
+	// @params
+	// add_tags set to TRUE will add to the output all the tags assigned to each feed
+	// user_id set to NULL will return all the feeds
 	function get_feeds( $add_tags = FALSE, $user_id = NULL )
 	{
 		if( $user_id ) {

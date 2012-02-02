@@ -9,6 +9,19 @@ $(function() {
 		api( 'add_feed', add_feed, data );
 	});
 	
+	$('#fetch_feeds button.fetch').click(function() {
+		var message = 'are you sure to fetch all the feeds manually? this operation can take a while';
+		$('#dialog').empty().append( message ).dialog('option', {
+			'title': 'confirm',
+			'buttons': {
+				'cancel': function() { $(this).dialog('close'); },
+				'ok': function() {
+					fetch_store_all_feeds();
+				}
+			}
+		}).dialog('open');
+	});
+	
 	// on button "add selected tags", send data to server and add tags to selected feed
 	$('#add_tag').click(function() {
 		var $sel_tags = $('#vocabulary_detail #root li.selected, #vocabulary_detail #children li.selected');
@@ -71,6 +84,15 @@ $(function() {
 		}).dialog('open');
 	});
 });
+
+function fetch_store_all_feeds()
+{
+	$('#dialog').dialog('close');
+
+	api('fetch_store_all_feeds', function() {
+		alert('all good');
+	});
+}
 
 // add row to feed table
 function add_feed(data)
