@@ -51,7 +51,47 @@ class Api extends CI_Controller
 				}
 			}
 		}
-		$this->_return_json_success( $result );
+		$this->_return_json_success( $result );			
+	}
+	
+	// fetch all content scraping pages referenced by permalinks
+	function fetch_store_all_permalinks()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+
+		if( $feed_id = $this->input->post('feed_id') ) {
+			$result = array();
+			$this->load->model('scraper_model');
+
+			$this->db->where('feed_id', $feed_id);
+			$query = $this->db->get('feeditems');
+			foreach($query->result() as $row) {
+				$result[] = $this->scraper_model->scrape_readitlater($row->id);
+			}
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('empty feed_id');
+		}		
+	}
+
+	function fetch_store_permalink()
+	{
+		if (!$this->ion_auth->logged_in()) {
+			$this->_return_json_error('please login first');
+			return;
+		}
+
+		if( $feeditem_id = $this->input->post('feeditem_id') ) {
+			$result = array();
+			$this->load->model('scraper_model');
+			$result[] = $this->scraper_model->scrape_readitlater($feeditem_id);
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('empty feeditem_id');
+		}		
 	}
 
 	function load_feed_items()
@@ -60,30 +100,29 @@ class Api extends CI_Controller
 			$this->_return_json_error('please login first');
 			return;
 		}
-		
-		$url = $this->input->post('url');
 
-		if( $url ) {
-			$this->load->library('rss_parser');
+		if( $feed_id = $this->input->post('feed_id') ) {			
 
-			$this->rss_parser->set_feed_url( $url );
-			$feed = $this->rss_parser->get_feed();
-			
+			$this->db->where('feed_id', $feed_id);
+			$this->db->order_by('date', 'desc');
+			$query = $this->db->get('feeditems');
+
 			$result = array();
-			foreach ($feed->get_items() as $item) {
+			foreach ($query->result() as $row) {
 				$result_item = new stdClass();
 
-				$result_item->title = $item->get_title();
-				$result_item->permalink = $item->get_permalink();
-				$result_item->description = $item->get_description();
-				$result_item->date = $item->get_date('j F Y - g:i a');
+				$result_item->id = $row->id;
+				$result_item->title = $row->title;
+				$result_item->permalink = $row->permalink;
+				$result_item->description = $row->description;
+				$result_item->date = $row->date;
 								
 				$result[] = $result_item;
 			}
 			
 			$this->_return_json_success( $result );
 		} else {
-			$this->_return_json_error('empty url');
+			$this->_return_json_error('empty feed_id');
 		}
 	}
 	

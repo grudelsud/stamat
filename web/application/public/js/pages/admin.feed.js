@@ -50,6 +50,22 @@ $(function() {
 		show_feed_details( selected_feed.id );
 	});
 	
+	// on button fetch feed permalinks
+	$('#feed_controls button.fetch_content').click(function() {
+		var feed_id = $(this).attr('id').replace('fetch_content_', '');
+		var message = 'are you sure you want fetch and store all the permalinks associated to this feed?';
+		$('#dialog').empty().append( message ).dialog('option', {
+			'title': 'confirm',
+			'buttons': {
+				'cancel': function() { $(this).dialog('close'); },
+				'ok': function() {
+					fetch_store_all_permalinks( feed_id );
+				}
+			}
+		}).dialog('open');
+		
+	});
+
 	// on button delete feed
 	$('#feed_controls button.delete').click(function() {
 		var feed_id = $(this).attr('id').replace('delete_', '');
@@ -84,6 +100,17 @@ $(function() {
 		}).dialog('open');
 	});
 });
+
+function fetch_store_all_permalinks( feed_id )
+{
+	$('#dialog').dialog('close');
+
+	var data = {};
+	data.feed_id = feed_id;
+	api('fetch_store_all_permalinks', function() {
+		alert('all good');
+	}, data);
+}
 
 function fetch_store_all_feeds()
 {
@@ -164,7 +191,8 @@ function show_feed_details( id )
 			$.each(data.success.tags, function(key,val) {
 				$feed_tag_list.append('<li id="feed_tag_'+val.id+'">'+val.name+'</li>');
 			});
-			$('#feed_controls button').attr('id', 'delete_'+id);
+			$('#feed_controls button.delete').attr('id', 'delete_'+id);
+			$('#feed_controls button.fetch_content').attr('id', 'fetch_content_'+id);
 			$feed_detail.show();
 		}
 	}, 'feed_id='+id );

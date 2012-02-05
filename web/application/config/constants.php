@@ -39,5 +39,7 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].str_replace('//', '/', dirname($_SERVER['SCRIPT_NAME']).'/'));
 define('ASSETS_URL', BASE_URL.'application/public/');
 
+define('READITLATER_API_KEY', '972TpV1eg2b72H40VQdaN70u71paq15f');
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

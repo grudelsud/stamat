@@ -208,13 +208,13 @@ a:hover {
 			#admin #content #vocabulary_detail li.child_over {
 				background: lightskyblue;
 			}
-		#admin #content #feed_content #item {
+		#admin #content #feed_content .item {
 			padding: 20px;
 		}
-			#admin #content #feed_content #item img {
+			#admin #content #feed_content .item img {
 				margin: 0 10px 0 0;
 			}
-		#admin #content #feed_content #item .footer {
+		#admin #content #feed_content .item .footer {
 			font-size: 0.85em;
 			padding: 3px;
 			margin: 5px 0;
