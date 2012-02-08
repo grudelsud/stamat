@@ -122,14 +122,47 @@ a:hover {
 	text-decoration: underline;
 }
 
+button {
+	background: lightyellow;
+	border: 1px solid lightgrey;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	cursor: pointer;
+}
+
+.loader {
+	background: url(../img/ajax-loader.gif) no-repeat;
+	float: left;
+	width: 16px;
+	height: 16px;
+	display: none;
+}
 /* STRUCTURE */
 #admin {
 }
 	#admin #header {
-		background: #000;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: url(../img/black70.png) top left repeat;
 		padding: 10px;
-		height: 23px;
+		height: 48px;
 	}
+	#admin #header #logo h1 a {
+		color: #fff;
+	}
+	#admin #footer {
+		position: fixed;
+		font-size: 0.8em;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		background: url(../img/black70.png) top left repeat;
+		padding: 10px;
+		height: 15px;
+	}
+		#admin #footer li,
 		#admin #header li {
 			display: inline;
 		}
@@ -147,15 +180,54 @@ a:hover {
 			text-decoration: none;
 			background: lightyellow;
 		}
+		#admin #footer li {
+			color: #aaa;
+			margin-right: 10px;
+		}
+		#admin #footer li a {
+			color: #aaa;
+		}
+		#admin #footer li a:hover {
+			color: lightyellow;
+		}
 	#admin #content {
 		padding: 10px;
+		margin: 64px 0 0;
 	}
 		#admin #content #feed_container {
 			float: left;
 			width: 45%;
+			padding: 0 0 45px;
+		}
+		#admin #content #feed_container #feed_controls {
+			float: right;
 		}
 			#admin #content #feeds {
 				margin: 10px 0;
+			}
+		#admin #content #permalink_container {
+			width: 45%;
+			position: fixed;
+			top: 80px;
+			right: 10px;
+			border: 1px solid lightgrey;
+			padding: 10px;
+			display: none;
+		}
+			#admin #content #permalink_container #permalink_controls {
+			}
+			#admin #content #permalink_container #permalink_controls button {
+				width: 16px;
+				height: 16px;
+				border: none;
+				background: transparent url(../img/sprite.png) no-repeat;
+			}
+			#admin #content #permalink_container #permalink_controls button.close {
+				background-position: -100px 0;
+			}
+			#admin #content #permalink_content iframe {
+				width: 100%;
+				height: 350px;
 			}
 		#admin #content #vocabulary_container {
 			float: right;
@@ -211,9 +283,29 @@ a:hover {
 		#admin #content #feed_content .item {
 			padding: 20px;
 		}
+		#admin #content #feed_content .item.selected {
+			background: lightgrey;
+		}
 			#admin #content #feed_content .item img {
 				margin: 0 10px 0 0;
 			}
+		#admin #content #feed_content .item .item_controls {
+			float: right;
+		}
+		#admin #content #feed_content .item .item_controls button {
+			width: 16px;
+			height: 16px;
+			border: none;
+			margin-left: 5px;
+			line-height: 10em;
+			background: transparent url(../img/sprite.png) no-repeat;
+		}
+		#admin #content #feed_content .item .item_controls button.show_content {
+			background-position: -80px -100px;
+		}
+		#admin #content #feed_content .item .item_controls button.fetch_content {
+			background-position: 0px -100px;
+		}
 		#admin #content #feed_content .item .footer {
 			font-size: 0.85em;
 			padding: 3px;

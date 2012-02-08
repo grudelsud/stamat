@@ -20,8 +20,21 @@ $(function() {
 	});
 
 	$('#feed_content .item button.fetch_content').live('click', function() {
-		var feeditem_id = $(this).parent().attr('id').replace('item_', '');
+		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
 		fetch_store_permalink( feeditem_id );
+	});
+	$('#feed_content .item button.show_content').live('click', function() {
+		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
+		$('#feed_content .item').removeClass('selected');
+		$('#feed_content #item_'+feeditem_id).addClass('selected');
+		var url = base_url + 'index.php/admin/permalink/' + feeditem_id;
+		$('#permalink_content').empty().append('<iframe src="'+url+'"></iframe>');
+		$('#permalink_container').fadeIn();
+	});
+	
+	$('#permalink_controls button.close').click(function() {
+		$('#feed_content .item').removeClass('selected');
+		$('#permalink_container').fadeOut();		
 	});
 });
 
@@ -33,21 +46,32 @@ function show_feed_items( feed_id )
 		var $feed_content = $('#feed_content');
 		$feed_content.empty();
 		$.each(data.success, function(key,val) {
-			var $item = $('<div id="item_'+val.id+'" class="item"></div>');
+			var item_id = 'item_'+val.id;
+			var $item = $('<div id="'+item_id+'" class="item"></div>');
+			var item_controls = '<div class="loader"></div><button type="button" class="fetch_content">fetch permalink content</button><button type="button" class="show_content">show permalink content</button>';
+			$item.append('<div class="item_controls">'+item_controls+'</div>');
 			$item.append('<h1><a href="'+val.permalink+'">'+val.title+'</a></h1>');
 			$item.append(val.description);
-			$item.append('<button type="button" class="fetch_content">fetch permalink content</button>');
 			$item.append('<p class="footer">'+val.date+'</p>');
 			$feed_content.append($item);
+			if( $.isEmptyObject( val.content_id ) ) {
+				$('#'+item_id+' button.show_content').hide();
+			} else {
+				$('#'+item_id+' button.fetch_content').hide();
+			}
 		});
 	}, data);
 }
 
 function fetch_store_permalink( feeditem_id )
 {
+	$('#permalink_container').fadeOut();
+	$('#item_'+feeditem_id+' button.fetch_content').hide();
+	$('#item_'+feeditem_id+' div.loader').show();
 	var data = {};
 	data.feeditem_id = feeditem_id;
 	api('fetch_store_permalink', function() {
-		alert('all good');
+		$('#item_'+feeditem_id+' div.loader').hide();
+		$('#item_'+feeditem_id+' button.show_content').show().click();
 	}, data);
 }

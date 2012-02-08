@@ -116,7 +116,16 @@ class Api extends CI_Controller
 				$result_item->permalink = $row->permalink;
 				$result_item->description = $row->description;
 				$result_item->date = $row->date;
-								
+
+				$content_id = array();
+				$this->db->select('id');
+				$this->db->where('feeditem_id', $row->id);
+				$query_content = $this->db->get('feeditemcontents');
+				foreach( $query_content->result() as $row_content ) {
+					$content_id[] = $row_content->id;
+				}
+				$result_item->content_id = $content_id;
+
 				$result[] = $result_item;
 			}
 			

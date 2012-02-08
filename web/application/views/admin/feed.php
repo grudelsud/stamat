@@ -31,7 +31,7 @@
 		</div>
 		<div id="feed_detail">
 			<div id="feed_controls"><button type="button" class="fetch_content">fetch permalinks content</button><button type="button" class="delete">delete feed</button></div>
-			<div id="feed_content"><div id="feed_meta"></div><ul id="feed_tags"></ul></div>
+			<div id="feed_content"><div id="feed_meta"></div><h1>Tags</h1><p>Tags assigned to this feed (select to delete)</p><ul id="feed_tags"></ul></div>
 			<div id="tag_controls"><button type="button" class="delete">delete selected tags</button></div>
 		</div>
 	</div>

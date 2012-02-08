@@ -9,5 +9,6 @@
 		<?php $this->load->view('admin/header'); ?>
 		<?php $this->load->view('admin/'.$template); ?>
 		<div id="dialog"></div>
+		<?php $this->load->view('admin/footer'); ?>
 	</body>
 </html>

@@ -40,6 +40,19 @@ class Admin extends CI_Controller
 		$this->data['template'] = 'items';
 		$this->index();
 	}
+
+	function permalink( $feeditem_id = 0 )
+	{
+		$this->db->where('feeditem_id', $feeditem_id);
+		$query = $this->db->get('feeditemcontents');
+		if($query->num_rows() > 0) {
+			$row = $query->row();
+			$data['content'] = $row->content;
+		} else {
+			$data['content'] = '<p>empty record</p>';			
+		}
+		$this->load->view('permalink', $data);
+	}
 }
 
 /* end of admin.php */

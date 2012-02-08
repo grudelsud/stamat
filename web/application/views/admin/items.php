@@ -17,4 +17,8 @@
 		<div id="feed_content">
 		</div>
 	</div>
+	<div id="permalink_container">
+		<div id="permalink_controls"><button type="button" class="close">close</button></div>
+		<div id="permalink_content"></div>
+	</div>
 </div>
