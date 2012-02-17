@@ -28,6 +28,12 @@ class Vocabulary_model extends CI_Model
 		}
 	}
 
+	function get_vocabularies()
+	{
+		$query = $this->db->get('vocabularies');
+		return $query->result();		
+	}
+
 	function get_tag( $tag_id )
 	{
 		$this->db->where('id', $tag_id);

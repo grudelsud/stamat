@@ -2,12 +2,11 @@ var stamat_api_key = 'rxcvbnoibuvyctxrtcyvbn6oiu';
 
 var feeds_table = {};
 var selected_feed = {};
+var feed_pagesize = 10;
 
 $(function() {
 	$('#dialog').dialog({autoOpen: false, resizable: false, height:140, modal: true});
 	
-	load_tags( true );
-
 	$('#vocabulary_detail #root li, #vocabulary_detail #children li').live({
 		click: function() {
 			$(this).toggleClass('selected');
@@ -52,12 +51,14 @@ function load_feeds(data)
 	});
 }
 
-function load_tags(clean) {
+function load_tags(vocabulary_id, clean) {
 	if( clean == true ) {
 		$('#root').empty();
 		$('#children').empty();
 	}
-	api( 'get_vocabulary_tags', append_tags );
+	var data = {};
+	data.vocabulary_id = vocabulary_id;
+	api( 'get_vocabulary_tags', append_tags, data );
 }
 
 // used both by admin.feed and admin.vocabulary
@@ -66,10 +67,12 @@ function append_tags(data)
 	var $list_root = $('#root');
 	var $list_children = $('#children');
 	$.each(data.success, function(key, val) {
-		if( val.parent_id == 0 ) {
-			$list_root.append('<li id="tag_'+val.id+'">'+val.name+'</li>');
-		} else {
-			$list_children.append('<li id="tag_'+val.id+'" class="child child_'+val.parent_id+'">'+val.name+'</li>');
+		if( typeof(val.name) != 'undefined' ) {
+			if( val.parent_id == 0 ) {
+				$list_root.append('<li id="tag_'+val.id+'">'+val.name+'</li>');
+			} else {
+				$list_children.append('<li id="tag_'+val.id+'" class="child child_'+val.parent_id+'">'+val.name+'</li>');
+			}
 		}
 	});
 }

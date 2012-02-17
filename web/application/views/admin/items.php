@@ -14,6 +14,8 @@
 				<tbody></tbody>
 			</table>
 		</div>
+		<div id="feed_pagination">
+		</div>
 		<div id="feed_content">
 		</div>
 	</div>

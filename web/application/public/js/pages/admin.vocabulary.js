@@ -1,4 +1,17 @@
 $(function() {
+	api('get_vocabularies', function(data) {
+		var $select = $('#vocabulary_select select');
+		$.each(data.success, function(key,val) {
+			$select.append('<option value="'+val.id+'">'+val.name+'</option>')
+		});
+		load_tags( $select.val(), true );
+		$('input[name|="vocabulary_id"]').val( $select.val() );		
+	});
+
+	$('#vocabulary_select select').change(function() {
+		load_tags( $(this).val(), true );
+		$('input[name|="vocabulary_id"]').val( $(this).val() );		
+	});
 
 	$('#form_add_tag').submit(function(e) {
 		e.preventDefault();
@@ -41,6 +54,6 @@ function delete_tags()
 	data.tag_id = id_array.join(',');
 
 	api('delete_tags', function() {
-		load_tags( true );
+		load_tags( $('#vocabulary_select select').val(), true );
 	}, data);
 }

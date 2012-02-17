@@ -248,6 +248,32 @@ button {
 			table#feeds_table .odd {
 				background: #FFF;
 			}
+		#admin #content #feed_pagination a {
+			display: none;
+			padding: 3px;
+			border: 1px solid #333;
+			background: #333;
+			color: #eee;
+			border-radius: 5px;
+			-moz-border-radius: 5px;
+		}
+		#admin #content #feed_pagination a:hover {
+			background: lightyellow;
+			text-decoration: none;
+			color: #333;
+		}
+		#admin #content #feed_pagination a.neighbor {
+			display: inline;
+			background: #666;
+		}
+		#admin #content #feed_pagination a.marker {
+			display: inline;
+		}
+		#admin #content #feed_pagination a.selected {
+			background: transparent;
+			display: inline;
+			color: #333;
+		}
 		#admin #content #feed_content ul,
 		#admin #content #vocabulary_detail ul {
 			margin: 6px 0;

@@ -16,13 +16,15 @@ $(function() {
 		selected_feed.position = position;
 
 		$('#feed_detail').hide();
-		show_feed_items( selected_feed.id );
+		load_pagination( selected_feed.id );
+		show_feed_items( selected_feed.id, 0, feed_pagesize );
 	});
 
 	$('#feed_content .item button.fetch_content').live('click', function() {
 		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
 		fetch_store_permalink( feeditem_id );
 	});
+
 	$('#feed_content .item button.show_content').live('click', function() {
 		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
 		$('#feed_content .item').removeClass('selected');
@@ -36,12 +38,47 @@ $(function() {
 		$('#feed_content .item').removeClass('selected');
 		$('#permalink_container').fadeOut();		
 	});
+
+	$('#feed_pagination a').live('click', function(e) {
+		e.preventDefault();
+		$('#feed_pagination a').removeClass('selected');
+		$('#feed_pagination a').removeClass('neighbor');
+		$(this).addClass('selected');
+		$(this).next().addClass('neighbor');
+		$(this).prev().addClass('neighbor');
+		var page = $(this).attr('id').replace('page_', '');
+		show_feed_items( selected_feed.id, page, feed_pagesize );
+	});
 });
 
-function show_feed_items( feed_id )
+function load_pagination( feed_id )
+{
+	$('#feed_pagination').empty();
+	var data = {};
+	data.feed_id = feed_id;
+	api('count_feed_items', function(data) {
+		var paging = 'select page ';
+		var side = 2;
+		var total = data.success;
+		var pages = total / feed_pagesize;
+		for( var i = 0; i < pages; i++ ) {
+			if( (i < side) || (i > pages - side) || (0 == (i + 1) % 10) ) {
+				paging += '<a href="#" id="page_'+i+'" class="marker">'+(i+1)+'</a> ';
+			} else {
+				paging += '<a href="#" id="page_'+i+'">'+(i+1)+'</a> ';	
+			}
+		}
+		$('#feed_pagination').append( paging );
+	}, data);
+}
+
+function show_feed_items( feed_id, page, limit )
 {
 	var data = {};
 	data.feed_id = feed_id;
+	data.offset = page * limit;
+	data.limit = limit;
+
 	api('load_feed_items', function(data) {
 		var $feed_content = $('#feed_content');
 		$feed_content.empty();

@@ -2,6 +2,18 @@ $(function() {
 	// on page ready load feeds in feed table
 	api( 'get_feeds', load_feeds );
 
+	api('get_vocabularies', function(data) {
+		var $select = $('#vocabulary_select select');
+		$.each(data.success, function(key,val) {
+			$select.append('<option value="'+val.id+'">'+val.name+'</option>')
+		});
+		load_tags( $select.val(), true );
+	});
+
+	$('#vocabulary_select select').change(function() {
+		load_tags( $(this).val(), true );
+	});
+
 	// on form submit, send data to server and add feed to feed table
 	$('#form_add_feed').submit(function(e) {
 		e.preventDefault();

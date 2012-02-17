@@ -36,6 +36,10 @@
 		</div>
 	</div>
 	<div id="vocabulary_container">
+		<div id="vocabulary_select">
+			<h1>select vocabulary</h1>
+			<select></select>
+		</div>
 		<div id="vocabulary_detail">
 			<h1>root tags</h1>
 			<ul id="root">
