@@ -1,3 +1,6 @@
 [submodule "web/application/libraries/simplepie"]
 	path = web/application/libraries/simplepie
 	url = https://github.com/simplepie/simplepie.git
+[submodule "_dev/lib/CodeIgniter-Ion-Auth"]
+	path = _dev/lib/CodeIgniter-Ion-Auth
+	url = https://github.com/benedmunds/CodeIgniter-Ion-Auth.git

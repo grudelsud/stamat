@@ -13,11 +13,8 @@ class Api extends CI_Controller
 	
 	function index()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-		} else {
-			$this->_return_json_success('all good');
-		}
+		$this->_user_check('API - index');
+		$this->_return_json_success('all good');
 	}
 	
 	/**
@@ -32,7 +29,7 @@ class Api extends CI_Controller
 			$this->load->library('rss_parser');
 			$this->rss_parser->set_feed_url( $feed->url );
 			$feed_content = $this->rss_parser->get_feed();
-
+	
 			foreach ($feed_content->get_items() as $item) {
 				$item_md5id = md5( $item->get_id() );
 				$this->db->where('item_md5id', $item_md5id);
@@ -58,17 +55,12 @@ class Api extends CI_Controller
 	// fetch all content scraping pages referenced by permalinks
 	function fetch_store_all_permalinks()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - fetch_store_all_permalinks');
-		}
-
+		$this->_user_check('API - fetch_store_all_permalinks');
+	
 		if( $feed_id = $this->input->post('feed_id') ) {
 			$result = array();
 			$this->load->model('scraper_model');
-
+	
 			$this->db->where('feed_id', $feed_id);
 			$query = $this->db->get('feeditems');
 			foreach($query->result() as $row) {
@@ -79,16 +71,11 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty feed_id');
 		}		
 	}
-
+	
 	function fetch_store_permalink()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - fetch_store_permalink');
-		}
-
+		$this->_user_check('API - fetch_store_permalink');
+	
 		if( $feeditem_id = $this->input->post('feeditem_id') ) {
 			$result = array();
 			$this->load->model('scraper_model');
@@ -98,14 +85,29 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty feeditem_id');
 		}		
 	}
-
+	
+	function fetch_entities()
+	{
+		$this->_user_check('API - fetch_entities');
+	
+		if( $feeditem_id = $this->input->post('feeditem_id') ) {
+			$result = array();
+			$this->load->model('scraper_model');
+			$data = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
+			$result_obj = new stdClass();
+			$result_obj->keywords = explode(' ', $data->keywords);
+			$result_obj->lang = $data->lang;
+			$result[] = $result_obj;
+			$this->_return_json_success( $result );
+		} else {
+			$this->_return_json_error('empty feeditemcontents_id');
+		}		
+	}
+	
 	function count_feed_items()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-
+		$this->_user_check();
+	
 		if( $feed_id = $this->input->post('feed_id') ) {
 			$this->db->where('feed_id', $feed_id);
 			$this->db->from('feeditems');
@@ -114,33 +116,30 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty feed_id');
 		}
 	}
-
+	
 	function load_feed_items()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-
+		$this->_user_check();
+	
 		if( $feed_id = $this->input->post('feed_id') ) {			
-
+	
 			$this->db->where('feed_id', $feed_id);
 			$this->db->order_by('date', 'desc');
 			
 			$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
 			$limit = $this->input->post('limit') ? $this->input->post('limit') : 100;
 			$query = $this->db->get('feeditems', $limit, $offset);
-
+	
 			$result = array();
 			foreach ($query->result() as $row) {
 				$result_item = new stdClass();
-
+	
 				$result_item->id = $row->id;
 				$result_item->title = $row->title;
 				$result_item->permalink = $row->permalink;
 				$result_item->description = $row->description;
 				$result_item->date = $row->date;
-
+	
 				$content_id = array();
 				$this->db->select('id');
 				$this->db->where('feeditem_id', $row->id);
@@ -149,7 +148,7 @@ class Api extends CI_Controller
 					$content_id[] = $row_content->id;
 				}
 				$result_item->content_id = $content_id;
-
+	
 				$result[] = $result_item;
 			}
 			
@@ -169,13 +168,7 @@ class Api extends CI_Controller
 	 */
 	function add_feed()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - add_feed');
-		}
-		
+		$this->_user_check('API - add_feed');
 		$title = $this->input->post('title');
 		$url = $this->input->post('url');
 		
@@ -192,27 +185,20 @@ class Api extends CI_Controller
 	
 	function get_feed()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-
+		$this->_user_check();
 		if( $feed_id = $this->input->post('feed_id') ) {
 			$this->load->model('feed_model');
-
+	
 			$result = new stdClass();
 			$result->feed = $this->feed_model->get_feed($feed_id);
 			$result->tags = $this->feed_model->get_tags($feed_id);
 			$this->_return_json_success( $result );
 		}		
 	}
-
+	
 	function get_feeds()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
+		$this->_user_check();
 		$this->load->model('feed_model');
 		
 		// TODO: should fetch logged user.id here, but bloody ion_auth->user() doesn't seem to work
@@ -221,12 +207,7 @@ class Api extends CI_Controller
 	
 	function delete_feed()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - delete_feed');
-		}
+		$this->_user_check('API - delete_feed');
 		$feed_id = $this->input->post('feed_id');
 		if( $feed_id ) {
 			$this->load->model('feed_model');
@@ -235,7 +216,7 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty field id');
 		}
 	}
-
+	
 	/**
 	 * Feed/tag related CRUD functions (no update)
 	 * 
@@ -245,12 +226,7 @@ class Api extends CI_Controller
 	 */
 	function add_feed_tag()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - add_feed_tag');
-		}
+		$this->_user_check('API - add_feed_tag');
 		$feed_id = $this->input->post('feed_id');
 		$tag_ids = $this->input->post('tag_id');
 		
@@ -262,14 +238,11 @@ class Api extends CI_Controller
 			$this->_return_json_error('both feed and tags must be selected');
 		}
 	}
-
+	
 	function get_feed_tags()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-
+		$this->_user_check();
+	
 		if( $feed_id = $this->input->post('feed_id') ) {
 			$this->load->model('feed_model');
 			$this->_return_json_success( $this->feed_model->get_tags($feed_id) );
@@ -278,12 +251,7 @@ class Api extends CI_Controller
 	
 	function delete_feed_tags()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - delete_feed_tags');
-		}
+		$this->_user_check('API - delete_feed_tags');
 		$tag_ids = $this->input->post('tag_id');
 		
 		if( $tag_ids ) {
@@ -294,7 +262,7 @@ class Api extends CI_Controller
 			$this->_return_json_error('select tags 1st');
 		}		
 	}
-
+	
 	/**
 	 * Vocabulary/tag related CRUD functions (no update)
 	 * 
@@ -304,13 +272,7 @@ class Api extends CI_Controller
 	 */
 	function add_tag()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - add_tag');
-		}
-		
+		$this->_user_check('API - add_tag');
 		$tag = $this->input->post('tag');
 		$parent = $this->input->post('parent_id');
 		
@@ -323,37 +285,25 @@ class Api extends CI_Controller
 		}
 		
 	}
-
+	
 	function get_vocabularies()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
+		$this->_user_check();
 		$this->load->model('vocabulary_model');
 		$this->_return_json_success( $this->vocabulary_model->get_vocabularies() );
 	}
-
+	
 	function get_vocabulary_tags()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		}
-
+		$this->_user_check();
 		$this->load->model('vocabulary_model');
 		$vocabulary_id = $this->input->post('vocabulary_id') ? $this->input->post('vocabulary_id') : 1;
 		$this->_return_json_success( $this->vocabulary_model->get_tags( $vocabulary_id ) );
 	}
-
+	
 	function delete_tags()
 	{
-		if (!$this->ion_auth->logged_in()) {
-			$this->_return_json_error('please login first');
-			return;
-		} else {
-			$this->user_model->log('API - delete_tags');
-		}
+		$this->_user_check('API - delete_tags');
 		$tag_ids = $this->input->post('tag_id');
 		
 		if( $tag_ids ) {
@@ -365,6 +315,15 @@ class Api extends CI_Controller
 		}
 	}
 
+	private function _user_check($message = '')
+	{
+		if( $this->user_model->api_check() ) {
+			if( !empty($message) ) {
+				$this->user_model->log( $message );
+			}
+		}
+	}
+	
 	// returns success message in json
 	private function _return_json_success($success) {
 		$this->_return_json('success', $success);

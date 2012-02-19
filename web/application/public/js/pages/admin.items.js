@@ -25,6 +25,12 @@ $(function() {
 		fetch_store_permalink( feeditem_id );
 	});
 
+	$('#feed_content .item button.fetch_entities').live('click', function() {
+		var data = {};
+		data.feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
+		api('fetch_entities', function(data) { console.log(data); }, data);
+	});
+
 	$('#feed_content .item button.show_content').live('click', function() {
 		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
 		$('#feed_content .item').removeClass('selected');
@@ -85,7 +91,7 @@ function show_feed_items( feed_id, page, limit )
 		$.each(data.success, function(key,val) {
 			var item_id = 'item_'+val.id;
 			var $item = $('<div id="'+item_id+'" class="item"></div>');
-			var item_controls = '<div class="loader"></div><button type="button" class="fetch_content">fetch permalink content</button><button type="button" class="show_content">show permalink content</button>';
+			var item_controls = '<div class="loader"></div><button type="button" class="fetch_entities">[ALPHA] fetch entities</button><button type="button" class="fetch_content">fetch permalink content</button><button type="button" class="show_content">show permalink content</button>';
 			$item.append('<div class="item_controls">'+item_controls+'</div>');
 			$item.append('<h1><a href="'+val.permalink+'">'+val.title+'</a></h1>');
 			$item.append(val.description);

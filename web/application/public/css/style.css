@@ -332,6 +332,9 @@ button {
 		#admin #content #feed_content .item .item_controls button.fetch_content {
 			background-position: 0px -100px;
 		}
+		#admin #content #feed_content .item .item_controls button.fetch_entities {
+			background-position: -120px -40px;
+		}
 		#admin #content #feed_content .item .footer {
 			font-size: 0.85em;
 			padding: 3px;

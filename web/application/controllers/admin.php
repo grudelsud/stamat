@@ -10,13 +10,14 @@ class Admin extends CI_Controller
 	{
 		parent::__construct();
 
+		$this->load->model('user_model');
 		// set default output template
 		$this->data['template'] = 'feed';
 	}
 	
 	function index()
 	{
-		if (!$this->ion_auth->logged_in())
+		if (!$this->user_model->logged_in())
 		{
 			redirect('/auth/login', 'refresh');
 		}

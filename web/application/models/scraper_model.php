@@ -11,6 +11,19 @@ class Scraper_model extends CI_Model
 		parent::__construct();
 	}
 	
+	function scrape_teamlife_sanr($feeditem_id)
+	{
+		$this->db->where('id', $feeditem_id);
+		$query_item = $this->db->get('feeditems');
+		$row = $query_item->row();
+
+		$this->curl->create('http://beta.teamlife.it/sanr/ajax/extract_words.php?snippets=on&text='.urlencode($row->abstract));
+		$this->curl->http_login('guest', 'teamlife');
+		$response = $this->curl->execute();
+
+		return json_decode($response);
+	}
+
 	function scrape_readitlater($feeditem_id)
 	{
 		$this->db->where('id', $feeditem_id);

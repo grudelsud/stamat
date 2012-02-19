@@ -52,9 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('database', 'session');
-$autoload['sparks'] = array('curl/1.2.0','ion_auth/2.1.2');
-
+$autoload['libraries'] = array('database', 'session', 'curl','ion_auth');
 
 /*
 | -------------------------------------------------------------------
