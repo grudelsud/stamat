@@ -42,6 +42,33 @@ class Admin extends CI_Controller
 		$this->index();
 	}
 
+	function topics()
+	{
+		$this->data['template'] = 'topics';
+		$this->index();
+	}
+
+	function users()
+	{
+		$this->load->library('grocery_CRUD');
+
+		$this->grocery_crud->set_table('users');
+		$this->grocery_crud->set_relation_n_n( 'groups', 'users_groups', 'groups', 'user_id', 'group_id', 'name' );
+
+		$this->grocery_crud->columns('username', 'groups', 'email', 'active', 'last_login');
+		$this->grocery_crud->callback_column('last_login',array($this,'timestamp_to_dateformat'));
+		
+		$this->grocery_crud->set_theme('datatables');
+		$this->data['grocery'] = $this->grocery_crud->render();
+		$this->data['template'] = 'users';
+		$this->index();
+	}
+
+	function timestamp_to_dateformat($value, $row)
+	{
+		return date('r', $value);
+	}
+
 	function permalink( $feeditem_id = 0 )
 	{
 		$this->db->where('feeditem_id', $feeditem_id);
