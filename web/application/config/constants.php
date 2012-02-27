@@ -44,5 +44,11 @@ define('READITLATER_API_KEY', '972TpV1eg2b72H40VQdaN70u71paq15f');
 define('GROUP_ADMIN', 'admin');
 define('HOURLYLIMIT_MEMBERS', 1000);
 
+define('VOCABULARY_EXTRACTED', 'extracted');
+define('STRUCT_OBJ_FEEDITEM', 'feed-item');
+define('STRUCT_ACT_ANNOTATE', 'annotate');
+define('STRUCT_ENG_TEAMLIFE', 'teamlife-sanr');
+define('STRUCT_OBJ_KEYWORD', 'keyword');
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

@@ -37,6 +37,15 @@ class Vocabulary_model extends CI_Model
 		return utf8_encode($string);
 	}
 
+	function add_tags( $vocabulary_id, $tag_array, $parent_id = NULL )
+	{
+		$result = array();
+		foreach($tag_array as $tag) {
+			$result[] = $this->add_tag( $vocabulary_id, $tag, $parent_id );
+		}
+		return $result;
+	}
+
 	function add_tag( $vocabulary_id, $name, $parent_id = NULL )
 	{
 		$this->db->where('name', $name );
@@ -59,12 +68,59 @@ class Vocabulary_model extends CI_Model
 		}
 	}
 
+	function get_language_id( $name, $insert = FALSE )
+	{
+		$this->db->where('name', $name);
+		$query = $this->db->get('languages');
+		if( $query->num_rows() > 0 ) {
+			$row = $query->row();
+			return $row->id;
+		} else {
+			if( $insert ) {
+				$this->db->insert('languages', array('name' => $name));
+				return $this->db->insert_id();
+			} else {
+				return 0;
+			}
+		}
+	}
+
+	function get_vocabulary_id( $name, $insert = FALSE )
+	{
+		$this->db->where('name', $name);
+		$query = $this->db->get('vocabularies');
+		if( $query->num_rows() > 0 ) {
+			$row = $query->row();
+			return $row->id;
+		} else {
+			if( $insert ) {
+				$this->load->model('user_model');
+				$user_id = $this->user_model->logged_in();
+				$this->db->insert('vocabularies', array('user_id' => $user_id, 'name' => $name));
+				return $this->db->insert_id();
+			} else {
+				return 0;
+			}
+		}
+	}
+
 	function get_vocabularies()
 	{
 		$query = $this->db->get('vocabularies');
 		return $query->result();		
 	}
 
+	function get_tag_id( $slug )
+	{
+		$this->db->where('slug', $slug);
+		$query = $this->db->get('tags');
+		if( $query->num_rows() > 0 ) {
+			$row = $query->row();
+			return $row->id;
+		} else {
+			return 0;
+		}
+	}
 	function get_tag( $tag_id )
 	{
 		$this->db->where('id', $tag_id);
@@ -75,6 +131,7 @@ class Vocabulary_model extends CI_Model
 	function get_tags( $vocabulary_id )
 	{
 		$this->db->where('vocabulary_id', $vocabulary_id);
+		$this->db->order_by('parent_id asc, slug asc, count desc');
 		$query = $this->db->get('tags');
 		return $query->result();
 	}

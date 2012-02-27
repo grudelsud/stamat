@@ -94,11 +94,7 @@ class Api extends CI_Controller
 			$result = array();
 			$this->load->model('scraper_model');
 			$data = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
-			$result_obj = new stdClass();
-			$result_obj->keywords = explode(' ', $data->keywords);
-			$result_obj->lang = $data->lang;
-			$result[] = $result_obj;
-			$this->_return_json_success( $result );
+			$this->_return_json_success( $data );
 		} else {
 			$this->_return_json_error('empty feeditemcontents_id');
 		}		

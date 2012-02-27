@@ -8,6 +8,7 @@
 			<div id="logo"><h1><a href="<?php echo site_url('/admin/feed'); ?>">STAMAT - Social Topics and Media Analysis Tool</a></h1></div>
 			<ul>
 				<li><a href="<?php echo site_url('/tools/create_slugs'); ?>">create / refresh all slugs</a></li>
+				<li><a href="<?php echo site_url('/tools/create_scrapers'); ?>">reset all scrapers</a></li>
 				<li><a href="<?php echo site_url('/auth/logout'); ?>">logout</a></li>
 			</ul>
 		</div>
