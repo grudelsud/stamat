@@ -125,7 +125,11 @@ class Vocabulary_model extends CI_Model
 	{
 		$this->db->where('id', $tag_id);
 		$query = $this->db->get('tags');
-		return $query->result();
+		if( $query->num_rows() > 0 ) {
+			return $query->row();
+		} else {
+			return NULL;
+		}
 	}
 	
 	function get_tags( $vocabulary_id )

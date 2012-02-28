@@ -59,10 +59,24 @@ class Tools extends CI_Controller
 		
 		// micc-lda
 		$auth_params = array();
-		$post_params = array();
+		$post_params = array(
+			'text' => '{TEXT}',
+			'docurl' => '',
+			'analysis' => 'topic',
+			'outputformat' => 'JSON',
+			'process' => 'Process',
+			'numtopics' => 3,
+			'numkeywords' => 7,
+			'modelname' => '',
+			'dburl' => $this->db->hostname,
+			'dbname' => $this->db->database,
+			'dbuser' => $this->db->username,
+			'dbpwd' => $this->db->password,
+			'entitytypes' => 'Allents'
+		);
 		$data = array(
 			'name' => 'micc-lda',
-			'rest_call' => '',
+			'rest_call' => 'http://fom.londondroids.com:8080/homer/Homer',
 			'request_type' => 'post',
 			'auth_type' => 'api_key',
 			'auth_params' => json_encode( $auth_params ),

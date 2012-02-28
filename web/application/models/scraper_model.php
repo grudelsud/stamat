@@ -33,6 +33,48 @@ class Scraper_model extends CI_Model
 		return $result->row();	
 	}
 
+	function scrape_micc_lda( $feeditem_id )
+	{
+		// check if feeditem exists and is already annotated
+		$this->db->where('id', $feeditem_id);
+		$query = $this->db->get('feeditems');
+		if( $query->num_rows() == 0 ) {
+			return FALSE;
+		} else {
+			
+			// check if feeditem is already annotated
+			$row = $query->row();
+			if( $row->sem_annotated ) {
+				$this->load->model('annotation_model');
+				return $this->annotation_model->get_triples( $feeditem_id, STRUCT_OBJ_KEYWORD );
+			} else {
+				
+				$content = $this->get_scraped_content( $feeditem_id );
+				$content = trim(preg_replace('/\s\s+/',' ',strip_tags($content)));
+				// fetch from micc-lda
+				$scraper = $this->_get_scraper('micc-lda');
+				$auth_params = json_decode( $scraper->auth_params, TRUE );
+				$post_params = json_decode( $scraper->post_params, TRUE );
+				$post_params['text'] = $content;
+
+				$response = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
+				$response_obj = json_decode( $response );
+
+				if( !empty($response_obj) ) {
+
+					$this->load->model('annotation_model');
+					$response = array();
+					foreach ($response_obj->results as $keyword_obj) {
+						$response[] = $this->annotation_model->annotate_micc_lda($feeditem_id, $keyword_obj->keyword);
+					}
+					return $response;			
+				} else {
+					return array('rest_call' => $scraper->rest_call, 'post_params' => $post_params, 'curl_info' => $this->curl->info, 'response' => $response);
+				}
+			}
+		}
+	}
+
 	function scrape_teamlife_sanr( $feeditem_id )
 	{
 		// check if feeditem exists and is already annotated
@@ -45,33 +87,11 @@ class Scraper_model extends CI_Model
 			// check if feeditem is already annotated
 			$row = $query->row();
 			if( $row->sem_annotated ) {
-				// simil sparql query! fetching all triples where subject == this feed item && object == keyword
-				$this->load->model('vocabulary_model');
-				$object_tag_id = $this->vocabulary_model->get_tag_id( STRUCT_OBJ_KEYWORD );
-				$this->db->select('id');
-				$this->db->where('subject_entity_id', $feeditem_id);
-				$this->db->where('object_tag_id', $object_tag_id);
-				$query = $this->db->get('tagtriples');
-				$response = array();
-				foreach($query->result() as $row) {
-					$response[] = $row->id;
-				}
-				return $response;
+				$this->load->model('annotation_model');
+				return $this->annotation_model->get_triples( $feeditem_id, STRUCT_OBJ_KEYWORD );
 			} else {
 				
-				// check if content is already scraped, or fetch it from readitlater
-				$this->db->where('feeditem_id', $feeditem_id);
-				$query = $this->db->get('feeditemcontents');
-				if( $query->num_rows() > 0 ) {
-					$row = $query->row();
-					$content = $row->content;
-				} else {
-					$feeditemcontent_id = $this->scrape_readitlater( $feeditem_id );
-					$this->db->where('id', $feeditemcontent_id);
-					$query = $this->db->get('feeditemcontents');
-					$row = $query->row();
-					$content = $row->content;
-				}
+				$content = $this->get_scraped_content( $feeditem_id );
 				$content = substr(trim(preg_replace('/\s\s+/',' ',strip_tags($content))), 0, 1999);
 				// fetch from teamlife-sanr
 				$scraper = $this->_get_scraper('teamlife-sanr');
@@ -93,6 +113,24 @@ class Scraper_model extends CI_Model
 				}
 			}
 		}
+	}
+
+	function get_scraped_content( $feeditem_id )
+	{
+		// check if content is already scraped, or fetch it from readitlater
+		$this->db->where('feeditem_id', $feeditem_id);
+		$query = $this->db->get('feeditemcontents');
+		if( $query->num_rows() > 0 ) {
+			$row = $query->row();
+			$content = $row->content;
+		} else {
+			$feeditemcontent_id = $this->scrape_readitlater( $feeditem_id );
+			$this->db->where('id', $feeditemcontent_id);
+			$query = $this->db->get('feeditemcontents');
+			$row = $query->row();
+			$content = $row->content;
+		}
+		return $content;
 	}
 
 	function scrape_readitlater( $feeditem_id )

@@ -47,6 +47,8 @@ define('HOURLYLIMIT_MEMBERS', 1000);
 define('VOCABULARY_EXTRACTED', 'extracted');
 define('STRUCT_OBJ_FEEDITEM', 'feed-item');
 define('STRUCT_ACT_ANNOTATE', 'annotate');
+
+define('STRUCT_ENG_MICCLDA', 'micc-lda');
 define('STRUCT_ENG_TEAMLIFE', 'teamlife-sanr');
 define('STRUCT_OBJ_KEYWORD', 'keyword');
 

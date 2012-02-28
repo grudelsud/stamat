@@ -93,7 +93,8 @@ class Api extends CI_Controller
 		if( $feeditem_id = $this->input->post('feeditem_id') ) {
 			$result = array();
 			$this->load->model('scraper_model');
-			$data = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
+			// $data = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
+			$data = $this->scraper_model->scrape_micc_lda($feeditem_id);
 			$this->_return_json_success( $data );
 		} else {
 			$this->_return_json_error('empty feeditemcontents_id');
