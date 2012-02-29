@@ -7,9 +7,10 @@ var feed_pagesize = 10;
 $(function() {
 	$('#dialog').dialog({autoOpen: false, resizable: false, height:140, modal: true});
 	
-	$('#vocabulary_detail #root li, #vocabulary_detail #children li').live({
+	$('#vocabulary_detail #tags li span').live({
 		click: function() {
 			$(this).toggleClass('selected');
+			// stuff for the form handling inserts
 			if( $(this).hasClass('selected') ) {
 				$('#parent').val( $(this).html() );
 				$('input[name|="parent_id"]').val( $(this).attr('id').replace('tag_', '') );
@@ -20,16 +21,16 @@ $(function() {
 		},
 		mouseover: function() {
 			var children = 'child_'+$(this).attr('id').replace('tag_', '');
-			$('#vocabulary_detail li.'+children).addClass('child_over');
+			$('#vocabulary_detail li span.'+children).addClass('child_over');
 
 			if( $(this).hasClass('child') ) {
 				var match = $(this).attr('class').match(/child_([0-9]+)/i)[1];
 				var parent = 'tag_'+match;
-				$('#vocabulary_detail li#'+parent).addClass('parent_over');
+				$('#vocabulary_detail li span#'+parent).addClass('parent_over');
 			}
 		},
 		mouseout: function() {
-			$('#vocabulary_detail #root li, #vocabulary_detail #children li').removeClass('parent_over child_over');
+			$('#vocabulary_detail #tags li span').removeClass('parent_over child_over');
 		}
 	});
 
@@ -53,8 +54,7 @@ function load_feeds(data)
 
 function load_tags(vocabulary_id, clean) {
 	if( clean == true ) {
-		$('#root').empty();
-		$('#children').empty();
+		$('#vocabulary_detail #tags #parent_tag_0').empty();
 	}
 	var data = {};
 	data.vocabulary_id = vocabulary_id;
@@ -64,15 +64,15 @@ function load_tags(vocabulary_id, clean) {
 // used both by admin.feed and admin.vocabulary
 function append_tags(data)
 {
-	var $list_root = $('#root');
-	var $list_children = $('#children');
+	var $tags = $('#vocabulary_detail #tags');
 	$.each(data.success, function(key, val) {
 		if( typeof(val.name) != 'undefined' ) {
+			$append_list = $('#parent_tag_'+val.parent_id);
+			$append_item = $('<li><span id="tag_'+val.id+'" class="child child_'+val.parent_id+' size_'+val.count+'">'+val.name+'</span></li>').append('<ul id="parent_tag_'+val.id+'"></ul>');
 			if( val.parent_id == 0 ) {
-				$list_root.append('<li id="tag_'+val.id+'">'+val.name+'</li>');
-			} else {
-				$list_children.append('<li id="tag_'+val.id+'" class="child child_'+val.parent_id+'">'+val.name+'</li>');
+				$append_item.addClass('clear');
 			}
+			$append_list.append( $append_item );
 		}
 	});
 }

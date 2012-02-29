@@ -274,38 +274,69 @@ button {
 			display: inline;
 			color: #333;
 		}
-		#admin #content #feed_content ul,
 		#admin #content #vocabulary_detail ul {
 			margin: 6px 0;
 		}
-		#admin #content #feed_content li,
-		#admin #content #vocabulary_detail li {
-			display: inline;
+			#admin #content #vocabulary_detail li {
+				margin: 6px 0 14px 0;
+				float: left;
+			}
+			#admin #content #vocabulary_detail li.clear {
+				float: none;
+				clear: both;
+			}
+			#admin #content #vocabulary_detail li ul {
+				padding: 0 10px;
+			}
+		#admin #content #feed_content li span,
+		#admin #content #vocabulary_detail li span {
 			background: #fff;
 			padding: 3px 5px;
-			margin: 3px 5px;
+			margin: 0px 3px;
 			border-radius: 5px;
 			-moz-border-radius: 5px;
 		}
-		#admin #content #vocabulary_detail li:hover {
+		#admin #content #vocabulary_detail li span:hover {
 			background: lightyellow;
 		}
-			#admin #content #feed_content li,
-			#admin #content #vocabulary_detail #root li, 
-			#admin #content #vocabulary_detail #children li {
+			#admin #content #vocabulary_detail li span,
 				line-height: 2em;
 				cursor: pointer;
 			}
-			#admin #content #feed_tags li.selected,
-			#admin #content #vocabulary_detail li.selected {
-				background: lightgreen;
+			#admin #content #vocabulary_detail li span {
+				background: white;
 			}
-			#admin #content #vocabulary_detail li.parent_over {
+			#admin #content #vocabulary_detail li span.parent_over {
 				background: lightsalmon;
 			}
-			#admin #content #vocabulary_detail li.child_over {
+			#admin #content #vocabulary_detail li span.child_over {
 				background: lightskyblue;
 			}
+			#admin #content #vocabulary_detail li span.selected {
+				background: lightgreen;
+			}
+				#admin.topics #content #vocabulary_detail li.clear {
+					float: left;
+					clear: none;
+				}
+				#admin.topics span.size_1, #admin.topics span.size_2, #admin.topics span.size_3 {
+					font-size: 0.5em;
+				}
+				#admin.topics span.size_4, #admin.topics span.size_5, #admin.topics span.size_6 {
+					font-size: 1em;
+				}
+				#admin.topics span.size_7, #admin.topics span.size_8, #admin.topics span.size_9 {
+					font-size: 1.5em;
+				}
+				#admin.topics span.size_10, #admin.topics span.size_11, #admin.topics span.size_12 {
+					font-size: 2em;
+				}
+				#admin.topics span.size_13, #admin.topics span.size_14, #admin.topics span.size_15 {
+					font-size: 3em;
+				}
+		#admin #content #vocabulary_detail #tag_controls {
+			clear: both;
+		}
 		#admin #content #feed_content .item {
 			padding: 20px;
 		}

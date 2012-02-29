@@ -44,7 +44,7 @@ function delete_tags()
 {
 	$('#dialog').dialog('close');
 
-	var $tags = $('#vocabulary_detail #root li.selected, #vocabulary_detail #children li.selected');
+	var $tags = $('#vocabulary_detail #tags span.selected');
 	var id_array = new Array();
 	$.each($tags, function(key,val) {
 		id_array[key] = $(val).attr('id').replace('tag_', '');

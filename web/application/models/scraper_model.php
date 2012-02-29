@@ -63,10 +63,11 @@ class Scraper_model extends CI_Model
 				if( !empty($response_obj) ) {
 
 					$this->load->model('annotation_model');
-					$response = array();
+					$keywords = array();
 					foreach ($response_obj->results as $keyword_obj) {
-						$response[] = $this->annotation_model->annotate_micc_lda($feeditem_id, $keyword_obj->keyword);
+						$keywords[] = $keyword_obj->keyword;
 					}
+					$response = $this->annotation_model->annotate_micc_lda($feeditem_id, $keywords);
 					return $response;			
 				} else {
 					return array('rest_call' => $scraper->rest_call, 'post_params' => $post_params, 'curl_info' => $this->curl->info, 'response' => $response);

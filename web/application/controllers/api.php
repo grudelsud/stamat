@@ -80,6 +80,9 @@ class Api extends CI_Controller
 			$result = array();
 			$this->load->model('scraper_model');
 			$result[] = $this->scraper_model->scrape_readitlater($feeditem_id);
+			if( $this->input->post('extract_topics') == 1 ) {
+				$this->scraper_model->scrape_micc_lda($feeditem_id);
+			}
 			$this->_return_json_success( $result );
 		} else {
 			$this->_return_json_error('empty feeditem_id');
@@ -270,15 +273,13 @@ class Api extends CI_Controller
 	function add_tag()
 	{
 		$this->_user_check('API - add_tag');
-		$tag = $this->input->post('tag');
-		$parent = $this->input->post('parent_id');
 		
-		if( $tag ) {
+		if( $tag = $this->input->post('tag') ) {
+			$parent = $this->input->post('parent_id');
 			$this->load->model('vocabulary_model');
 			$vocabulary_id = $this->input->post('vocabulary_id') ? $this->input->post('vocabulary_id') : 1;
-			$id = $this->vocabulary_model->add_tag( $vocabulary_id, $tag, empty( $parent ) ? NULL : $parent );
-			// TODO: return something clever
-			$this->_return_json_success( $id );
+			$result[] = $this->vocabulary_model->add_tag( $vocabulary_id, $tag, empty( $parent ) ? NULL : $parent );
+			$this->_return_json_success( $result );
 		}
 		
 	}

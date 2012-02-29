@@ -36,7 +36,7 @@ $(function() {
 	
 	// on button "add selected tags", send data to server and add tags to selected feed
 	$('#add_tag').click(function() {
-		var $sel_tags = $('#vocabulary_detail #root li.selected, #vocabulary_detail #children li.selected');
+		var $sel_tags = $('#vocabulary_detail #tags li span.selected');
 		var id_array = new Array();
 		var tag_array = new Array();
 		$.each($sel_tags, function(key, val) {
@@ -94,7 +94,7 @@ $(function() {
 	});
 
 	// on tag click, show selected
-	$('#feed_tags li').live('click', function(e) {
+	$('#feed_tags li span').live('click', function(e) {
 		$(this).toggleClass('selected');
 	});
 	
@@ -168,7 +168,7 @@ function add_feed_tags(selected_feed, id_array, tag_array) {
 			
 			// append to feed content
 			$.each(data.success, function(key,val) {
-				$feed_tag_list.append('<li id="feed_tag_'+val.id+'">'+val.name+'</li>');
+				$feed_tag_list.append('<li><span id="feed_tag_'+val.id+'">'+val.name+'</span></li>');
 				tags_added[key] = val.name;
 			});
 			
@@ -201,7 +201,7 @@ function show_feed_details( id )
 			var $feed_tag_list = $('#feed_tags');
 			$feed_tag_list.empty();
 			$.each(data.success.tags, function(key,val) {
-				$feed_tag_list.append('<li id="feed_tag_'+val.id+'">'+val.name+'</li>');
+				$feed_tag_list.append('<li><span id="feed_tag_'+val.id+'">'+val.name+'</span></li>');
 			});
 			$('#feed_controls button.delete').attr('id', 'delete_'+id);
 			$('#feed_controls button.fetch_content').attr('id', 'fetch_content_'+id);
@@ -229,7 +229,7 @@ function delete_feed_tags()
 {
 	$('#dialog').dialog('close');
 
-	var $feed_tags = $('#feed_tags li.selected');
+	var $feed_tags = $('#feed_tags li span.selected');
 	var id_array = new Array();
 	$.each($feed_tags, function(key,val) {
 		id_array[key] = $(val).attr('id').replace('feed_tag_', '');

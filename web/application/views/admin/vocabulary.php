@@ -18,20 +18,17 @@
 		<?php echo form_close(); ?>
 	</div>
 	<div id="vocabulary_detail">
-		<h1>root tags</h1>
-		<ul id="root">
-		</ul>
-		<h1>children tags</h1>
-		<ul id="children">
-		</ul>
+		<div id="tags">
+			<ul id="parent_tag_0"></ul>
+		</div>
 		<div id="tag_controls"><button type="button" class="delete">delete selected tags</button></div>
 		<hr/>
 		<h1>colour codes</h1>
 		<ul>
-			<li>node</li>
-			<li class="selected">selected</li>
-			<li class="parent_over">parent</li>
-			<li class="child_over">child</li>
+			<li><span>node</span></li>
+			<li><span class="selected">selected</span></li>
+			<li><span class="parent_over">parent</span></li>
+			<li><span class="child_over">child</span></li>
 		</ul>
 	</div>
 </div>

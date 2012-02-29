@@ -41,21 +41,20 @@
 			<select></select>
 		</div>
 		<div id="vocabulary_detail">
-			<h1>root tags</h1>
-			<ul id="root">
-			</ul>
-			<h1>children tags</h1>
-			<ul id="children">
-			</ul>
+		<div id="tags">
+			<ul id="parent_tag_0"></ul>
+		</div>
+		<div id="tag_controls">
 			<button type="button" id="add_tag">add selected tags</button>
-			<hr/>
-			<h1>colour codes</h1>
-			<ul>
-				<li>node</li>
-				<li class="selected">selected</li>
-				<li class="parent_over">parent</li>
-				<li class="child_over">child</li>
-			</ul>
+		</div>
+		<hr/>
+		<h1>colour codes</h1>
+		<ul>
+			<li><span>node</span></li>
+			<li><span class="selected">selected</li>
+			<li><span class="parent_over">parent</li>
+			<li><span class="child_over">child</li>
+		</ul>
 		</div>		
 	</div>
 </div>
