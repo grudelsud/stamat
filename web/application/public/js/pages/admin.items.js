@@ -28,6 +28,8 @@ $(function() {
 	$('#feed_content .item button.fetch_entities').live('click', function() {
 		var data = {};
 		data.feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
+		data.annotate_micc = 1;
+		data.annotate_teamlife = 0;
 		api('fetch_entities', function(data) {
 			console.log('silence is bliss');
 		}, data);
@@ -57,6 +59,8 @@ $(function() {
 		var page = $(this).attr('id').replace('page_', '');
 		show_feed_items( selected_feed.id, page, feed_pagesize );
 	});
+
+	$('.check').live('click', function() { $(this).toggleClass('selected'); });
 });
 
 function load_pagination( feed_id )
@@ -94,9 +98,11 @@ function show_feed_items( feed_id, page, limit )
 			var item_id = 'item_'+val.id;
 			var $item = $('<div id="'+item_id+'" class="item"></div>');
 			var item_controls = '<div class="loader"></div>';
-			// item_controls += '<button type="button" class="fetch_entities">[ALPHA] fetch entities</button>';
-			item_controls += '<button type="button" class="fetch_content">fetch permalink content</button>';
-			item_controls += '<button type="button" class="show_content">show permalink content</button>';
+			item_controls += '<button type="button" class="fetch_entities">[BETA] fetch entities</button> ';
+			item_controls += '<button type="button" class="annotate_micc check"></button> MICC ';
+			item_controls += '<button type="button" class="annotate_teamlife check"></button> SANR ';
+			item_controls += '<button type="button" class="fetch_content">fetch permalink content</button> ';
+			item_controls += '<button type="button" class="show_content">show permalink content</button> ';
 
 			$item.append('<div class="item_controls">'+item_controls+'</div>');
 			$item.append('<h1><a href="'+val.permalink+'">'+val.title+'</a></h1>');
@@ -118,7 +124,6 @@ function fetch_store_permalink( feeditem_id )
 	$('#item_'+feeditem_id+' button.fetch_content').hide();
 	$('#item_'+feeditem_id+' div.loader').show();
 	var data = {};
-	data.extract_topics = 1;
 	data.feeditem_id = feeditem_id;
 	api('fetch_store_permalink', function() {
 		$('#item_'+feeditem_id+' div.loader').hide();

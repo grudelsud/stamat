@@ -45,11 +45,13 @@ class Tools extends CI_Controller
 			'username' => 'guest',
 			'password' => 'teamlife'
 		);
-		$post_params = array();
+		$post_params = array(
+			'text' => '{TEXT}'
+		);
 		$data = array(
 			'name' => 'teamlife-sanr',
-			'rest_call' => 'http://beta.teamlife.it/sanr/ajax/extract_words.php?snippets=on&text={TEXT}',
-			'request_type' => 'get',
+			'rest_call' => 'http://beta.teamlife.it/sanr/ajax/extract_words.php',
+			'request_type' => 'post',
 			'auth_type' => 'http_login',
 			'auth_params' => json_encode( $auth_params ),
 			'post_params' => json_encode( $post_params )

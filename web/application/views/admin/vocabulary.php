@@ -18,9 +18,7 @@
 		<?php echo form_close(); ?>
 	</div>
 	<div id="vocabulary_detail">
-		<div id="tags">
-			<ul id="parent_tag_0"></ul>
-		</div>
+		<div id="tags"></div>
 		<div id="tag_controls"><button type="button" class="delete">delete selected tags</button></div>
 		<hr/>
 		<h1>colour codes</h1>

@@ -274,6 +274,9 @@ button {
 			display: inline;
 			color: #333;
 		}
+		#admin #content #vocabulary_detail h1 {
+			clear: both;
+		}
 		#admin #content #vocabulary_detail ul {
 			margin: 6px 0;
 		}
@@ -295,17 +298,12 @@ button {
 			margin: 0px 3px;
 			border-radius: 5px;
 			-moz-border-radius: 5px;
+			cursor: pointer;
+			background: white;
 		}
 		#admin #content #vocabulary_detail li span:hover {
 			background: lightyellow;
 		}
-			#admin #content #vocabulary_detail li span,
-				line-height: 2em;
-				cursor: pointer;
-			}
-			#admin #content #vocabulary_detail li span {
-				background: white;
-			}
 			#admin #content #vocabulary_detail li span.parent_over {
 				background: lightsalmon;
 			}
@@ -353,7 +351,8 @@ button {
 			width: 16px;
 			height: 16px;
 			border: none;
-			margin-left: 5px;
+			margin-left: 2px;
+			vertical-align: bottom;
 			line-height: 10em;
 			background: transparent url(../img/sprite.png) no-repeat;
 		}
@@ -365,6 +364,12 @@ button {
 		}
 		#admin #content #feed_content .item .item_controls button.fetch_entities {
 			background-position: -120px -40px;
+		}
+		#admin #content #feed_content .item .item_controls button.check {
+			background-position: -20px 0px;
+		}
+		#admin #content #feed_content .item .item_controls button.check.selected {
+			background-position: 0px 0px;
 		}
 		#admin #content #feed_content .item .footer {
 			font-size: 0.85em;

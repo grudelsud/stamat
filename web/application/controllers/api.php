@@ -80,9 +80,6 @@ class Api extends CI_Controller
 			$result = array();
 			$this->load->model('scraper_model');
 			$result[] = $this->scraper_model->scrape_readitlater($feeditem_id);
-			if( $this->input->post('extract_topics') == 1 ) {
-				$this->scraper_model->scrape_micc_lda($feeditem_id);
-			}
 			$this->_return_json_success( $result );
 		} else {
 			$this->_return_json_error('empty feeditem_id');
@@ -96,9 +93,13 @@ class Api extends CI_Controller
 		if( $feeditem_id = $this->input->post('feeditem_id') ) {
 			$result = array();
 			$this->load->model('scraper_model');
-			// $data = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
-			$data = $this->scraper_model->scrape_micc_lda($feeditem_id);
-			$this->_return_json_success( $data );
+			if( $this->input->post('annotate_micc') == 1 ) {
+				$result['micc'] = $this->scraper_model->scrape_micc_lda($feeditem_id);
+			}
+			if( $this->input->post('annotate_teamlife') == 1 ) {
+				$result['sanr'] = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
+			}
+			$this->_return_json_success( $result );
 		} else {
 			$this->_return_json_error('empty feeditemcontents_id');
 		}		
@@ -107,11 +108,16 @@ class Api extends CI_Controller
 	function count_feed_items()
 	{
 		$this->_user_check();
-	
+		// pagination used for admin.items.js
 		if( $feed_id = $this->input->post('feed_id') ) {
 			$this->db->where('feed_id', $feed_id);
 			$this->db->from('feeditems');
-			$this->_return_json_success( $this->db->count_all_results() );			
+			$this->_return_json_success( $this->db->count_all_results() );
+		// pagination used for admin.topics.js
+		} else if( $tag_id = $this->input->post('tag_id') ) {
+			$this->db->where('object_entity_id', $tag_id);
+			$this->db->from('tagtriples');
+			$this->_return_json_success( $this->db->count_all_results() );
 		} else {
 			$this->_return_json_error('empty feed_id');
 		}

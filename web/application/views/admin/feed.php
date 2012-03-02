@@ -41,9 +41,7 @@
 			<select></select>
 		</div>
 		<div id="vocabulary_detail">
-		<div id="tags">
-			<ul id="parent_tag_0"></ul>
-		</div>
+		<div id="tags"></div>
 		<div id="tag_controls">
 			<button type="button" id="add_tag">add selected tags</button>
 		</div>

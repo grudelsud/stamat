@@ -7,7 +7,7 @@ var feed_pagesize = 10;
 $(function() {
 	$('#dialog').dialog({autoOpen: false, resizable: false, height:140, modal: true});
 	
-	$('#vocabulary_detail #tags li span').live({
+	$('#vocabulary_detail li span').live({
 		click: function() {
 			$(this).toggleClass('selected');
 			// stuff for the form handling inserts
@@ -52,29 +52,30 @@ function load_feeds(data)
 	});
 }
 
-function load_tags(vocabulary_id, clean) {
+function load_tags(vocabulary_id, root, clean) {
 	if( clean == true ) {
-		$('#vocabulary_detail #tags #parent_tag_0').empty();
+		$(root).empty().append('<ul class="parent_tag_0"></ul>');
 	}
 	var data = {};
 	data.vocabulary_id = vocabulary_id;
-	api( 'get_vocabulary_tags', append_tags, data );
+	api( 'get_vocabulary_tags', append_tags(root), data );
 }
 
-// used both by admin.feed and admin.vocabulary
-function append_tags(data)
+// used by admin.feed, admin.vocabulary, admin.topics
+function append_tags(root)
 {
-	var $tags = $('#vocabulary_detail #tags');
-	$.each(data.success, function(key, val) {
-		if( typeof(val.name) != 'undefined' ) {
-			$append_list = $('#parent_tag_'+val.parent_id);
-			$append_item = $('<li><span id="tag_'+val.id+'" class="child child_'+val.parent_id+' size_'+val.count+'">'+val.name+'</span></li>').append('<ul id="parent_tag_'+val.id+'"></ul>');
-			if( val.parent_id == 0 ) {
-				$append_item.addClass('clear');
+	return function(data) {
+		$.each(data.success, function(key, val) {
+			if( typeof(val.name) != 'undefined' ) {
+				$append_list = $(root+' .parent_tag_'+val.parent_id);
+				$append_item = $('<li><span id="tag_'+val.id+'" class="child child_'+val.parent_id+' size_'+val.count+'">'+val.name+'</span></li>').append('<ul class="parent_tag_'+val.id+'"></ul>');
+				if( val.parent_id == 0 ) {
+					$append_item.addClass('clear');
+				}
+				$append_list.append( $append_item );
 			}
-			$append_list.append( $append_item );
-		}
-	});
+		});
+	}
 }
 
 function show_error_message( message ) {

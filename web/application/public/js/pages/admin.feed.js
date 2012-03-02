@@ -7,11 +7,11 @@ $(function() {
 		$.each(data.success, function(key,val) {
 			$select.append('<option value="'+val.id+'">'+val.name+'</option>')
 		});
-		load_tags( $select.val(), true );
+		load_tags( $select.val(), '#tags', true );
 	});
 
 	$('#vocabulary_select select').change(function() {
-		load_tags( $(this).val(), true );
+		load_tags( $(this).val(), '#tags', true );
 	});
 
 	// on form submit, send data to server and add feed to feed table

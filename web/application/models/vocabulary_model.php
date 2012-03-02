@@ -106,6 +106,7 @@ class Vocabulary_model extends CI_Model
 
 	function get_vocabularies()
 	{
+		$this->db->order_by('order', 'asc');
 		$query = $this->db->get('vocabularies');
 		return $query->result();		
 	}
@@ -132,8 +133,11 @@ class Vocabulary_model extends CI_Model
 		}
 	}
 	
-	function get_tags( $vocabulary_id )
+	function get_tags( $vocabulary_id, $exclude_stop_words = TRUE )
 	{
+		if( $exclude_stop_words ) {
+			$this->db->where('stop_word', 0);
+		}
 		$this->db->where('vocabulary_id', $vocabulary_id);
 		$this->db->order_by('parent_id asc, slug asc, count desc');
 		$query = $this->db->get('tags');

@@ -46,7 +46,7 @@ class Scraper_model extends CI_Model
 			$row = $query->row();
 			if( $row->sem_annotated ) {
 				$this->load->model('annotation_model');
-				return $this->annotation_model->get_triples( $feeditem_id, STRUCT_OBJ_KEYWORD );
+				return $this->annotation_model->get_triples( $feeditem_id );
 			} else {
 				
 				$content = $this->get_scraped_content( $feeditem_id );
@@ -57,21 +57,24 @@ class Scraper_model extends CI_Model
 				$post_params = json_decode( $scraper->post_params, TRUE );
 				$post_params['text'] = $content;
 
-				$response = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
-				$response_obj = json_decode( $response );
-
-				if( !empty($response_obj) ) {
-
-					$this->load->model('annotation_model');
-					$keywords = array();
-					foreach ($response_obj->results as $keyword_obj) {
-						$keywords[] = $keyword_obj->keyword;
-					}
-					$response = $this->annotation_model->annotate_micc_lda($feeditem_id, $keywords);
-					return $response;			
-				} else {
-					return array('rest_call' => $scraper->rest_call, 'post_params' => $post_params, 'curl_info' => $this->curl->info, 'response' => $response);
+				$response_t = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
+				$response_obj = json_decode( $response_t );
+				$topics = array();
+				foreach ($response_obj->results as $keyword_obj) {
+					$topics[] = $keyword_obj->keyword;
 				}
+
+				$post_params['analysis'] = 'ned';
+				$response_e = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
+				$response_obj = json_decode( $response_e );
+				$entities = array();
+				foreach ($response_obj->results as $keyword_obj) {
+					$entities[] = $keyword_obj->keyword;
+				}
+
+				$this->load->model('annotation_model');
+				$response = $this->annotation_model->annotate_micc_lda($feeditem_id, $topics, $entities);
+				return $response;			
 			}
 		}
 	}
@@ -89,18 +92,18 @@ class Scraper_model extends CI_Model
 			$row = $query->row();
 			if( $row->sem_annotated ) {
 				$this->load->model('annotation_model');
-				return $this->annotation_model->get_triples( $feeditem_id, STRUCT_OBJ_KEYWORD );
+				return $this->annotation_model->get_triples( $feeditem_id );
 			} else {
 				
 				$content = $this->get_scraped_content( $feeditem_id );
 				$content = substr(trim(preg_replace('/\s\s+/',' ',strip_tags($content))), 0, 1999);
 				// fetch from teamlife-sanr
 				$scraper = $this->_get_scraper('teamlife-sanr');
-				$rest_call = preg_replace('/{TEXT}/', urlencode($content), $scraper->rest_call);
 				$post_params = json_decode( $scraper->post_params, TRUE );
 				$auth_params = json_decode( $scraper->auth_params, TRUE );
+				$post_params['text'] = $content;
 
-				$response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
+				$response = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
 				$response_obj = json_decode( $response );
 				if( !empty($response_obj) ) {
 					$keywords = explode(' ', $response_obj->keywords );
