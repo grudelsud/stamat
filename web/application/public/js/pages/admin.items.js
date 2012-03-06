@@ -25,28 +25,25 @@ $(function() {
 		fetch_store_permalink( feeditem_id );
 	});
 
+	// THE NAME OF THE GAME!
 	$('#feed_content .item button.fetch_entities').live('click', function() {
-		var data = {};
-		data.feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
-		data.annotate_micc = 1;
-		data.annotate_teamlife = 0;
-		api('fetch_entities', function(data) {
-			console.log('silence is bliss');
-		}, data);
-	});
-
-	$('#feed_content .item button.show_content').live('click', function() {
 		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
-		$('#feed_content .item').removeClass('selected');
-		$('#feed_content #item_'+feeditem_id).addClass('selected');
-		var url = base_url + 'index.php/admin/permalink/' + feeditem_id;
-		$('#permalink_content').empty().append('<iframe src="'+url+'"></iframe>');
-		$('#permalink_container').fadeIn();
-	});
-	
-	$('#permalink_controls button.close').click(function() {
-		$('#feed_content .item').removeClass('selected');
-		$('#permalink_container').fadeOut();		
+		var data = {};
+		data.feeditem_id = feeditem_id;
+		data.annotate_micc = 0;
+		data.annotate_teamlife = 0;
+		$.each($(this).siblings('.check.selected'), function(key, val) {
+			data.annotate_micc += $(val).hasClass('annotate_micc') ? 1 : 0;
+			data.annotate_teamlife += $(val).hasClass('annotate_teamlife') ? 1 : 0;
+		});
+		if( data.annotate_micc + data.annotate_teamlife > 0 ) {
+			$('#item_'+feeditem_id+' button.fetch_content').hide();
+			$('#item_'+feeditem_id+' div.loader').show();
+			api('fetch_entities', function(data) {
+				$('#item_'+feeditem_id+' div.loader').hide();
+				$('#item_'+feeditem_id+' button.show_content').show().click();
+			}, data);
+		}
 	});
 
 	$('#feed_pagination a').live('click', function(e) {
@@ -115,7 +112,7 @@ function show_feed_items( feed_id, page, limit )
 				$('#'+item_id+' button.fetch_content').hide();
 			}
 		});
-	}, data);
+}, data);
 }
 
 function fetch_store_permalink( feeditem_id )

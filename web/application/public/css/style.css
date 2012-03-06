@@ -280,8 +280,9 @@ button {
 		#admin #content #vocabulary_detail ul {
 			margin: 6px 0;
 		}
+			#admin #content #feed_content li,
 			#admin #content #vocabulary_detail li {
-				margin: 6px 0 14px 0;
+				margin: 6px 0 12px 0;
 				float: left;
 			}
 			#admin #content #vocabulary_detail li.clear {
@@ -301,6 +302,7 @@ button {
 			cursor: pointer;
 			background: white;
 		}
+		#admin #content #feed_content li span:hover,
 		#admin #content #vocabulary_detail li span:hover {
 			background: lightyellow;
 		}
@@ -310,6 +312,7 @@ button {
 			#admin #content #vocabulary_detail li span.child_over {
 				background: lightskyblue;
 			}
+			#admin #content #feed_content li span.selected,
 			#admin #content #vocabulary_detail li span.selected {
 				background: lightgreen;
 			}
@@ -332,7 +335,8 @@ button {
 				#admin.topics span.size_13, #admin.topics span.size_14, #admin.topics span.size_15 {
 					font-size: 3em;
 				}
-		#admin #content #vocabulary_detail #tag_controls {
+		#admin #content #tag_controls,
+		#admin #content #tagged_items {
 			clear: both;
 		}
 		#admin #content #feed_content .item {
@@ -347,6 +351,7 @@ button {
 		#admin #content #feed_content .item .item_controls {
 			float: right;
 		}
+		#admin.topics #vocabulary_detail button,
 		#admin #content #feed_content .item .item_controls button {
 			width: 16px;
 			height: 16px;
@@ -355,6 +360,12 @@ button {
 			vertical-align: bottom;
 			line-height: 10em;
 			background: transparent url(../img/sprite.png) no-repeat;
+		}
+		#admin.topics #vocabulary_detail button.slide {
+			background-position: -100px -120px;
+		}
+		#admin.topics #vocabulary_detail button.slide.closed {
+			background-position: 0px -120px;
 		}
 		#admin #content #feed_content .item .item_controls button.show_content {
 			background-position: -80px -100px;

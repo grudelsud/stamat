@@ -51,45 +51,45 @@ class Annotation_model extends CI_Model
 		return $tag_triples;
 	}
 
-	function annotate_feeditem_engine_entities($feeditem_id, $engine, $entities)
+	function annotate_feeditem_engine_entities($feeditem_id, $engine, $entities, $vocabulary = VOCABULARY_EXTRACTED_ENTITIES)
 	{
-		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_ENTITIES, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_ENTITY, $entities);
+		return $this->annotate_subject_engine_objects( $vocabulary, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_ENTITY, $entities);
 	}
 
-	function annotate_feeditem_engine_topics($feeditem_id, $engine, $topics)
+	function annotate_feeditem_engine_topics($feeditem_id, $engine, $topics, $vocabulary = VOCABULARY_EXTRACTED_TOPICS)
 	{
-		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_TOPICS, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_TOPIC, $topics);
+		return $this->annotate_subject_engine_objects( $vocabulary, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_TOPIC, $topics);
 	}
 
-	function annotate_feeditem_engine_keywords($feeditem_id, $engine, $keywords)
+	function annotate_feeditem_engine_keywords($feeditem_id, $engine, $keywords, $vocabulary = VOCABULARY_EXTRACTED_TOPICS)
 	{
-		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_TOPICS, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_KEYWORD, $keywords);
+		return $this->annotate_subject_engine_objects( $vocabulary, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_KEYWORD, $keywords);
 	}
 
-	function annotate_micc_lda($feeditem_id, $topics, $entities)
+	function annotate_micc_lda($feeditem_id, $topics, $entities, $prev_annotations)
 	{
 		$tagtriples_t = $this->annotate_feeditem_engine_topics( $feeditem_id, STRUCT_ENG_MICCLDA, $topics );
 		$tagtriples_e = $this->annotate_feeditem_engine_entities( $feeditem_id, STRUCT_ENG_MICCLDA, $entities );
 
 		$this->db->where('id', $feeditem_id);
 		$data = array(
-			'sem_annotated' => 1
-			);
+			'sem_annotated' => (ANNOTATED_MICC | (int)$prev_annotations)
+		);
 		$this->db->update('feeditems', $data);
 		return array_merge($tagtriples_t, $tagtriples_e);
 	}
 
-	function annotate_teamlife_sanr($feeditem_id, $lang, $keywords)
+	function annotate_teamlife_sanr($feeditem_id, $lang, $keywords, $prev_annotations)
 	{
-		$tagtriples = $this->annotate_feeditem_engine_keywords( $feeditem_id, STRUCT_ENG_TEAMLIFE, $keywords );
+		$tagtriples = $this->annotate_feeditem_engine_keywords( $feeditem_id, STRUCT_ENG_TEAMLIFE, $keywords, VOCABULARY_TEAMLIFE_SANR );
 		$language_id = $this->vocabulary_model->get_language_id( $lang, TRUE );
 
 		$this->db->where('id', $feeditem_id);
 		$data = array(
 			'language_id' => $language_id,
-			'sem_annotated' => 1
+			'sem_annotated' => (ANNOTATED_SANR | (int)$prev_annotations)
 			);
 		$this->db->update('feeditems', $data);
-		return $tag_triples;
+		return $tagtriples;
 	}
 }

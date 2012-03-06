@@ -26,7 +26,9 @@ class Tools extends CI_Controller
 	{
 		$this->db->truncate('scrapers');
 
-		// readitlater
+		/**
+		 readitlater
+		 */
 		$auth_params = array();
 		$post_params = array();
 		$data = array(
@@ -40,7 +42,9 @@ class Tools extends CI_Controller
 		$this->db->insert('scrapers', $data);
 		$output = '<h1>read it later</h1>'.var_export( $data, TRUE );
 		
-		// teamlife
+		/**
+		 teamlife
+		 */
 		$auth_params = array(
 			'username' => 'guest',
 			'password' => 'teamlife'
@@ -50,8 +54,8 @@ class Tools extends CI_Controller
 		);
 		$data = array(
 			'name' => 'teamlife-sanr',
-			'rest_call' => 'http://beta.teamlife.it/sanr/ajax/extract_words.php',
-			'request_type' => 'post',
+			'rest_call' => 'http://beta.teamlife.it/sanr/ajax/extract_words.php?text={TEXT}',
+			'request_type' => 'get',
 			'auth_type' => 'http_login',
 			'auth_params' => json_encode( $auth_params ),
 			'post_params' => json_encode( $post_params )
@@ -59,7 +63,9 @@ class Tools extends CI_Controller
 		$this->db->insert('scrapers', $data);
 		$output .= '<h1>teamlife semantic annotator</h1>'.var_export( $data, TRUE );
 		
-		// micc-lda
+		/**
+		 micc-lda
+		 */
 		$auth_params = array();
 		$post_params = array(
 			'text' => '{TEXT}',

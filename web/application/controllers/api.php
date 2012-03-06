@@ -114,8 +114,20 @@ class Api extends CI_Controller
 			$this->db->from('feeditems');
 			$this->_return_json_success( $this->db->count_all_results() );
 		// pagination used for admin.topics.js
-		} else if( $tag_id = $this->input->post('tag_id') ) {
-			$this->db->where('object_entity_id', $tag_id);
+		} else if( $tag_array = $this->input->post('tag_array') ) {
+			$this->load->model('vocabulary_model');
+			$subject_type_id = $this->vocabulary_model->get_tag_id( STRUCT_OBJ_FEEDITEM );
+
+			$this->db->where('subject_tag_id', $subject_type_id);
+			$first = TRUE;
+			foreach( $tag_array as $tag_id ) {
+				if( $first ) {
+					$this->db->where('object_entity_id', $tag_id);
+					$first = FALSE;
+				} else {
+					$this->db->or_where('object_entity_id', $tag_id);					
+				}
+			}
 			$this->db->from('tagtriples');
 			$this->_return_json_success( $this->db->count_all_results() );
 		} else {
@@ -164,6 +176,43 @@ class Api extends CI_Controller
 		}
 	}
 	
+	function load_tagged_feed_items()
+	{
+		$this->_user_check();
+
+		if( $tag_array = $this->input->post('tag_array') ) {
+
+			$this->load->model('vocabulary_model');
+			$subject_type_id = $this->vocabulary_model->get_tag_id( STRUCT_OBJ_FEEDITEM );
+
+			$this->db->select('feeditems.id, feeditems.title, feeditems.permalink, feeditems.description, feeditems.date');
+			$this->db->distinct();
+			$this->db->from('feeditems');
+			$this->db->join('tagtriples', 'feeditems.id = tagtriples.subject_entity_id');
+			$this->db->group_by('feeditems.id');
+			$this->db->where('tagtriples.subject_tag_id', $subject_type_id);
+			$first = TRUE;
+			foreach( $tag_array as $tag_id ) {
+				if( $first ) {
+					$this->db->where('tagtriples.object_entity_id', $tag_id);
+					$first = FALSE;
+				} else {
+					$this->db->or_where('tagtriples.object_entity_id', $tag_id);					
+				}
+			}
+
+			$this->db->order_by('date', 'desc');
+			$offset = $this->input->post('offset') ? $this->input->post('offset') : 0;
+			$limit = $this->input->post('limit') ? $this->input->post('limit') : 100;
+			$this->db->limit($limit, $offset);
+			$query = $this->db->get();
+			
+			$this->_return_json_success( $query->result() );
+		} else {
+			$this->_return_json_error('empty triples');
+		}
+	}
+
 	/**
 	 * Feed related CRUD functions (no update)
 	 * 

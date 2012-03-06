@@ -7,7 +7,7 @@ var feed_pagesize = 10;
 $(function() {
 	$('#dialog').dialog({autoOpen: false, resizable: false, height:140, modal: true});
 	
-	$('#vocabulary_detail li span').live({
+	$('#vocabulary_detail #tags li span').live({
 		click: function() {
 			$(this).toggleClass('selected');
 			// stuff for the form handling inserts
@@ -34,6 +34,21 @@ $(function() {
 		}
 	});
 
+	$('#feed_content .item button.show_content').live('click', function() {
+		var feeditem_id = $(this).closest('.item').attr('id').replace('item_', '');
+		$('#feed_content .item').removeClass('selected');
+		$('#feed_content #item_'+feeditem_id).addClass('selected');
+		var url = base_url + 'index.php/admin/permalink/' + feeditem_id;
+		$('#permalink_content').empty().append('<iframe src="'+url+'"></iframe>');
+		$('#permalink_container').fadeIn();
+	});
+
+	$('#permalink_controls button.close').click(function() {
+		$('#feed_content .item').removeClass('selected');
+		$('#permalink_container').fadeOut();		
+	});
+
+
 });
 
 // load content in feed table
@@ -44,10 +59,10 @@ function load_feeds(data)
 		'bJQueryUI' : true,
 		'aaData' : data.success,
 		'aoColumns' : [
-			{ 'mDataProp': 'id' },
-			{ 'mDataProp': 'title' },
-			{ 'mDataProp': 'tags' },
-			{ 'mDataProp': 'url' },
+		{ 'mDataProp': 'id' },
+		{ 'mDataProp': 'title' },
+		{ 'mDataProp': 'tags' },
+		{ 'mDataProp': 'url' },
 		],
 	});
 }

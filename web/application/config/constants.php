@@ -44,13 +44,18 @@ define('READITLATER_API_KEY', '972TpV1eg2b72H40VQdaN70u71paq15f');
 define('GROUP_ADMIN', 'admin');
 define('HOURLYLIMIT_MEMBERS', 1000);
 
+define('VOCABULARY_TEAMLIFE_SANR', 'teamlife_sanr');
 define('VOCABULARY_EXTRACTED_TOPICS', 'topics');
 define('VOCABULARY_EXTRACTED_ENTITIES', 'entities');
+
 define('STRUCT_OBJ_FEEDITEM', 'feed-item');
 define('STRUCT_ACT_ANNOTATE', 'annotate');
 
 define('STRUCT_ENG_MICCLDA', 'micc-lda');
 define('STRUCT_ENG_TEAMLIFE', 'teamlife-sanr');
+
+define('ANNOTATED_MICC', 1);
+define('ANNOTATED_SANR', 2);
 
 define('STRUCT_OBJ_KEYWORD', 'keyword');
 define('STRUCT_OBJ_TOPIC', 'topic');

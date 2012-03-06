@@ -11,18 +11,21 @@ class Scraper_model extends CI_Model
 		parent::__construct();
 	}
 	
-	private function _execute_curl( $rest_call, $request_type, $auth_type, $auth_params, $post_params ) {
+	private function _execute_curl( $rest_call, $request_type, $auth_type, $auth_params, $post_params, &$debug = NULL )
+	{
 		$this->curl->create( $rest_call );
-		// $debug = $rest_call;
-		if( $request_type == 'post' ) {
-			$this->curl->post( $post_params );
-			// $debug .= ' post params: '.var_export( $post_params, TRUE );
-		}
+		$debug['rest_call'] = $rest_call;
+
+		$this->curl->option(CURLOPT_TIMEOUT, 60);
+
 		if( $auth_type == 'http_login' ) {
 			$this->curl->http_login( $auth_params['username'], $auth_params['password'] );
-			// $debug .= ' auth params: '.var_export( $auth_params, TRUE );
+			$debug['auth'] = $auth_params;
 		}
-
+		if( $request_type == 'post' ) {
+			$this->curl->post( $post_params );
+			$debug['post'] = $post_params;
+		}
 		return $this->curl->execute();
 	}
 
@@ -44,7 +47,8 @@ class Scraper_model extends CI_Model
 			
 			// check if feeditem is already annotated
 			$row = $query->row();
-			if( $row->sem_annotated ) {
+			$annotations = (int)$row->sem_annotated;
+			if( $annotations & ANNOTATED_MICC ) {
 				$this->load->model('annotation_model');
 				return $this->annotation_model->get_triples( $feeditem_id );
 			} else {
@@ -73,7 +77,7 @@ class Scraper_model extends CI_Model
 				}
 
 				$this->load->model('annotation_model');
-				$response = $this->annotation_model->annotate_micc_lda($feeditem_id, $topics, $entities);
+				$response = $this->annotation_model->annotate_micc_lda($feeditem_id, $topics, $entities, $annotations);
 				return $response;			
 			}
 		}
@@ -90,30 +94,32 @@ class Scraper_model extends CI_Model
 			
 			// check if feeditem is already annotated
 			$row = $query->row();
-			if( $row->sem_annotated ) {
+			$annotations = (int)$row->sem_annotated;
+			if( $annotations & ANNOTATED_SANR ) {
 				$this->load->model('annotation_model');
 				return $this->annotation_model->get_triples( $feeditem_id );
 			} else {
 				
 				$content = $this->get_scraped_content( $feeditem_id );
-				$content = substr(trim(preg_replace('/\s\s+/',' ',strip_tags($content))), 0, 1999);
+				$content = substr(urlencode(trim(preg_replace('/\s\s+/',' ',strip_tags($content)))), 0, 1999);
 				// fetch from teamlife-sanr
 				$scraper = $this->_get_scraper('teamlife-sanr');
+				$rest_call = preg_replace('/{TEXT}/', $content, $scraper->rest_call);
 				$post_params = json_decode( $scraper->post_params, TRUE );
 				$auth_params = json_decode( $scraper->auth_params, TRUE );
-				$post_params['text'] = $content;
 
-				$response = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
+				$debug = array();
+				$response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params, $debug );
 				$response_obj = json_decode( $response );
 				if( !empty($response_obj) ) {
 					$keywords = explode(' ', $response_obj->keywords );
 
 					// and store annotations
 					$this->load->model('annotation_model');
-					$response = $this->annotation_model->annotate_teamlife_sanr($feeditem_id, $response_obj->lang, $keywords);
+					$response = $this->annotation_model->annotate_teamlife_sanr($feeditem_id, $response_obj->lang, $keywords, $annotations);
 					return $response;			
 				} else {
-					return array('content' => $content, 'rest_call' => $rest_call, 'auth_params' => $auth_params, 'curl_info' => $this->curl->info, 'response' => $response);
+					return array('debug' => $debug, 'curl_info' => $this->curl->info, 'response' => $response);
 				}
 			}
 		}

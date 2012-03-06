@@ -1,4 +1,5 @@
-var show_vocab = ['topics', 'entities'];
+var show_vocab = ['topics', 'entities', 'teamlife_sanr'];
+var selected_tags = Array();
 
 $(function() {
 	api('get_vocabularies', function(data) {
@@ -9,10 +10,26 @@ $(function() {
 		});
 	});
 
+	$('#vocabulary_detail button.slide').click(function() {
+		var id = $(this).attr('id').replace('slide_', '');
+		$('#vocabulary_detail #'+id).slideToggle();
+		$(this).toggleClass('closed');
+	});
+
 	$('#vocabulary_detail li span').live({
 		click: function() {
-			$(this).toggleClass('filter');
-			console.log($('.filter'));
+			$(this).toggleClass('selected');
+			selected_tags.length = 0;
+			$.each($('.selected'), function(key, val) {
+				selected_tags.push( $(this).attr('id').replace('tag_', '') );
+			});
+			if( selected_tags.length > 0 ) {
+				load_pagination( selected_tags );
+				show_tagged_feed_items( selected_tags, 0, feed_pagesize );
+			} else {
+				$('#feed_pagination').empty();
+				$('#feed_content').empty();
+			}
 		}
 	});
 
@@ -24,15 +41,15 @@ $(function() {
 		$(this).next().addClass('neighbor');
 		$(this).prev().addClass('neighbor');
 		var page = $(this).attr('id').replace('page_', '');
-		// show_tagged_feed_items( selected_feed.id, page, feed_pagesize );
+		show_tagged_feed_items( selected_tags, page, feed_pagesize );
 	});
 });
 
-function load_pagination( tag_id )
+function load_pagination( tag_array )
 {
 	$('#feed_pagination').empty();
 	var data = {};
-	data.tag_id = tag_id;
+	data.tag_array = tag_array;
 	api('count_feed_items', function(data) {
 		var paging = 'select page ';
 		var side = 2;
@@ -49,10 +66,10 @@ function load_pagination( tag_id )
 	}, data);
 }
 
-function show_tagged_feed_items( tag_id, page, limit )
+function show_tagged_feed_items( tag_array, page, limit )
 {
 	var data = {};
-	data.tag_id = tag_id;
+	data.tag_array = tag_array;
 	data.offset = page * limit;
 	data.limit = limit;
 
