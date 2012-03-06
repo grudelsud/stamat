@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# stamat.hourly cron hourly
+# stamat_hourly cron hourly
 
 LOGFILE='fetch.log'
 

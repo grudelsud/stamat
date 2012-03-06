@@ -1,11 +1,10 @@
 #!/bin/sh
 #
-# stamat.hourly cron hourly
+# stamat_daily cron daily
 
-LOGFILE='fetch.log'
-
-echo 'go get them, tiger!'
-wget -O - 'http://fom.londondroids.com/stamat/index.php/api/fetch_store_all_feeds' > $LOGFILE
-echo '' >> $LOGFILE
-cat $LOGFILE | mail -s "STAMAT hourly fetch" thomasalisi@gmail.com
-rm -f $LOGFILE
+REPO=/home/ubuntu/STAMAT/git
+cd $REPO
+git pull
+mysqldump -u fom -pf0m?fom! fom_stamat > $REPO/_dev/db/stamat_bkp.sql
+chown ubuntu:ubuntu $REPO/_dev/db/stamat_bkp.sql
+git add . && git commit -m "db backup" && git push
