@@ -6,5 +6,4 @@ REPO=/home/ubuntu/STAMAT/git
 cd $REPO
 git pull
 mysqldump -u fom -pf0m?fom! fom_stamat > $REPO/_dev/db/stamat_bkp.sql
-chown ubuntu:ubuntu $REPO/_dev/db/stamat_bkp.sql
 git add . && git commit -m "db backup" && git push
