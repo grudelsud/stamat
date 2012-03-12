@@ -1,3 +1,5 @@
-<div id="content">
-	<?php echo $grocery->output; ?>
+<div id="content" >
+	<div class="col16">
+		<?php echo $grocery->output; ?>
+	</div>
 </div>

@@ -1,5 +1,5 @@
-<div id="content">
-	<div id="feed_container">
+<div id="content" >
+	<div id="feed_container" >
 		<h1>manage feeds</h1>
 		<div id="add_feed">
 			<?php echo form_open( 'add_feed', array('id' => 'form_add_feed') ); ?>
@@ -45,7 +45,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="vocabulary_container">
+	<div id="vocabulary_container" >
 		<div id="vocabulary_select">
 			<h1>select vocabulary</h1>
 			<select></select>

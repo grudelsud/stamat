@@ -17,7 +17,7 @@ $(function() {
 		e.preventDefault();
 		var data = $(this).serialize();
 		$('#form_add_tag #tag').val('');
-		api( 'add_tag', append_tags, data );
+		api( 'add_tag', append_tags('#tags'), data );
 	});
 	
 	$('#clear').click(function() {

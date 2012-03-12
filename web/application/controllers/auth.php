@@ -85,7 +85,10 @@ class Auth extends CI_Controller {
 				'type' => 'password',
 			);
 
-			$this->load->view('auth/login', $this->data);
+			// original view, we don't want the ugly html
+			// $this->load->view('auth/login', $this->data);
+			$this->data['template'] = 'login';
+			$this->load->view('main_template', $this->data);
 		}
 	}
 

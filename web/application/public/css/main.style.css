@@ -1,0 +1,38 @@
+body {
+	font-family: Arial, sans-serif;
+	background: #EEE;
+	font-size: 0.85em;
+	color: #222;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Magra', sans-serif;
+	font-weight: 700;
+	text-transform: uppercase;
+	margin-bottom: 5px;
+	padding: 4px 0;
+}
+ul {
+	list-style-type: none;
+}
+
+a {
+	text-decoration: none;
+	color: #555;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.wrapper {
+	width: 980px;
+	margin: 0 auto;
+}
+
+.div_auth {
+	width: 300px;
+	padding: 5px;
+	float: left;
+	margin: 0 10px 0 0;
+}

@@ -1,4 +1,5 @@
-<div id="content">
+<div id="content" >
+
 	<div id="vocabulary_select">
 		<h1>select vocabulary</h1>
 		<select></select>
@@ -17,6 +18,7 @@
 		<?php echo form_submit( 'submit', 'add!' ); ?>
 		<?php echo form_close(); ?>
 	</div>
+
 	<div id="vocabulary_detail">
 		<div id="tags"></div>
 		<div id="tag_controls"><button type="button" class="delete">delete selected tags</button></div>

@@ -1,0 +1,13 @@
+Idea
+It's a tool to evaluate who's talking about what on social media.
+It's a data mining and social network analysis tool made simple.
+It's like google reader, but digs into twitter to show reactions of social media.
+
+Background
+It started as a research project funded by Telecom Italia with a mini-seed
+Its goal is topic analysis of geo-localized content
+
+How it works
+Store data, create clusters of relevant informations, analyze topic structure with Latent Dirichlet Allocation
+Re-iterate
+
