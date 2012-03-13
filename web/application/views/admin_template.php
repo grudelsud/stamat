@@ -20,5 +20,13 @@
 		<div class="clearer"></div>
 		<div id="dialog"></div>
 		<?php $this->load->view('admin/footer'); ?>
+
+		<?php
+			$debug = false;
+			if( $debug ) {
+				include 'phpBugLost.php';
+				echo bl_debug();
+			}
+		?>
 	</body>
 </html>

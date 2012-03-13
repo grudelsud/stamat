@@ -9,5 +9,5 @@
 		<script type="text/javascript">
 			var base_url = '<?php echo BASE_URL; ?>';
 			var assets_url = '<?php echo ASSETS_URL; ?>';
-			var fbAppID = '105746679556989';
+			var fbAppID = '<?php echo FB_APP_ID; ?>';
 		</script>

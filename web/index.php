@@ -18,16 +18,25 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
+
+$fb_app_id = '';
+$fb_app_secret = '';
+
 switch ($_SERVER['SERVER_NAME']) {
 case 'stamat.net':
 	$environment = 'development';
+	$fb_app_id = '105746679556989';
+	$fb_app_secret = '29759386d9ead63d70318c41e5219696';
 	break;
 case 'londondroids.com':
 default:
 	$environment = 'production';
 }
 
-	define('ENVIRONMENT', $environment);
+define('FB_APP_ID', $fb_app_id);
+define('FB_APP_SECRET', $fb_app_secret);
+
+define('ENVIRONMENT', $environment);
 	/*
  *---------------------------------------------------------------
  * ERROR REPORTING

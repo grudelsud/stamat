@@ -7,3 +7,6 @@
 [submodule "_dev/lib/grocery-crud"]
 	path = _dev/lib/grocery-crud
 	url = https://github.com/scoumbourdis/grocery-crud.git
+[submodule "_dev/lib/facebook-php-sdk"]
+	path = _dev/lib/facebook-php-sdk
+	url = https://github.com/facebook/facebook-php-sdk.git
