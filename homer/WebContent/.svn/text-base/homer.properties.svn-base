@@ -1,0 +1,6 @@
+#homer java webapp properties
+#Wed Apr 14 18:15:20 CEST 2010
+db_name=_stamat
+db_pass=root
+db_host=localhost:8889/
+db_user=root

@@ -1,0 +1,71 @@
+10
+
+dir
+21512
+http://www.micc.unifi.it/svn/micc/homer/WebContent/WEB-INF/data
+http://www.micc.unifi.it/svn/micc
+
+
+
+2012-02-28T16:28:17.334605Z
+21281
+beppe
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+1ac7d7c4-be10-0410-a36c-8cc9a657c507
+
+.gitignore
+file
+
+
+
+
+2012-03-13T15:55:13.000000Z
+e35d6691e37ac05d8387524a696ef1a5
+2011-09-30T18:17:12.404695Z
+18574
+mbertini
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+32
+
+langmodels
+dir
+
+ldamodel
+dir
+
+stopwords
+dir
+

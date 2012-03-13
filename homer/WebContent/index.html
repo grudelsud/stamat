@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Homer - tester</title>
+<link href="./css/cake.generic.css" rel="stylesheet" type="text/css" />
+<link href="./css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="header">
+<div class="wrapper">
+	<div id="logo">
+	<h1>Media Integration and Communication Center<br />	
+	Homer Test Form</h1>
+	</div><!-- end of #logo -->
+
+	<div id="topmenu">
+	<ul>
+		<li><a href="/homer">home</a></li>
+		<li><a href="config.jsp">config</a></li>
+	</ul>
+	<br class="clearer" />
+	</div><!-- end of #topmenu -->
+</div><!-- end of .wrapper -->
+</div><!-- end of #header -->
+<div id="content">
+<div class="wrapper">
+<fieldset>
+<legend><b>Analyse text</b></legend>
+<form id="form1" name="form1" method="post" action="./Homer">
+	<table width="85%" border="1" align="center" cellpadding="7">
+	<tr>
+		<td  align="center" valign="middle">
+			<label for="analysistext">Text to be analysed: </label>
+			<textarea name="text" id="analysistext" cols="45" rows="5"></textarea><br />
+			<label for="docurl">Text URL:</label>
+			<input name="docurl" type="text" id="docurl" value="" size="40" maxlength="255" />
+		</td>
+		<td align="center" valign="middle"><p><label for="action2">Analysis: </label>
+			<select name="analysis" id="analysis2">
+				<option value="topic">Topic detection</option>
+				<option value="traintopic">Train LDA Model</option>
+				<option value="ned">Entities detection</option>
+				<option value="language">Language detection</option>
+				<option value="tagcloud">Tag Cloud</option>
+			</select>
+			</p><p>
+				<input type="checkbox" name="modelLDA" id="modelLDA" value="modelLDA"/>
+				<label for="modelLDA">With model</label>
+				<input type="checkbox" name="texttype" id="texttype" value="HTML"/>
+				<label for="texttype">HTML input format</label>
+				<input type="checkbox" name="textextraction" id="textextraction" value="ARTICLE"/>
+				<label for="textextraction">HTML input article extraction</label>
+				<input type="checkbox" name="outputformat" id="outputformat" value="JSON"/>
+				<label for="outputformat">JSON output format</label>
+			</p></td>
+		<td  align="center" valign="middle"><input type="submit" name="process" id="process" value="Process" /></td>
+	</tr>
+	<tr>
+		<td colspan="3"><p><b>Topic detection parameters:</b></p>
+			<p>
+				<label for="numtopics">Number of topics (-1 for autodetection):</label>
+				<input name="numtopics" type="text" id="numtopics" value="3" size="5" maxlength="3" />
+				<label for="numkeywords">Number of keywords (-1 for autodetection):</label>
+				<input name="numkeywords" type="text" id="numkeywords" value="7" size="5" maxlength="5" />
+			</p>	
+		</td>
+	</tr>
+	<tr>
+		<td colspan="15"><p><b>Topic training parameters:</b></p>
+			<p>
+				<label for="modelname">Model name</label>
+				<input name="modelname" type="text" id="modelname" value="" size="5" maxlength="10" />
+				<label for="db_host">Database URL</label>
+				<input name="db_host" type="text" id="db_host" value="" size="5" maxlength="10" />
+				<label for="db_name">Database name</label>
+				<input name="db_name" type="text" id="db_name" value="" size="5" maxlength="10" />
+				<label for="db_user">Database user</label>
+				<input name="db_user" type="text" id="db_user" value="" size="5" maxlength="10" />
+				<label for="db_pass">Database password</label>
+				<input name="db_pass" type="text" id="db_pass" value="" size="5" maxlength="10" />
+			</p>	
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3"><p><b>Entity detection parameters:</b></p>
+			<table width="75%" border="1" align="center" cellpadding="3">
+				<tr>
+					<td><input name="entitytypes" type="checkbox" id="allents" checked="checked" value="Allents" />
+						<label for="allents">All entities</label></td>
+					<td><input type="checkbox" name="entitytypes" id="nameent" value="Person"/>
+						<label for="nameent">Person entities</label></td>
+					<td><input type="checkbox" name="entitytypes" id="placeent" value="Location" />
+						<label for="placeent">Place entities</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" name="entitytypes" id="dateent" value="Date" />
+						<label for="dateent">Date entities</label></td>
+					<td><input type="checkbox" name="entitytypes" id="hourent" value="Time"/>
+						<label for="hourent">Time entities</label></td>
+					<td><input type="checkbox" name="entitytypes" id="money" value="Money" />
+						<label for="current">Currency entities</label></td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" name="entitytypes" id="percent" value="Percent" />
+						<label for="percent">Percentage entities</label></td>
+					<td><input type="checkbox" name="entitytypes" id="organization" value="Organization" />
+						<label for="percent">Organization entities</label></td>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+			<p>&nbsp;</p></td>
+		</tr>
+</table>
+	<p>&nbsp;</p>
+</form>
+</fieldset>
+
+</div><!-- end of .wrapper -->
+</div><!-- end of #content -->
+
+<div class="wrapper">
+<div id="footer">
+&copy; '11-12 MICC - Media Integration and Communication Center
+</div><!-- end of #footer -->
+</div><!-- end of .wrapper -->
+</body>
+</html>

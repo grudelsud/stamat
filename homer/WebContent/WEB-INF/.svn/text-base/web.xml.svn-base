@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<display-name>Homer - text analysis</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<description>Homer text analysis servlet</description>
+		<display-name>Homer</display-name>
+		<servlet-name>Homer</servlet-name>
+		<servlet-class>it.unifi.micc.homer.controller.Homer</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Homer</servlet-name>
+		<url-pattern>/Homer</url-pattern>
+	</servlet-mapping>
+	<!-- Allows cross-domain requests using an implementation of the W3C CORS (http://www.w3.org/TR/cors/) -->
+	<!-- Uses http://software.dzhuvinov.com/cors-filter.html -->
+	<filter>
+		<filter-name>CORS</filter-name>
+		<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CORS</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- Format encoding - see http://stackoverflow.com/questions/2657515/detect-the-uri-encoding-automatically-in-tomcat -->
+	<filter>
+	<filter-name>EncodingFilter</filter-name>
+	<filter-class>it.unifi.micc.homer.util.EncodingFilter</filter-class>
+	<init-param>
+		<param-name>encodings</param-name>
+		<param-value>UTF-8, ISO-8859-15, ISO-8859-1, US-ASCII, EUC-KR</param-value>
+	</init-param>
+	<init-param>
+		<param-name>inputEncodingParameterName</param-name>
+		<param-value>ie</param-value>
+	</init-param>
+</filter>
+
+	<filter-mapping>
+		<filter-name>EncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+</web-app>
