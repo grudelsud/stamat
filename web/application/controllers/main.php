@@ -8,14 +8,21 @@ class Main extends CI_Controller {
 
 		$this->load->model('user_model');
 
+		$this->load->config('ion_auth', TRUE);
+		$admin_group = $this->config->item('admin_group', 'ion_auth');
+
+		$logged_user = array();
+		$this->logged_in = $this->user_model->logged_in( $logged_user );
+
 		// set default options & output template
+		$this->data['logged_user'] = $logged_user;
+		$this->data['logged_admin'] = empty($logged_user['groups']) ? false : in_array( $admin_group, $logged_user['groups']);
 		$this->data['template'] = 'home';
 	}
 	
 	function index()
 	{
-		if (!$this->user_model->logged_in())
-		{
+		if ( !$this->logged_in ) {
 			redirect('/auth/login', 'refresh');
 		}
 		$this->load->view('main_template', $this->data);
@@ -32,6 +39,7 @@ class Main extends CI_Controller {
 		$this->load->library('Facebook', $config);
 		$user = $this->facebook->getUser();
 
+		$debug = '';
 		$profile = null;
 		if( $user ) {
 			try {
@@ -39,15 +47,17 @@ class Main extends CI_Controller {
 				$profile = $this->facebook->api('/me?fields=id,name,link,email');
 				$this->load->library('ion_auth');
 
-				$logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
-				if( !$logged_in ) {
+				$login = $this->ion_auth->login($profile['email'], $profile['id']);
+
+				if( !$login ) {
 					$this->ion_auth->register($profile['name'], $profile['id'], $profile['email']);
-					$logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
+					$this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
 				}
 			} catch (FacebookApiException $e) {
 				// TODO: I'm sure we should do something here
 			}
 		}
+		// echo $debug;
 		redirect('/', 'refresh');
 	}
 }

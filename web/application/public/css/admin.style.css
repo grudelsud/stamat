@@ -269,6 +269,20 @@ button {
 			line-height: 10em;
 			background: transparent url(../img/sprite.png) no-repeat;
 		}
+		#admin #content #feed_content .item .entities {
+			margin: 15px 0;
+			padding: 10px 0 0 0;
+			line-height: 1.8em;
+			font-size: 0.85em;
+			border-top: 1px solid #eee;
+		}
+			#admin #content #feed_content .item .entities span {
+				margin: 0 5px 0 0;
+				padding: 2px;
+				border-radius: 5px;
+				-moz-border-radius: 5px;
+				background: #eee;
+			}
 		#admin.topics #vocabulary_detail button.slide {
 			background-position: -100px -120px;
 		}

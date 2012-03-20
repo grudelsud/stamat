@@ -7,7 +7,7 @@ $(function() {
 					window.location = base_url + 'index.php/main/login_facebook';
 				});
 			} else {
-				console.log('User cancelled login or did not fully authorize.');
+				$('#auth_fb_message').empty().append('<p>Sorry, you cancelled login or did not fully authorize.</p>');
 			}
 		}, {scope: 'email'});
 	});

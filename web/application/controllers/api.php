@@ -95,9 +95,11 @@ class Api extends CI_Controller
 			$this->load->model('scraper_model');
 			if( $this->input->post('annotate_micc') == 1 ) {
 				$result['micc'] = $this->scraper_model->scrape_micc_lda($feeditem_id);
-			}
-			if( $this->input->post('annotate_teamlife') == 1 ) {
+			} else if( $this->input->post('annotate_teamlife') == 1 ) {
 				$result['sanr'] = $this->scraper_model->scrape_teamlife_sanr($feeditem_id);
+			} else {
+				$this->load->model('annotation_model');
+				$result = $this->annotation_model->get_triples($feeditem_id);
 			}
 			$this->_return_json_success( $result );
 		} else {

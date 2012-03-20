@@ -84,6 +84,7 @@ function show_tagged_feed_items( tag_array, page, limit )
 			$item.append('<div class="item_controls">'+item_controls+'</div>');
 			$item.append('<h1><a href="'+val.permalink+'">'+val.title+'</a></h1>');
 			$item.append(val.description);
+			$item.append('<div class="entities"></div>');
 			$item.append('<p class="footer">'+val.date+'</p>');
 			$feed_content.append($item);
 		});

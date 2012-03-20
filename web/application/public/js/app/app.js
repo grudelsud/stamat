@@ -1,11 +1,8 @@
 $(function() {
 
 	var feed_item_list = [
-		{ pic: 'test.png', name: 'blog post', type: 'post', content: 'bla bla bla...', meta: 'posted on 2015-12-25' },
-		{ pic: 'test.png', name: 'blog post', type: 'post', content: 'bla bla bla...', meta: 'posted on 2015-12-25' },
-		{ pic: 'test.png', name: 'blog post', type: 'post', content: 'bla bla bla...', meta: 'posted on 2015-12-25' },
-		{ pic: 'test.png', name: 'blog post', type: 'post', content: 'bla bla bla...', meta: 'posted on 2015-12-25' },
-		{ pic: 'test.png', name: 'blog post', type: 'post', content: 'bla bla bla...', meta: 'posted on 2015-12-25' }
+		{ /* pic: 'test.png', */ name: 'blog post', type: 'test', content: 'bla bla bla...', meta: 'posted on 2015-12-25' },
+		{ /* pic: 'test.png', */ name: 'blog post', type: 'test', content: 'bla bla bla...', meta: 'posted on 2015-12-25' }
 	];
 	/**
 	 * Models

@@ -104,7 +104,8 @@ function show_feed_items( feed_id, page, limit )
 			$item.append('<div class="item_controls">'+item_controls+'</div>');
 			$item.append('<h1><a href="'+val.permalink+'">'+val.title+'</a></h1>');
 			$item.append(val.description);
-			$item.append('<p class="footer">'+val.date+'</p>');
+			$item.append('<div class="entities"></div>');
+			$item.append('<p class="footer">'+val.date);
 			$feed_content.append($item);
 			if( $.isEmptyObject( val.content_id ) ) {
 				$('#'+item_id+' button.show_content').hide();

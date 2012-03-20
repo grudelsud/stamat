@@ -1,6 +1,6 @@
 body {
 	font-family: Arial, sans-serif;
-	background: #EEE;
+	background: url(../img/stripe.png) repeat;
 	font-size: 0.85em;
 	color: #222;
 }
@@ -26,12 +26,53 @@ a:hover {
 }
 
 .wrapper {
+	background: #fff;
+	padding: 10px;
 	width: 980px;
 	margin: 0 auto;
 }
 
-.div_auth {
+.float_box {
 	width: 310px;
 	float: left;
 	margin: 0 10px 0 0;
 }
+
+#navigation {
+	height: 50px;
+}
+
+	#menu_main {
+		margin: 5px 0;
+		float: left;
+	}
+	#menu_admin {
+		margin: 5px 0;
+		float: right;
+	}
+
+	#menu_main li, 
+	#menu_admin li {
+		display: inline;
+	}
+
+	#menu_main li a, 
+	#menu_admin li a {
+		text-decoration: none;
+		padding: 3px 5px;
+		background: lightgrey;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+	}
+
+	#menu_main li a:hover, 
+	#menu_admin li a:hover {
+		background: #ff9900;
+	}
+
+#feed_directory article.feed_item_container {
+	margin: 0 0 10px;
+}
+	#feed_directory article.feed_item_container img {
+		border: 1px solid #eee;
+	}

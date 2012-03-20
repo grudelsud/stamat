@@ -41,6 +41,18 @@ $(function() {
 		var url = base_url + 'index.php/admin/permalink/' + feeditem_id;
 		$('#permalink_content').empty().append('<iframe src="'+url+'"></iframe>');
 		$('#permalink_container').fadeIn();
+
+		var data = {};
+		data.feeditem_id = feeditem_id;
+		api('fetch_entities', function(data) {
+			var entities = 'tagged as: ';
+			var $entities = $('#feed_content #item_'+feeditem_id+' div.entities').empty();
+			$.each(data.success, function(key, val) {
+				entities += '<span>'+val.name+'</span>' + ' ';
+			});
+			$entities.append( entities );
+		}, data);
+
 	});
 
 	$('#permalink_controls button.close').click(function() {

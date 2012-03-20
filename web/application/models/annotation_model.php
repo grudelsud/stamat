@@ -12,15 +12,24 @@ class Annotation_model extends CI_Model
 		$this->load->model('vocabulary_model');
 	}
 
-	function get_triples( $subject_entity_id )
+	function get_triples( $subject_entity_id, $fetch_object_entity_id = TRUE )
 	{
 		// simil sparql query! fetching all triples where subject == this feed item
-		$this->db->select('id');
-		$this->db->where('subject_entity_id', $subject_entity_id);
-		$query = $this->db->get('tagtriples');
+		if( $fetch_object_entity_id ) {
+			$this->db->select('t.id, t.name, t.slug');
+			$this->db->from('tagtriples as tt');
+			$this->db->join('tags as t', 'tt.object_entity_id = t.id');
+			$this->db->where('tt.subject_entity_id', $subject_entity_id);
+			$this->db->where('t.stop_word', 0);
+			$query = $this->db->get();
+		} else {
+			$this->db->select('id');
+			$this->db->where('subject_entity_id', $subject_entity_id);
+			$query = $this->db->get('tagtriples');
+		}
 		$response = array();
-		foreach($query->result() as $row) {
-			$response[] = $row->id;
+		foreach($query->result_array() as $row) {
+			$response[] = $row;
 		}
 		return $response;
 	}

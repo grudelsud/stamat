@@ -12,9 +12,13 @@
 	<body id="main" class="<?php echo $template; ?>">
 		<div id="fb-root"></div>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/pages/fb.init.js"></script>
-		<div class="wrapper"><?php $this->load->view('main/header'); ?></div>
+		<?php if($template != 'login') : ?>
+			<div class="wrapper"><?php $this->load->view('main/header'); ?></div>
+		<?php endif; ?>
 		<div class="wrapper"><?php $this->load->view('main/'.$template); ?></div>
-		<div class="wrapper"><?php $this->load->view('main/footer'); ?></div>
-		<div id="dialog"></div>
+		<?php if($template != 'login') : ?>
+			<div class="wrapper"><?php $this->load->view('main/footer'); ?></div>
+			<div id="dialog"></div>
+		<?php endif; ?>
 	</body>
 </html>
