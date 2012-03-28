@@ -28,7 +28,7 @@ class Main extends CI_Controller {
 		$this->load->view('main_template', $this->data);
 	}
 
-	// not sure it's the right place, it's just that I don't want to add code to someone else's classes for maintenance (ion_auth in this case)
+	// this clearly is not the right place for this function, it's just that I don't want to add code to someone else's classes for maintenance (ion_auth in this case)
 	function login_facebook()
 	{
 		$config = array(

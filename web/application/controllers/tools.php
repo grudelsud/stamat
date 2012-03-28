@@ -9,8 +9,21 @@ class Tools extends CI_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->data['output'] = '';
+
+
 		$this->load->model('user_model');
+		$this->load->config('ion_auth', TRUE);
+		$admin_group = $this->config->item('admin_group', 'ion_auth');
+
+		$logged_user = array();
+		$this->logged_in = $this->user_model->logged_in( $logged_user );
+
+		// set default options & output template
+		$this->data['logged_user'] = $logged_user;
+		$this->data['logged_admin'] = empty($logged_user['groups']) ? false : in_array( $admin_group, $logged_user['groups']);
+		// set default output template
+		$this->data['template'] = 'tools';
+		$this->data['output'] = '';
 	}
 
 	function index()
@@ -19,7 +32,7 @@ class Tools extends CI_Controller
 		{
 			redirect('/auth/login', 'refresh');
 		}
-		$this->load->view('tools', $this->data);
+		$this->load->view('admin_template', $this->data);
 	}
 	
 	function create_scrapers()
@@ -80,7 +93,7 @@ class Tools extends CI_Controller
 			'dbname' => $this->db->database,
 			'dbuser' => $this->db->username,
 			'dbpwd' => $this->db->password,
-			'entitytypes' => 'Allents'
+			'entitytypes' => 'Person, Organization, Location'
 		);
 		$data = array(
 			'name' => 'micc-lda',

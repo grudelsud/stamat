@@ -44,6 +44,7 @@ define('READITLATER_API_KEY', '972TpV1eg2b72H40VQdaN70u71paq15f');
 define('GROUP_ADMIN', 'admin');
 define('HOURLYLIMIT_MEMBERS', 1000);
 
+define('VOCABULARY_SYS_TAGS', 'system');
 define('VOCABULARY_TEAMLIFE_SANR', 'teamlife_sanr');
 define('VOCABULARY_EXTRACTED_TOPICS', 'topics');
 define('VOCABULARY_EXTRACTED_ENTITIES', 'entities');

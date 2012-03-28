@@ -1,6 +1,6 @@
-<div id="content" >
-	<div id="feed_container" >
-		<h1>manage feeds</h1>
+<div class="row">
+	<div id="feed_container" class="span8">
+		<h3>manage feeds</h3>
 		<div id="add_feed">
 			<?php echo form_open( 'add_feed', array('id' => 'form_add_feed') ); ?>
 			<?php echo form_label( 'Title', 'title' ); ?>
@@ -16,6 +16,7 @@
 			<button type="button" class="fetch">cache all feeds to database</button>
 			<p>this operation is performed periodically by a cron job</p>
 		</div>
+
 		<div id="feeds">
 			<table width="100%" id="feeds_table">
 				<thead>
@@ -29,6 +30,7 @@
 				<tbody></tbody>
 			</table>
 		</div>
+
 		<div id="feed_detail">
 			<div id="feed_controls">
 				<!-- <button type="button" class="fetch_content">fetch permalinks content</button> -->
@@ -36,7 +38,7 @@
 			</div>
 			<div id="feed_content">
 				<div id="feed_meta"></div>
-				<h1>Tags</h1>
+				<h3>Tags</h3>
 				<p>Tags assigned to this feed (select to delete)</p>
 				<ul id="feed_tags"></ul>
 			</div>
@@ -45,9 +47,10 @@
 			</div>
 		</div>
 	</div>
-	<div id="vocabulary_container" >
+
+	<div id="vocabulary_container" class="span4">
 		<div id="vocabulary_select">
-			<h1>select vocabulary</h1>
+			<h3>select vocabulary</h3>
 			<select></select>
 		</div>
 		<div id="vocabulary_detail">
@@ -56,7 +59,7 @@
 			<button type="button" id="add_tag">add selected tags</button>
 		</div>
 		<hr/>
-		<h1>colour codes</h1>
+		<h3>colour codes</h3>
 		<ul>
 			<li><span>node</span></li>
 			<li><span class="selected">selected</li>

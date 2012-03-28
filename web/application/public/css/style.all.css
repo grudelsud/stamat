@@ -1,0 +1,9 @@
+body {
+	background: url(../img/hexellence.png) repeat;
+	padding: 60px 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'Magra', sans-serif;
+	font-weight: 400;
+}

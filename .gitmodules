@@ -10,3 +10,6 @@
 [submodule "_dev/lib/facebook-php-sdk"]
 	path = _dev/lib/facebook-php-sdk
 	url = https://github.com/facebook/facebook-php-sdk.git
+[submodule "_dev/lib/bootstrap"]
+	path = _dev/lib/bootstrap
+	url = https://github.com/twitter/bootstrap.git

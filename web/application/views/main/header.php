@@ -1,20 +1,24 @@
-<div id="header">
-	<div id="logo"><h1>REACT</h1></div>
-	<div id="navigation">
-		<p>howdy, <?php echo $logged_user['username']; ?>!</p>
+<div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="brand" href="<?php echo site_url('/'); ?>">ReadReac.TV</a>
 
-		<div id="menu_main">
-			<ul>
-				<li><a href="<?php echo site_url('/auth/logout'); ?>">logout</a></li>
-			</ul>
-		</div>
-		<?php if( !empty($logged_admin) && $logged_admin ) : ?>
-		<div id="menu_admin">
-			<ul>
+			<?php if($template != 'login') : ?>
+			<ul class="nav">
+				<?php if( !empty($logged_admin) && $logged_admin ) : ?>
 				<li><a href="<?php echo site_url('/admin'); ?>">admin</a></li>
-				<li><a href="<?php echo site_url('/tools'); ?>">tools</a></li>
+				<?php endif; ?>
 			</ul>
+
+			<ul class="nav pull-right">
+				<li class="dropdown">
+					<a href="#" data-toggle="dropdown" class="dropdown-toggle">howdy, <?php echo $logged_user['username']; ?>! <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a href="<?php echo site_url('/auth/logout'); ?>">logout</a></li>
+					</ul>
+				</li>
+			</ul>
+			<?php endif; ?>
 		</div>
-		<?php endif; ?>
 	</div>
 </div>

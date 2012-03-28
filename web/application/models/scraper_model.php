@@ -54,7 +54,7 @@ class Scraper_model extends CI_Model
 			} else {
 				
 				$content = $this->get_scraped_content( $feeditem_id );
-				$content = trim(preg_replace('/\s\s+/',' ',strip_tags($content)));
+				$content = trim(preg_replace('/\s\s+/',' ',html_entity_decode(strip_tags($content), ENT_NOQUOTES )));
 				// fetch from micc-lda
 				$scraper = $this->_get_scraper('micc-lda');
 				$auth_params = json_decode( $scraper->auth_params, TRUE );

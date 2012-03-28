@@ -1,6 +1,6 @@
-<div id="content" >
-	<div id="feed_container" >
-		<h1>read feeds</h1>
+<div class="row">
+	<div id="feed_container" class="span8">
+		<h3>read feeds</h3>
 		<div id="feeds">
 			<table width="100%" id="feeds_table">
 				<thead>
@@ -14,13 +14,11 @@
 				<tbody></tbody>
 			</table>
 		</div>
-		<div id="feed_pagination">
+		<div id="feed_pagination" class="pagination">
 		</div>
 		<div id="feed_content">
 		</div>
 	</div>
-	<div id="permalink_container" >
-		<div id="permalink_controls"><button type="button" class="close">close</button></div>
-		<div id="permalink_content"></div>
-	</div>
 </div>
+
+<?php $this->load->view('admin/modal_permalink'); ?>

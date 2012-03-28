@@ -1,43 +1,3 @@
-/* LET'S ROCK */
-body {
-	font-family: Arial, sans-serif;
-	background: #EEE;
-	font-size: 0.85em;
-	color: #222;
-}
-
-h1, h2, h3, h4, h5, h6 {
-	font-family: 'Magra', sans-serif;
-	font-weight: 700;
-	text-transform: uppercase;
-	margin-bottom: 5px;
-	padding: 4px 0;
-}
-ul {
-	list-style-type: none;
-}
-
-a {
-	text-decoration: none;
-	color: #555;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-button {
-	background: lightyellow;
-	border: 1px solid lightgrey;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	cursor: pointer;
-}
-
-.clearer {
-	clear: both;
-}
-
 .loader {
 	background: url(../img/ajax-loader.gif) no-repeat;
 	float: left;
@@ -46,105 +6,27 @@ button {
 	display: none;
 }
 /* STRUCTURE */
-#admin {
-}
-	#admin #header {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		background: url(../img/black70.png) top left repeat;
-		padding: 10px;
-		height: 48px;
-	}
-	#admin #header #logo h1 a {
-		color: #fff;
-	}
-	#admin #footer {
-		position: fixed;
-		font-size: 0.8em;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		background: url(../img/black70.png) top left repeat;
-		padding: 10px;
-		height: 15px;
-	}
-		#admin #footer li,
-		#admin #header li {
-			display: inline;
-		}
-		#admin #header li a {
-			font-family: 'Magra', sans-serif;
-			background: #AAA;
-			display: block;
-			padding: 3px 5px;
-			margin: 0 5px 0 0;
-			float: left;
-			border-radius: 5px;
-			-moz-border-radius: 5px;
-		}
-		#admin #header li a:hover {
-			text-decoration: none;
-			background: lightyellow;
-		}
-		#admin #footer li {
-			color: #aaa;
-			margin-right: 10px;
-		}
-		#admin #footer li a {
-			color: #aaa;
-		}
-		#admin #footer li a:hover {
-			color: lightyellow;
-		}
-	#admin #content {
-		padding: 10px;
-		margin: 64px 0 0;
-	}
-		#admin #content #feed_container {
-			float: left;
-			width: 45%;
-			padding: 0 0 45px;
-		}
-		#admin #content #feed_container #feed_controls {
+		#admin #feed_container #feed_controls {
+			/* can be replaced with a .pull-right probably */
 			float: right;
 		}
-			#admin #content #feeds {
-				margin: 10px 0;
+			#admin #permalink_container {
+				display: none;
 			}
-		#admin #content #permalink_container {
-			width: 45%;
-			position: fixed;
-			top: 80px;
-			right: 10px;
-			border: 1px solid lightgrey;
-			padding: 10px;
-			display: none;
-		}
-			#admin #content #permalink_container #permalink_controls {
-			}
-			#admin #content #permalink_container #permalink_controls button {
-				width: 16px;
-				height: 16px;
-				border: none;
-				background: transparent url(../img/sprite.png) no-repeat;
-			}
-			#admin #content #permalink_container #permalink_controls button.close {
-				background-position: -100px 0;
-			}
-			#admin #content #permalink_content iframe {
+			#admin #permalink_content iframe {
 				width: 100%;
-				height: 350px;
+				height: 400px;
+				border: none;
 			}
-		#admin #content #vocabulary_container {
-			float: right;
-			width: 45%;
-		}
-			#admin #content #feed_detail {
+
+			#admin #feed_detail {
 				border: 1px solid lightgrey;
 				padding: 3px;
 				display: none;
+			}
+
+			#feeds label input, #feeds label textarea, #feeds label select {
+				display: inline;
 			}
 			table#feeds_table td {
 				padding: 3px;
@@ -156,52 +38,56 @@ button {
 			table#feeds_table .odd {
 				background: #FFF;
 			}
-		#admin #content #feed_pagination a {
+
+		#admin #feed_pagination a {
 			display: none;
-			padding: 3px;
+			padding: 1px;
+			line-height: 24px;
+			margin: 0 2px 0 0;
 			border: 1px solid #333;
 			background: #333;
 			color: #eee;
 			border-radius: 5px;
 			-moz-border-radius: 5px;
 		}
-		#admin #content #feed_pagination a:hover {
+		#admin #feed_pagination a:hover {
 			background: lightyellow;
 			text-decoration: none;
 			color: #333;
 		}
-		#admin #content #feed_pagination a.neighbor {
+		#admin #feed_pagination a.neighbor {
 			display: inline;
 			background: #666;
 		}
-		#admin #content #feed_pagination a.marker {
+		#admin #feed_pagination a.marker {
 			display: inline;
 		}
-		#admin #content #feed_pagination a.selected {
+		#admin #feed_pagination a.selected {
 			background: transparent;
 			display: inline;
 			color: #333;
 		}
-		#admin #content #vocabulary_detail h1 {
+		#admin #vocabulary_detail h1 {
 			clear: both;
 		}
-		#admin #content #vocabulary_detail ul {
+		#admin #vocabulary_detail ul {
 			margin: 6px 0;
+			list-style-type: none;
 		}
-			#admin #content #feed_content li,
-			#admin #content #vocabulary_detail li {
-				margin: 6px 0 12px 0;
+			#admin #feed_content li,
+			#admin #vocabulary_detail li {
+				margin: 3px 0 3px 0;
 				float: left;
 			}
-			#admin #content #vocabulary_detail li.clear {
+			#admin #vocabulary_detail li.clear {
 				float: none;
 				clear: both;
 			}
-			#admin #content #vocabulary_detail li ul {
+			#admin #vocabulary_detail li ul {
 				padding: 0 10px;
 			}
-		#admin #content #feed_content li span,
-		#admin #content #vocabulary_detail li span {
+		#admin #feed_content li span,
+		#admin #vocabulary_detail li span {
 			background: #fff;
 			padding: 3px 5px;
 			margin: 0px 3px;
@@ -210,21 +96,21 @@ button {
 			cursor: pointer;
 			background: white;
 		}
-		#admin #content #feed_content li span:hover,
-		#admin #content #vocabulary_detail li span:hover {
+		#admin #feed_content li span:hover,
+		#admin #vocabulary_detail li span:hover {
 			background: lightyellow;
 		}
-			#admin #content #vocabulary_detail li span.parent_over {
+			#admin #vocabulary_detail li span.parent_over {
 				background: lightsalmon;
 			}
-			#admin #content #vocabulary_detail li span.child_over {
+			#admin #vocabulary_detail li span.child_over {
 				background: lightskyblue;
 			}
-			#admin #content #feed_content li span.selected,
-			#admin #content #vocabulary_detail li span.selected {
+			#admin #feed_content li span.selected,
+			#admin #vocabulary_detail li span.selected {
 				background: lightgreen;
 			}
-				#admin.topics #content #vocabulary_detail li.clear {
+				#admin.topics #vocabulary_detail li.clear {
 					float: left;
 					clear: none;
 				}
@@ -243,40 +129,40 @@ button {
 				#admin.topics span.size_13, #admin.topics span.size_14, #admin.topics span.size_15 {
 					font-size: 3em;
 				}
-		#admin #content #tag_controls,
-		#admin #content #tagged_items {
+		#admin #tag_controls,
+		#admin #tagged_items {
 			clear: both;
 		}
-		#admin #content #feed_content .item {
+		#admin #feed_content .item {
 			padding: 20px;
+			background: white;
 		}
-		#admin #content #feed_content .item.selected {
+		#admin #feed_content .item.selected {
 			background: lightgrey;
 		}
-			#admin #content #feed_content .item img {
+			#admin #feed_content .item img {
 				margin: 0 10px 0 0;
 			}
-		#admin #content #feed_content .item .item_controls {
+		#admin #feed_content .item .item_controls {
 			float: right;
 		}
 		#admin.topics #vocabulary_detail button,
-		#admin #content #feed_content .item .item_controls button {
+		#admin #feed_content .item .item_controls button {
 			width: 16px;
 			height: 16px;
 			border: none;
 			margin-left: 2px;
-			vertical-align: bottom;
+			vertical-align: top;
 			line-height: 10em;
 			background: transparent url(../img/sprite.png) no-repeat;
 		}
-		#admin #content #feed_content .item .entities {
+		#admin #feed_content .item .entities {
 			margin: 15px 0;
 			padding: 10px 0 0 0;
 			line-height: 1.8em;
 			font-size: 0.85em;
-			border-top: 1px solid #eee;
 		}
-			#admin #content #feed_content .item .entities span {
+			#admin #feed_content .item .entities span {
 				margin: 0 5px 0 0;
 				padding: 2px;
 				border-radius: 5px;
@@ -289,22 +175,22 @@ button {
 		#admin.topics #vocabulary_detail button.slide.closed {
 			background-position: 0px -120px;
 		}
-		#admin #content #feed_content .item .item_controls button.show_content {
+		#admin #feed_content .item .item_controls button.show_content {
 			background-position: -80px -100px;
 		}
-		#admin #content #feed_content .item .item_controls button.fetch_content {
+		#admin #feed_content .item .item_controls button.fetch_content {
 			background-position: 0px -100px;
 		}
-		#admin #content #feed_content .item .item_controls button.fetch_entities {
+		#admin #feed_content .item .item_controls button.fetch_entities {
 			background-position: -120px -40px;
 		}
-		#admin #content #feed_content .item .item_controls button.check {
+		#admin #feed_content .item .item_controls button.check {
 			background-position: -20px 0px;
 		}
-		#admin #content #feed_content .item .item_controls button.check.selected {
+		#admin #feed_content .item .item_controls button.check.selected {
 			background-position: 0px 0px;
 		}
-		#admin #content #feed_content .item .footer {
+		#admin #feed_content .item .footer {
 			font-size: 0.85em;
 			padding: 3px;
 			margin: 5px 0;

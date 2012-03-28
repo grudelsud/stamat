@@ -2,7 +2,12 @@
 <html>
 	<head>
 		<?php $this->load->view('assets'); ?>
-		<link rel="stylesheet" type="text/css" media="all" href="<?php echo ASSETS_URL; ?>css/admin.style.css" />
+		<style>
+			body {
+				background: white;
+				padding: 0;
+			}
+		</style>
 	</head>
 	<body>
 		<?php echo $content; ?>

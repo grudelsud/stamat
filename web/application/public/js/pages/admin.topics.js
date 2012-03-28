@@ -51,7 +51,7 @@ function load_pagination( tag_array )
 	var data = {};
 	data.tag_array = tag_array;
 	api('count_feed_items', function(data) {
-		var paging = 'select page ';
+		var paging = '';
 		var side = 2;
 		var total = data.success;
 		var pages = total / feed_pagesize;

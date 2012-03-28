@@ -40,7 +40,9 @@ $(function() {
 		$('#feed_content #item_'+feeditem_id).addClass('selected');
 		var url = base_url + 'index.php/admin/permalink/' + feeditem_id;
 		$('#permalink_content').empty().append('<iframe src="'+url+'"></iframe>');
-		$('#permalink_container').fadeIn();
+
+		// $('#permalink_container').fadeIn();
+		$('#permalink_container').modal('show');
 
 		var data = {};
 		data.feeditem_id = feeditem_id;
@@ -55,11 +57,9 @@ $(function() {
 
 	});
 
-	$('#permalink_controls button.close').click(function() {
-		$('#feed_content .item').removeClass('selected');
-		$('#permalink_container').fadeOut();		
+	$('#permalink_container').on('hidden', function() {
+		$('#feed_content .item').removeClass('selected');		
 	});
-
 
 });
 
