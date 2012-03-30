@@ -1,11 +1,11 @@
 (function(Tag) {
 
-	var TagModel = Backbone.Model.extend({});
+	Tag.Model = Backbone.Model.extend({});
 
-	var TagList = Backbone.Collection.extend({
-		model: TagModel
+	Tag.Collection = Backbone.Collection.extend({
+		model: Tag.Model
 	});
 
-	var TagView = Backbone.View.extend({});
+	Tag.Views.Main = Backbone.View.extend({});
 
 })(readreactv.module('tag'));

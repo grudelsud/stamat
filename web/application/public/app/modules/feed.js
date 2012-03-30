@@ -3,16 +3,16 @@
 	// dependency
 	var Tag = readreactv.module('tag');
 
-	var FeedModel = Backbone.Model.extend({
+	Feed.Model = Backbone.Model.extend({
 		initialize: function() {
-			this.set({ tags: new TagList() });
+			this.set({ tags: new Tag.Collection() });
 		}
 	});
 
-	var FeedList = Backbone.Collection.extend({
-		model: FeedModel
+	Feed.Collection = Backbone.Collection.extend({
+		model: Feed.Model
 	});
 
-	var FeedView = Backbone.View.extend({});
+	Feed.Views.Main = Backbone.View.extend({});
 
 })(readreactv.module('feed'));

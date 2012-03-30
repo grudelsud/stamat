@@ -23,9 +23,9 @@
 		<!-- now the serious stuff, backbone ready to go -->
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/main.js"></script>
 		<!-- and some modules -->
+		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/tag.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/feed.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/feeditem.js"></script>
-		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/tag.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/entity.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/reaction.js"></script>
 	</head>

@@ -1,37 +1,49 @@
 (function(FeedItem) {
 
-	 var FeedItemModel = Backbone.Model.extend({
-	 	defaults: {
-	 		pic: assets_url+'img/app/feed_item_placeholder.png'
-	 	}
-	 });
+	var test_items = [
+		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 25.12.12'},
+		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 26.12.12'},
+		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 27.12.12'},
+		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 28.12.12'}
+	];
 
-	 var FeedItemList = Backbone.Collection.extend({
-	 	model: FeedItemModel
-	 });
+	FeedItem.Model = Backbone.Model.extend({
+		defaults: {
+			pic: assets_url+'img/app/feed_item_placeholder.png'
+		}
+	});
 
-	 var FeedItemView = Backbone.View.extend({
-	 	tagName: 'article',
-	 	className: 'feed_item_container',
-	 	template: _.template( $('#feed_item').html() ),
-	 	render: function() {
-	 		this.$el.html(this.template(this.model.toJSON()));
-	 		return this;
-	 	}
-	 });
+	FeedItem.Collection = Backbone.Collection.extend({
+		model: FeedItem.Model
+	});
 
-	 var FeedItemListView = Backbone.View.extend({
-	 	el: $('#feed_directory'),
-	 	initialize: function() {
+	FeedItem.Views.Main = Backbone.View.extend({
+		tagName: 'article',
+		className: 'feed_item_container',
+		template: assets_url+'app/templates/feeditem.html',
+		render: function() {
+			var view = this;
+
+			// Fetch the template, render it to the View element and call done.
+			readreactv.fetchTemplate(this.template, function(tmpl) {
+				view.$el.html(tmpl(view.model.toJSON()));
+			});
+			return this;
+		}
+	});
+
+	FeedItem.Views.Collection = Backbone.View.extend({
+		initialize: function() {
 			// todo: grab data from server to initialize the collection
-			this.collection = new FeedItemList();
+			this.collection = new FeedItem.Collection( test_items );
 			this.render();
 		},
 		render: function() {
-			var that = this;
+			this.$el = $('#feed_directory');
+			var view = this;
 			_.each(this.collection.models, function(feed_item) {
-				var feed_item_view = new FeedItemView({model: feed_item});
-				that.$el.append(feed_item_view.render().el);
+				var feed_item_view = new FeedItem.Views.Main({model: feed_item});
+				view.$el.append(feed_item_view.render().el);
 			}, this);
 		}
 	});
