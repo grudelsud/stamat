@@ -1,4 +1,11 @@
-<img src="<%= pic %>" alt="<%= name %>" />
-<h1><%= name %> - <span><%= type %></span></h1>
-<div class="content"><%= content %></div>
-<div class="meta"><%= meta %></div>
+<h3><a href="<%= permalink %>"><%= title %></a></h3>
+<p class="meta"><a href="#!/reactions/<%= id %>">read reactions</a> - <%= date %></p>
+<div class="row">
+	<div class="span2">
+		<div class="featured" style="background: url('<%= pic %>') no-repeat;"></div>
+	</div>
+	<div class="span4">
+		<div class="content"><%= description %></div>
+	</div>
+</div>
+<div class="source">source: <a href="<%= url %>"><%= feed_title %></a></div>

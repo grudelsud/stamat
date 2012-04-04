@@ -1,5 +1,14 @@
 <div class="row">
-	<div id="tag_list" class="span3"></div>
-	<div id="feed_directory" class="span6"></div>
-	<div id="feed_reactions" class="span3"></div>
+	<div id="feed_container" class="span2 scroll-top">
+		<h3>Select Feed</h3>
+		<div id="tag_list"></div>		
+	</div>
+	<div id="feeditem_container" class="span6">
+		<h3>Read Articles</h3>
+		<div id="feed_directory"></div>		
+	</div>
+	<div id="reaction_container" class="span4 scroll-top">
+		<h3>Read Reactions</h3>
+		<div id="feed_reactions"></div>		
+	</div>
 </div>

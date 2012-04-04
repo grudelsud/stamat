@@ -1,0 +1,11 @@
+.row {
+	background: #fff;
+}
+
+article.feed_item_container {
+	padding: 15px 0;
+	border-bottom: 1px solid #ddd;
+}
+	article div.featured {
+		height: 100px;
+	}

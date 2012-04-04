@@ -41,22 +41,53 @@ class Json extends CI_Controller
 		$params = $this->uri->uri_to_assoc();
 		// return $this->_return_json_success( $params );
 
+		$this->db->select('f.id, f.title, f.url, t.id as tag_id, t.name as tag_name, t.slug');
 		$this->db->from('feeds as f');
+
+		$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
+		$this->db->join('tags as t', 't.id = ft.tag_id');
+
 		if( $this->logged_in ) {
-			$this->db->where('user_id', $this->logged_user['id'] );
+			$this->db->where('f.user_id', $this->logged_user['id'] );
 		}
 		if( !empty($params['tag']) ) {
-			$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
-			$this->db->join('tags as t', 't.id = ft.tag_id');
 			$this->db->where('t.slug', $params['tag']);
 		}
+
 		$query = $this->db->get();
 		return $this->_return_json_success( $query->result() );
 	}
 
-	public function items()
+	public function feeditems()
 	{
+		$params = $this->uri->uri_to_assoc();
 
+		$this->db->select('fi.id, fi.feed_id, fi.title, fi.permalink, fi.date, fi.description, f.title as feed_title, f.url');
+		$this->db->from('feeditems as fi');
+		$this->db->join('feeds as f', 'fi.feed_id = f.id');
+
+		if( $this->logged_in ) {
+			$this->db->where('f.user_id', $this->logged_user['id'] );
+		}
+		$this->db->order_by('date', 'desc');
+		$this->db->limit(20);
+		$query = $this->db->get();
+
+		$result = array();
+		foreach($query->result() as $row) {
+			$item = new stdClass();
+			$item->id = $row->id;
+			$item->feed_id = $row->feed_id;
+			$item->title = strip_tags($row->title);
+			$item->permalink = $row->permalink;
+			$item->date = $row->date;
+			$item->description = strip_tags( $row->description, '<div><p><a>');
+			$item->feed_title = $row->feed_title;
+			$item->url = $row->url;
+
+			$result[] = $item;
+		}
+		return $this->_return_json_success( $result );
 	}
 
 	// returns success message in json

@@ -1,12 +1,5 @@
 (function(FeedItem) {
 
-	var test_items = [
-		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 25.12.12'},
-		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 26.12.12'},
-		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 27.12.12'},
-		{ name: 'test', type: 'fashion', content: 'bla bla bla...', meta: 'posted 28.12.12'}
-	];
-
 	FeedItem.Model = Backbone.Model.extend({
 		defaults: {
 			pic: assets_url+'img/app/feed_item_placeholder.png'
@@ -14,7 +7,11 @@
 	});
 
 	FeedItem.Collection = Backbone.Collection.extend({
-		model: FeedItem.Model
+		model: FeedItem.Model,
+		url: base_url+'index.php/json/feeditems',
+		parse: function(response) {
+			return response.success;
+		}
 	});
 
 	FeedItem.Views.Main = Backbone.View.extend({
@@ -34,9 +31,9 @@
 
 	FeedItem.Views.Collection = Backbone.View.extend({
 		initialize: function() {
-			// todo: grab data from server to initialize the collection
-			this.collection = new FeedItem.Collection( test_items );
-			this.render();
+			_.bindAll(this, 'render');
+			this.collection.bind('reset', this.render);
+			this.collection.bind('change', this.render);
 		},
 		render: function() {
 			this.$el = $('#feed_directory');

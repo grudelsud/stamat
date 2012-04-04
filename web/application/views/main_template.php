@@ -10,7 +10,6 @@
 		<?php $this->load->view('assets'); ?>
 		<link rel="stylesheet" type="text/css" media="all" href="<?php echo ASSETS_URL; ?>css/main.style.css" />
 
-		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/libs/underscore-min.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/libs/backbone-min.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/pages/main.<?php echo $template; ?>.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/pages/main.all.js"></script>

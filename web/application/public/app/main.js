@@ -38,26 +38,46 @@ var readreactv = {
 	}
 };
 
+var feedItemCollection = feedItemCollectionView = {};
+
 $(function() {
 
 	// Defining the application router, you can attach sub routers here.
 	var Router = Backbone.Router.extend({
 		routes: {
+			'!/tags' : 'tags',
+			'!/feeds/:id' : 'feeds',
+			'!/feeditems/*params' : 'feeditems',
+			'!/reactions/:id' : 'reactions',
 			'': 'index'
 		},
-
+		tags: function() {
+			console.log('router - tags');
+		},
+		feeds: function( id ) {
+			console.log('router - feeds');
+		},
+		feeditems: function( params ) {
+			console.log('router - feeditems');
+		},
+		reactions: function( id ) {
+			console.log('router - reactions');
+		},
 		index: function() {
 			console.log('router - index');
 		}
 	});
 
 	var feedItemModule = readreactv.module('feeditem');
-	var feedItemCollectionView = new feedItemModule.Views.Collection();
+
+	feedItemCollection = new feedItemModule.Collection();
+	feedItemCollectionView = new feedItemModule.Views.Collection({collection: feedItemCollection});
+
+	feedItemCollection.fetch();
 
 	//create router instance
 	var router = new Router();
 
 	//start history service
 	Backbone.history.start();
-
 });
