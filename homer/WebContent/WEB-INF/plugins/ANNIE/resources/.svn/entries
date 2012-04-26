@@ -1,58 +1,0 @@
-10
-
-dir
-21512
-http://www.micc.unifi.it/svn/micc/homer/WebContent/WEB-INF/plugins/ANNIE/resources
-http://www.micc.unifi.it/svn/micc
-
-
-
-2012-02-17T15:37:59.093015Z
-21044
-mbertini
-
-
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-1ac7d7c4-be10-0410-a36c-8cc9a657c507
-
-BengaliNE
-dir
-
-NE
-dir
-
-VP
-dir
-
-gazetteer
-dir
-
-heptag
-dir
-
-othomatcher
-dir
-
-regex-splitter
-dir
-
-schema
-dir
-
-sentenceSplitter
-dir
-
-tokeniser
-dir
-
