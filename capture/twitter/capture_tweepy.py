@@ -65,9 +65,9 @@ class Main:
 		self.streamer = tweepy.Stream(self.auth, self.listener)
 
 		if self.args.filter:
-			pass
 			# follow=None, track=None, async=False, locations=None, count=None
-			self.streamer.filter(self.filteroptions['follow'], self.filteroptions['track'], False, self.filteroptions['locations'], self.filteroptions['count'])
+			locations = map(float, self.filteroptions['locations'].split(','))
+			self.streamer.filter(self.filteroptions['follow'], self.filteroptions['track'], False, locations, self.filteroptions['count'])
 		elif self.args.sample:
 			self.streamer.sample()
 
