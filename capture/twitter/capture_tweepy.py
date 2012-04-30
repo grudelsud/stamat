@@ -66,8 +66,10 @@ class Main:
 
 		if self.args.filter:
 			# follow=None, track=None, async=False, locations=None, count=None
+			follow = self.filteroptions['follow'].split(',') if self.filteroptions['follow'] is not None else None
+			track = self.filteroptions['track'].split(',') if self.filteroptions['track'] is not None else None
 			locations = map(float, self.filteroptions['locations'].split(','))
-			self.streamer.filter(self.filteroptions['follow'], self.filteroptions['track'], False, locations, self.filteroptions['count'])
+			self.streamer.filter(follow, track, False, locations, self.filteroptions['count'])
 		elif self.args.sample:
 			self.streamer.sample()
 
