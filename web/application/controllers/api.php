@@ -379,6 +379,42 @@ class Api extends CI_Controller
 		}
 	}
 	
+  /**
+	 * Twitter related CRUD functions 
+	 * 
+	 * search_tweets - find tweets and add tweets to database
+	 * 
+	 * 
+	 */
+       // add tweets to database (after a search on twitter's server)
+        function search_tweets()
+	{
+		$key_word = $this->input->post('key_word');
+		
+		if( $key_word ) {
+			$this->load->model('scraper_model');
+			$result = $this->scraper_model->scrape_twitter( $key_word ); // result è il query_id
+                        
+			$this->_return_json_success($result);
+		} else {
+			$this->_return_json_error('empty field');
+		}
+	}
+        //fetch tweets from db (by the key_word) 
+        function get_tweets()
+         {
+                $key_word = $this->input->post('key_word');
+		
+		if( $key_word ) {
+			$this->load->model('twitter_model');
+                        $result = $this->twitter_model->get_tweets($key_word);
+                        $this->_return_json_success($result);
+		} else {
+			$this->_return_json_error('empty field');
+		}    			
+         }
+        
+               
 	// returns success message in json
 	private function _return_json_success($success) {
 		$this->_return_json('success', $success);

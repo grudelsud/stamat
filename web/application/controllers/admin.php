@@ -50,7 +50,13 @@ class Admin extends CI_Controller
 		$this->data['template'] = 'items';
 		$this->index();
 	}
-
+        
+        function twitter()
+	{
+		$this->data['template'] = 'twitter';
+		$this->index();
+	}
+        
 	function topics()
 	{
 		$this->data['template'] = 'topics';

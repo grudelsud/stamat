@@ -9,7 +9,9 @@
 				<li><a href="<?php echo site_url('/admin/items'); ?>">items</a></li>
 				<li><a href="<?php echo site_url('/admin/vocabulary'); ?>">vocabularies</a></li>
 				<li><a href="<?php echo site_url('/admin/topics'); ?>">topics &amp; entities</a></li>
-				<li><a href="<?php echo site_url('/admin/users'); ?>">users</a></li>
+				<li><a href="<?php echo site_url('/admin/twitter'); ?>">TW</a></li>
+                                <li><a href="<?php echo site_url('/admin/users'); ?>">users</a></li>
+                                
 
 				<li class="divider-vertical"></li>
 

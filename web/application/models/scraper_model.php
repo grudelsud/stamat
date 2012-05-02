@@ -60,7 +60,8 @@ class Scraper_model extends CI_Model
 				$auth_params = json_decode( $scraper->auth_params, TRUE );
 				$post_params = json_decode( $scraper->post_params, TRUE );
 				$post_params['text'] = $content;
-
+                                
+                                
 				$response_t = $this->_execute_curl( $scraper->rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
 				$response_obj = json_decode( $response_t );
 				$topics = array();
@@ -154,7 +155,7 @@ class Scraper_model extends CI_Model
 		$post_params = json_decode( $scraper->post_params, TRUE );
 		$auth_params = json_decode( $scraper->auth_params, TRUE );
 		
-		$response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
+                $response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params );
 		
 		// create abstract and data insert object
 		$abstract = substr(trim(preg_replace('/\s\s+/',' ',htmlspecialchars_decode(strip_tags($response)))), 0, 499);
@@ -183,4 +184,65 @@ class Scraper_model extends CI_Model
 			return $row->id;
 		}
 	}
+        
+        function scrape_twitter( $key_word ) //key_word è la parola immessa dall'utente
+	{
+		$scraper = $this->_get_scraper('twitter_scraper');
+		$rest_call = preg_replace('/{KEY_WORD}/',  urlencode($key_word) , $scraper->rest_call);
+                               
+                // valuto se i tweet che scarico vanno allegati ad una precedente query o hanno un nuovo query_id
+                $this->db->where('query', $rest_call );
+		$query_content = $this->db->get('twitter_queries');  
+		
+                if( $query_content->num_rows() == 1 ) {  //ci può essere al max una query identica alla rest_call attuale
+                    $row = $query_content->row();
+                    $query_id = (int)$row->id;
+                }               
+                else { 
+                    $data = array(
+                      'query' => $rest_call,
+                      'key_word' => $key_word );
+                
+                    $this->db->insert('twitter_queries', $data);
+                    $query_id = $this->db->insert_id();
+                }
+                                
+                $post_params = json_decode( $scraper->post_params, TRUE ); 
+		$auth_params = json_decode( $scraper->auth_params, TRUE );  
+		                
+		$response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params, $debug );
+		
+                $response_obj = json_decode( $response );
+		$tweet_data = array();
+                  
+		foreach ($response_obj->results as $tweet_obj) {                                                         
+                                       
+                       foreach ($tweet_obj->entities->media as $media_obj) {  //finding the image in the "media" array
+                           
+                           if ( $media_obj->type == 'photo' ) {
+                                    
+                                $tweet_data[url]= $media_obj->media_url;
+                           }
+                       }
+                      
+                       $tweet_data[text] = $tweet_obj->text;
+                       
+                      
+                       $data = array(
+                           'query_id' => $query_id,
+                           'text' => $tweet_data[text],
+                           'url' => $tweet_data[url],
+                           'error_code' => $this->curl->error_code,
+                           'error_string' => $this->curl->error_string,
+                           'curl_info' => json_encode($this->curl->info)
+                       );         
+                       $this->db->insert('tweets', $data);  
+                
+                }
+                                     
+                return $query_id;  //finito il foreach, restituisce l'id della query: con esso posso risalire a tutti 
+                 // i tweets legati a quella query (per poterli visualizzare)
+        }      
+        
+        
 }
