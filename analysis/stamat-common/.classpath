@@ -3,9 +3,21 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.0.jar"/>
-	<classpathentry kind="lib" path="lib/JOpenSurf.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
-	<classpathentry kind="lib" path="lib/lire.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/caliph-emir-cbir.jar"/>
+	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/lire.jar"/>
+	<classpathentry kind="lib" path="lib/lc4j-0.4.jar"/>
+	<classpathentry kind="lib" path="lib/fastutil-6.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/colt.jar"/>
+	<classpathentry kind="lib" path="lib/concurrent.jar"/>
+	<classpathentry kind="lib" path="lib/java-getopt-1.0.14.jar"/>
+	<classpathentry kind="lib" path="lib/mg4j-4.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jsoup-1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/mallet-deps.jar"/>
+	<classpathentry kind="lib" path="lib/mallet.jar"/>
+	<classpathentry kind="lib" path="lib/gate.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
