@@ -20,9 +20,8 @@ class Twitter_model extends CI_Model{
            $query_id = (int)$row->id;
            // if i try to display absent tweet ???
            if ($query_id == NULL) {
-               return NULL;
+               return NULL; // vedere meglio cosa fare...
            }
-           
            // get tweets for this query id
            $this->db->where('query_id', $query_id);     
            $tweets = $this->db->get('tweets');

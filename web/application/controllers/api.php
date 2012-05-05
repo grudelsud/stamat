@@ -383,8 +383,7 @@ class Api extends CI_Controller
 	 * Twitter related CRUD functions 
 	 * 
 	 * search_tweets - find tweets and add tweets to database
-	 * 
-	 * 
+	 * get_tweets - fetch tweets from db, by key word
 	 */
        // add tweets to database (after a search on twitter's server)
         function search_tweets()
@@ -394,7 +393,6 @@ class Api extends CI_Controller
 		if( $key_word ) {
 			$this->load->model('scraper_model');
 			$result = $this->scraper_model->scrape_twitter( $key_word ); // result è il query_id
-                        
 			$this->_return_json_success($result);
 		} else {
 			$this->_return_json_error('empty field');
@@ -413,8 +411,7 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty field');
 		}    			
          }
-        
-               
+          
 	// returns success message in json
 	private function _return_json_success($success) {
 		$this->_return_json('success', $success);
