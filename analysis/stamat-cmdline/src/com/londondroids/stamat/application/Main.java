@@ -3,6 +3,7 @@
  */
 package com.londondroids.stamat.application;
 
+import it.unifi.micc.homer.Analyser;
 import it.unifi.micc.stamat.visualSimilarity.*;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 import org.apache.commons.cli.*;
+import org.json.JSONObject;
 
 
 /**
@@ -23,14 +25,20 @@ public class Main {
 		options.addOption("h", "help", false, "print this help and exit");
 		
 		OptionGroup ogMain = new OptionGroup();
-		ogMain.addOption( OptionBuilder.hasArg(false).withDescription("create image index, requires options -I and -F").withLongOpt("visual-create-index").create("Vc"));
-		ogMain.addOption( OptionBuilder.hasArg(false).withDescription("query for image similarity, requires options -i, -I and -n").withLongOpt("visual-query-image").create("Vq"));
+		ogMain.addOption( OptionBuilder.hasArg(false).withDescription("extract topics from text, requires options -t -n -nk -lm -ls").withLongOpt("topic-extract").create("Tx"));
+		ogMain.addOption( OptionBuilder.hasArg(false).withDescription("create image index, requires options -iI and -iF").withLongOpt("image-create-index").create("Vc"));
+		ogMain.addOption( OptionBuilder.hasArg(false).withDescription("query for image similarity, requires options -i, -iI and -n").withLongOpt("image-query").create("Vq"));
 		options.addOptionGroup(ogMain);
 
-		options.addOption( OptionBuilder.hasArg().withArgName("indexPath").withDescription("full path of folder containing index").withLongOpt("index-path").create("I"));
-		options.addOption( OptionBuilder.hasArg().withArgName("imageFolderPath").withDescription("full path of folder containing images").withLongOpt("image-folder-path").create("F"));
+		options.addOption( OptionBuilder.hasArg().withArgName("imageIndexPath").withDescription("full path of folder containing image index").withLongOpt("image-index-path").create("iI"));
+		options.addOption( OptionBuilder.hasArg().withArgName("imageFolderPath").withDescription("full path of folder containing images").withLongOpt("image-folder-path").create("iF"));
 		options.addOption( OptionBuilder.hasArg().withArgName("imagePath").withDescription("full image path").withLongOpt("image-path").create("i"));
-		options.addOption( OptionBuilder.hasArg().withArgName("results").withDescription("number of results").withLongOpt("num").create("n"));
+		options.addOption( OptionBuilder.hasArg().withArgName("num").withDescription("number of outputs (topics / results)").withLongOpt("num-outputs").create("n"));
+		options.addOption( OptionBuilder.hasArg().withArgName("num").withDescription("number of keywords per topic").withLongOpt("num-keywords").create("nk"));
+
+		options.addOption( OptionBuilder.hasArg().withArgName("textInput").withDescription("file or folder containing text input").withLongOpt("num-keywords").create("t"));
+		options.addOption( OptionBuilder.hasArg().withArgName("langModelsPath").withDescription("full path of folder containing language models").withLongOpt("lang-models").create("lm"));
+		options.addOption( OptionBuilder.hasArg().withArgName("langStopwordPath").withDescription("full path of folder containing stopwords").withLongOpt("lang-stopwords").create("ls"));
 		return options;
 	}
 
@@ -71,6 +79,16 @@ public class Main {
 				System.err.println(e.getMessage());
 			}
 			return;
+		} else if( line.hasOption("Tx")) {
+			// t -n -nk -lm -ls
+			String text = line.getOptionValue("t");
+			String numTopics = line.getOptionValue("n");
+			String numKeywords = line.getOptionValue("nk");
+			String langModels = line.getOptionValue("lm");
+			String langStopwords = line.getOptionValue("ls");
+			
+			JSONObject result = Analyser.topicAnalysisJSON(text, Integer.parseInt(numTopics), Integer.parseInt(numKeywords), langModels, langStopwords);
+			System.out.println(result.toString());
 		}
 
 		System.out.println("Type 'java -jar stamat-cmdline.jar -h' for help");

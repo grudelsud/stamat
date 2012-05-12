@@ -121,8 +121,7 @@ public class TopicDetector {
 				}
 
 				// System.out.println(model.displayTopWords(5, true));
-				Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(),
-						numberOfTopics, numTopWords, lda.getAlphabet());
+				Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(),numberOfTopics, numTopWords, lda.getAlphabet());
 				int limit = WordCounter.countWords(allSanitizedText.toString()) < numberOfTopics ? WordCounter.countWords(allSanitizedText.toString()) : numberOfTopics;
 				// Object[][] topWords = model.getTopWords(numTopWords);
 				for (int topicCount = 0; topicCount < limit; topicCount++) {
