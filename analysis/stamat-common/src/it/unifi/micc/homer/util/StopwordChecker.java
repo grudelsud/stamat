@@ -17,7 +17,7 @@ public class StopwordChecker {
 	private Set<String> stopwords;
 	private static String langStopwordPath = HomerConstants.DEFAULT_REL_LANG_STOPWORD_PATH;
 
-	private static Map<Language, StopwordChecker> instances = new HashMap<Language, StopwordChecker>();
+	private static Map<String, StopwordChecker> instances = new HashMap<String, StopwordChecker>();
 
 	/**
 	 * @param lang	Stopword language
@@ -25,7 +25,7 @@ public class StopwordChecker {
 	 * 
 	 * All stopwords are normalized to eliminate diacritic marks (accents)
 	 */
-	private StopwordChecker(Language lang, String langStopPath) {
+	private StopwordChecker(String lang, String langStopPath) {
 		BufferedReader bufRead;
 		try {
 			stopwords = new HashSet<String>();
@@ -48,7 +48,7 @@ public class StopwordChecker {
 		}
 	}
 
-	public static StopwordChecker getCheckerForLanguage(Language lang, String langStopwordPath) {
+	public static StopwordChecker getCheckerForLanguage(String lang, String langStopwordPath) {
 		StopwordChecker checker = instances.get(lang);
 		if (checker == null) {
 			checker = new StopwordChecker(lang, langStopwordPath);

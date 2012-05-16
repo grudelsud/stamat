@@ -5,8 +5,9 @@ package it.unifi.micc.homer.model;
 
 import java.util.List;
 
-import it.unifi.micc.homer.model.language.Lc4jLangIdentifier;
+import it.unifi.micc.homer.model.language.LanguageDetector;
 import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
+import it.unifi.micc.homer.util.HomerException;
 
 /**
  * @author bertini
@@ -15,7 +16,7 @@ import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
 public class TextDocument {
 	protected List<SemanticKeyword> keywords;
 	protected String content;
-	protected Language language;
+	protected String language;
 	/**
 	 * 
 	 */
@@ -26,7 +27,7 @@ public class TextDocument {
 	 * @param content
 	 * @param language
 	 */
-	public TextDocument(String content, Language language) {
+	public TextDocument(String content, String language) {
 		super();
 		this.content = content;
 		this.language = language;
@@ -40,13 +41,12 @@ public class TextDocument {
 		this.language = null;
 	}
 	
-	public boolean autoSetLanguage(String langModelsPath, String langStopwordPath) {
+	public boolean autoSetLanguage(String langModelsPath, String langStopwordPath) throws HomerException {
 		boolean result = false;
-		Lc4jLangIdentifier langIdent = new Lc4jLangIdentifier(langModelsPath, langStopwordPath);
-		language = langIdent.identifyLanguageOf(content);
-		if( language != Language.unknown )
+		LanguageDetector langIdent = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
+		this.language = langIdent.identifyLanguageOf(content);
+		if( this.language != "unknown" )
 			result = true;
-		
 		return result;
 	}
 	
@@ -65,13 +65,13 @@ public class TextDocument {
 	/**
 	 * @return the language
 	 */
-	public Language getLanguage() {
+	public String getLanguage() {
 		return language;
 	}
 	/**
 	 * @param language the language to set
 	 */
-	public void setLanguage(Language language) {
+	public void setLanguage(String language) {
 		this.language = language;
 	}
 	/**

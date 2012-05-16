@@ -3,16 +3,20 @@
  */
 package it.unifi.micc.homer.model.topic;
 
+import it.unifi.micc.homer.model.AsciiTextDocument;
+import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.TextDocument;
 import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
-import it.unifi.micc.homer.model.language.Lc4jLangIdentifier;
+import it.unifi.micc.homer.model.language.LanguageDetector;
 import it.unifi.micc.homer.util.HomerConstants;
+import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.StringOperations;
 import it.unifi.micc.homer.util.WordCounter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -53,6 +57,60 @@ public class TopicDetector {
 		this.disableLangDetection = false;
 	}
 
+	public static Vector<SemanticKeyword> process(String text, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath, String ldaModelPath) {
+		
+		AsciiTextDocument textDocument = new AsciiTextDocument(text);
+		List<TextDocument> texts = new ArrayList<TextDocument>();
+		texts.add(textDocument);
+		
+		TopicDetector topicd = new TopicDetector(langModelsPath, langStopwordPath);
+		List<Topic> detectedTopics;
+		
+		if( ldaModelPath != null ) {
+			try {
+				TrainedModel modelLDA = TrainedModel.getInstance(ldaModelPath);
+				detectedTopics = topicd.inferenceTopic(texts,modelLDA,numTopWords); 
+			} catch (Exception e) {
+				detectedTopics = topicd.extractTopics(texts, numTopics, numTopWords);
+			}
+		} else {
+			detectedTopics = topicd.extractTopics(texts, numTopics, numTopWords);
+		}
+		
+		if (numTopWords == HomerConstants.AUTODETECT_NUMKEYWORDS)
+			numTopWords = topicd.numTopWords;
+		
+		Vector<SemanticKeyword> detectedSW = new Vector<SemanticKeyword>();
+		for( Topic topic : detectedTopics ) {
+			detectedSW.addAll(SemanticKeyword.convertTopicToSemanticKeyword(topic));
+		}
+		Vector<SemanticKeyword> result = SemanticKeyword.selectTopSemanticKeywords(detectedSW, numTopWords*numTopics);
+		int docSize = WordCounter.countWords(text);
+		for( SemanticKeyword kw : result ) {
+			kw.setNumOccurrences(WordCounter.countWordInstances(text, kw.getKeyword()));
+			kw.setTf((float)((float)kw.getNumOccurrences()/(float)docSize));
+		}
+		return result;
+	}
+
+	public static Vector<SemanticKeyword> processTrainer(String modelPath, List<TextDocument> trainingTexts, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath) throws Exception {
+	
+		TopicDetector topicd = new TopicDetector(langModelsPath, langStopwordPath);
+		TrainedModel modelLDA = TrainedModel.getInstance(modelPath);
+		List<Topic> detectedTopics = topicd.trainTopicModel(trainingTexts, numTopics, numTopWords, modelLDA);		
+	    
+		if (numTopWords == HomerConstants.AUTODETECT_NUMKEYWORDS)
+			numTopWords = topicd.numTopWords;
+		
+		Vector<SemanticKeyword> detectedSW = new Vector<SemanticKeyword>();
+		for( Topic topic : detectedTopics ) {
+			detectedSW.addAll(SemanticKeyword.convertTopicToSemanticKeyword(topic));
+		}
+		Vector<SemanticKeyword> result = SemanticKeyword.selectTopSemanticKeywords(detectedSW, numTopWords*numTopics);
+		
+		return result; 
+	}
+
 	public List<Topic> extractTopics(List<TextDocument> texts, int numberTopics, int numberTopWords) {
 
 		// Pipes: tokenize, lowercase, remove stopwords, map to features
@@ -70,7 +128,7 @@ public class TopicDetector {
 
 		List<Instance> tmpInstanceList = new ArrayList<Instance>();
 
-		Language language = null;
+		String language = null;
 		StringBuffer allSanitizedText = new StringBuffer();
 		for (TextDocument text : texts) {
 			String sanitizedText = text.getContent();
@@ -79,11 +137,16 @@ public class TopicDetector {
 			sanitizedText = StringOperations.removeNonLettersFromString(sanitizedText);
 
 			if (!disableLangDetection) {
-				Lc4jLangIdentifier lId = new Lc4jLangIdentifier(langModelsPath, langStopwordPath);
-				sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
-				// FIXME at present keywords are assigned to the language of the
-				// last document ! Let's make at least a majority vote !
-				language = text.getLanguage();
+				LanguageDetector lId;
+				try {
+					lId = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
+					sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
+					// FIXME at present keywords are assigned to the language of the
+					// last document ! Let's make at least a majority vote !
+					language = text.getLanguage();
+				} catch (HomerException e) {
+					language = "unknown";
+				}
 			}
 
 			if (!sanitizedText.trim().equalsIgnoreCase("")) {
@@ -109,7 +172,7 @@ public class TopicDetector {
 		List<Topic> topics = new ArrayList<Topic>();
 
 		try {
-			for(int i=0; i < getNumRepetitions(); i++) {
+			for(int i=0; i < this.numRepetitions; i++) {
 				ParallelTopicModel lda = new ParallelTopicModel(numberOfTopics);
 				lda.setNumIterations(numIterations);
 				lda.setOptimizeInterval(numInterval);
@@ -158,7 +221,7 @@ public class TopicDetector {
 
 		List<Instance> tmpInstanceList = new ArrayList<Instance>();
 
-		Language language = null;
+		String language = null;
 		StringBuffer allSanitizedText = new StringBuffer();
 		for (TextDocument text : texts) {
 			String sanitizedText = text.getContent();
@@ -167,11 +230,16 @@ public class TopicDetector {
 			sanitizedText = StringOperations.removeNonLettersFromString(sanitizedText);
 
 			if (!disableLangDetection) {
-				Lc4jLangIdentifier lId = new Lc4jLangIdentifier(langModelsPath, langStopwordPath);
-				sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
-				// FIXME at present keywords are assigned to the language of the
-				// last document ! Let's make at least a majority vote !
-				language = text.getLanguage();
+				LanguageDetector lId;
+				try {
+					lId = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
+					sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
+					// FIXME at present keywords are assigned to the language of the
+					// last document ! Let's make at least a majority vote !
+					language = text.getLanguage();
+				} catch (HomerException e) {
+					language = "unknown";
+				}
 			}
 
 			if (!sanitizedText.trim().equalsIgnoreCase("")) {
@@ -226,7 +294,7 @@ public class TopicDetector {
 	}
 
 
-	public  List<Topic> InferenceTopic(List<TextDocument> texts,TrainedModel modelLDA, int numberTopWords) {
+	public  List<Topic> inferenceTopic(List<TextDocument> texts,TrainedModel modelLDA, int numberTopWords) {
 
 		// Pipes: tokenize, lowercase, remove stopwords, map to features
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
@@ -245,7 +313,7 @@ public class TopicDetector {
 
 		List<Instance> tmpInstanceList = new ArrayList<Instance>();
 
-		Language language = null;
+		String language = null;
 		StringBuffer allSanitizedText = new StringBuffer();
 		for (TextDocument text : texts) {
 			String sanitizedText = text.getContent();
@@ -254,11 +322,16 @@ public class TopicDetector {
 			sanitizedText = StringOperations.removeNonLettersFromString(sanitizedText);
 
 			if (!disableLangDetection) {
-				Lc4jLangIdentifier lId = new Lc4jLangIdentifier(langModelsPath, langStopwordPath);
-				sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
-				// FIXME at present keywords are assigned to the language of the
-				// last document ! Let's make at least a majority vote !
-				language = text.getLanguage();
+				LanguageDetector lId;
+				try {
+					lId = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
+					sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
+					// FIXME at present keywords are assigned to the language of the
+					// last document ! Let's make at least a majority vote !
+					language = text.getLanguage();
+				} catch (HomerException e) {
+					language = "unknown";
+				}
 			}
 
 			if (!sanitizedText.trim().equalsIgnoreCase("")) {
@@ -326,120 +399,5 @@ public class TopicDetector {
 			return numTopics;
 	}
 
-	/**
-	 * @return the disableLangDetection
-	 */
-	public boolean isDisableLangDetection() {
-		return disableLangDetection;
-	}
-
-	/**
-	 * @param disableLangDetection
-	 *            the disableLangDetection to set
-	 */
-	public void setDisableLangDetection(boolean disableLangDetection) {
-		this.disableLangDetection = disableLangDetection;
-	}
-
-	/**
-	 * @return the langModelsPath
-	 */
-	public String getLangModelsPath() {
-		return langModelsPath;
-	}
-
-	/**
-	 * @param langModelsPath
-	 *            the langModelsPath to set
-	 */
-	public void setLangModelsPath(String langModelsPath) {
-		this.langModelsPath = langModelsPath;
-	}
-
-	/**
-	 * @return the langStopwordPath
-	 */
-	public String getLangStopwordPath() {
-		return langStopwordPath;
-	}
-
-	/**
-	 * @param langStopwordPath
-	 *            the langStopwordPath to set
-	 */
-	public void setLangStopwordPath(String langStopwordPath) {
-		this.langStopwordPath = langStopwordPath;
-	}
-
-	/**
-	 * @return the numIterations
-	 */
-	public int getNumIterations() {
-		return numIterations;
-	}
-
-	/**
-	 * @param numIterations
-	 *            the numIterations to set
-	 */
-	public void setNumIterations(int numIterations) {
-		this.numIterations = numIterations;
-	}
-
-	/**
-	 * @return the numInterval
-	 */
-	public int getNumInterval() {
-		return numInterval;
-	}
-
-	/**
-	 * @param numInterval the numInterval to set
-	 */
-	public void setNumInterval(int numInterval) {
-		this.numInterval = numInterval;
-	}
-
-	/**
-	 * @return the numRepetitions
-	 */
-	public int getNumRepetitions() {
-		return numRepetitions;
-	}
-
-	/**
-	 * @param numRepetitions the numRepetitions to set
-	 */
-	public void setNumRepetitions(int numRepetitions) {
-		this.numRepetitions = numRepetitions;
-	}
-
-	/**
-	 * @return the numberOfTopics
-	 */
-	public int getNumberOfTopics() {
-		return numberOfTopics;
-	}
-
-	/**
-	 * @param numberOfTopics the numberOfTopics to set
-	 */
-	public void setNumberOfTopics(int numberOfTopics) {
-		this.numberOfTopics = numberOfTopics;
-	}
-
-	/**
-	 * @return the numTopWords
-	 */
-	public int getNumTopWords() {
-		return numTopWords;
-	}
-
-	/**
-	 * @param numTopWords the numTopWords to set
-	 */
-	public void setNumTopWords(int numTopWords) {
-		this.numTopWords = numTopWords;
-	}
 
 }

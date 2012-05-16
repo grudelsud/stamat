@@ -7,6 +7,7 @@ import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.tagcloud.TagCloud;
 import it.unifi.micc.homer.util.HomerConstants;
+import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;
 
 import java.util.Iterator;
@@ -21,7 +22,7 @@ import java.util.Vector;
  */
 public class TagCloudAnalyser {
 
-	public static Vector<SemanticKeyword> process(String text, int numTopWords, String langStopwordPath, String langModelsPath) {
+	public static Vector<SemanticKeyword> process(String text, int numTopWords, String langStopwordPath, String langModelsPath) throws HomerException {
 
 		AsciiTextDocument textDocument = new AsciiTextDocument(text);
 		

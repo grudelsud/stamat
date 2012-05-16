@@ -1,6 +1,7 @@
 package it.unifi.micc.homer.model.language;
 
 import it.unifi.micc.homer.model.TextDocument;
+import it.unifi.micc.homer.util.HomerException;
 
 public interface LanguageIdentifier {
 	public enum Language {
@@ -72,6 +73,6 @@ public interface LanguageIdentifier {
 	 * The method may use some heuristic in case of uncertainty in language detection: the number of stopwords of each possible language
 	 * is computed: the higher the number of stopwords found the higher the probability that the text is written in that language
 	 */
-	public Language identifyLanguageOf(String text);
+	public String identifyLanguageOf(String text) throws HomerException;
 	public TextDocument cleanTextDocumentStopwords(TextDocument text);
 }

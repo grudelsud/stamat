@@ -54,7 +54,7 @@ public class StringOperations {
 		return input.replaceAll("[@]+([A-Za-z0-9-_]+)", "");
 	}
 
-	public static String removeStopwords(String input, Language lang, String langStopwordPath) {
+	public static String removeStopwords(String input, String lang, String langStopwordPath) {
 		if( lang == null )
 			return input;
 		StringBuffer results = new StringBuffer("");
@@ -79,7 +79,7 @@ public class StringOperations {
 	 * @param langStopwordPath path to the list of stopwords for the selected language
 	 * @return number of eliminated stopwords, or -1 if language can not be identified
 	 */
-	public static int countStopwords(String input, Language lang, String langStopwordPath) {
+	public static int countStopwords(String input, String lang, String langStopwordPath) {
 		int result = 0;
 		if( lang == null )
 			return -1;

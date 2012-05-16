@@ -13,7 +13,7 @@ import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
  */
 public class AsciiTextDocument extends TextDocument implements Serializable {
 
-	public AsciiTextDocument(String content, Language language) {
+	public AsciiTextDocument(String content, String language) {
 		super(content, language);
 	}
 	

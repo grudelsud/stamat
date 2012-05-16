@@ -6,7 +6,8 @@ package it.unifi.micc.homer.model.tagcloud;
 import it.unifi.micc.homer.model.KeywordType;
 import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.TextDocument;
-import it.unifi.micc.homer.model.language.Lc4jLangIdentifier;
+import it.unifi.micc.homer.model.language.LanguageDetector;
+import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;
 
 import java.util.ArrayList;
@@ -35,8 +36,8 @@ public class TagCloud {
 		this.langModelsPath = langModelsPath;
 	}
 
-	public TreeMap<Integer, List<SemanticKeyword>> computeTagCloud(TextDocument text) {
-		Lc4jLangIdentifier lId = new Lc4jLangIdentifier(langModelsPath, langStopwordPath);
+	public TreeMap<Integer, List<SemanticKeyword>> computeTagCloud(TextDocument text) throws HomerException {
+		LanguageDetector lId = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
 		String sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
 		Map<String, Integer> wc = WordCounter.doWordCount(sanitizedText);
 		int docSize = WordCounter.countWords(sanitizedText);

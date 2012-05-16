@@ -15,9 +15,9 @@ import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
 public class Topic {
 	private List<TopicWord> words;
 	private double alpha;
-	private Language language;
+	private String language;
 	
-	public Topic(double alpha, Language language){
+	public Topic(double alpha, String language){
 		this.words = new ArrayList<TopicWord>();
 		this.alpha = alpha;
 		this.language = language;
@@ -35,7 +35,7 @@ public class Topic {
 		return words;
 	}
 	
-	public Language getLanguage(){
+	public String getLanguage(){
 		return language;
 	}
 }
