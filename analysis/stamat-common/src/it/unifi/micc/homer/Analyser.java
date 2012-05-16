@@ -18,30 +18,47 @@ public class Analyser {
 	public static JSONObject topicAnalysisJSON(String text, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath) {
 		Vector<SemanticKeyword> semanticKeywordVector = TopicDetector.process(text, numTopics, numTopWords, langModelsPath, langStopwordPath, null);
 		JSONObject result = new JSONObject();
-		JSONArray keywords = new JSONArray();
 		try {
-			for(SemanticKeyword semanticKeyword : semanticKeywordVector) {
-				result.put("keyword", semanticKeyword.getKeyword());
-				result.put("type", semanticKeyword.getType());
-				result.put("confidence", semanticKeyword.getConfidence());
-				result.put("num_occurences", semanticKeyword.getNumOccurrences());
-				result.put("tf", semanticKeyword.getTf());
-			}
-			result.append("success", keywords);
+			JSONArray keywords = Analyser.semanticKeywordVector2JSON(semanticKeywordVector);
+			result.put("success", keywords);
 		} catch (JSONException e) {
 			System.err.println(e.getMessage());
-		} finally {
-			return result;
 		}
+		return result;
 	}
 
-	public static Vector<SemanticKeyword> processLanguage(String text, String langModelsPath, String langStopwordPath) throws HomerException {
-	
+	public static JSONObject languageDetectionJSON(String text, String langModelsPath, String langStopwordPath) {
+		JSONObject result = new JSONObject();
 		AsciiTextDocument textDocument = new AsciiTextDocument(text);
-		textDocument.autoSetLanguage(langModelsPath, langStopwordPath);
+		try {
+			textDocument.autoSetLanguage(langModelsPath, langStopwordPath);
+		} catch (HomerException e1) {
+			System.err.println(e1.getMessage());
+			return result;
+		}
 		Vector<SemanticKeyword> v = new Vector<SemanticKeyword>();
 		SemanticKeyword sw = new SemanticKeyword(textDocument.getLanguage().toString(), (float) 1.0, KeywordType.LANGUAGE, 0.0);
 		v.add(sw);
-		return v;
+		try {
+			JSONArray keywords = Analyser.semanticKeywordVector2JSON(v);
+			result.put("success", keywords);
+		} catch (JSONException e) {
+			System.err.println(e.getMessage());
+		}
+		return result;
+	}
+	
+	private static JSONArray semanticKeywordVector2JSON(Vector<SemanticKeyword> semanticKeywordVector) throws JSONException {
+		JSONArray keywords = new JSONArray();
+		for(SemanticKeyword semanticKeyword : semanticKeywordVector) {
+			JSONObject keyword = new JSONObject();
+			keyword.put("keyword", semanticKeyword.getKeyword());
+			keyword.put("type", semanticKeyword.getType());
+			keyword.put("confidence", semanticKeyword.getConfidence());
+			keyword.put("num_occurences", semanticKeyword.getNumOccurrences());
+			keyword.put("tf", semanticKeyword.getTf());
+			keywords.put(keyword);
+		}
+		return keywords;
 	}
 }
