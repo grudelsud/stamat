@@ -13,3 +13,6 @@
 [submodule "_dev/lib/bootstrap"]
 	path = _dev/lib/bootstrap
 	url = https://github.com/twitter/bootstrap.git
+[submodule "_dev/lib/language-detection"]
+	path = _dev/lib/language-detection
+	url = https://code.google.com/p/language-detection

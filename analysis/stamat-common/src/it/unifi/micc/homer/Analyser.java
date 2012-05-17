@@ -16,7 +16,7 @@ import org.json.JSONObject;
 public class Analyser {
 
 	public static JSONObject topicAnalysisJSON(String text, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath) {
-		Vector<SemanticKeyword> semanticKeywordVector = TopicDetector.process(text, numTopics, numTopWords, langModelsPath, langStopwordPath, null);
+		Vector<SemanticKeyword> semanticKeywordVector = TopicDetector.extract(text, langModelsPath, langStopwordPath, numTopics, numTopWords);
 		JSONObject result = new JSONObject();
 		try {
 			JSONArray keywords = Analyser.semanticKeywordVector2JSON(semanticKeywordVector);

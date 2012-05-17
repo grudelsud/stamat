@@ -15,7 +15,7 @@ import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
 
 public class StopwordChecker {
 	private Set<String> stopwords;
-	private static String langStopwordPath = HomerConstants.DEFAULT_REL_LANG_STOPWORD_PATH;
+	private static String langStopwordPath;
 
 	private static Map<String, StopwordChecker> instances = new HashMap<String, StopwordChecker>();
 
@@ -29,8 +29,7 @@ public class StopwordChecker {
 		BufferedReader bufRead;
 		try {
 			stopwords = new HashSet<String>();
-			if (langStopPath != null)
-				langStopwordPath = langStopPath;
+			langStopwordPath = langStopPath;
 			File stopwordFile = new File(langStopwordPath + lang.toString() + ".txt");
 			bufRead = new BufferedReader(new InputStreamReader(new FileInputStream(stopwordFile),"UTF8"));
 			String stopword = null;

@@ -89,9 +89,14 @@ public abstract class HomerConstants {
 	
 	public static final String DEFAULT_MODELLDA		= "";
 	public static final String DEFAULT_TEXTTYPE		= TEXTTYPE_ASCII;
-	public static final String DEFAULT_REL_LANG_MODELS_PATH = "data/langmodels/";
-	public static final String DEFAULT_REL_LANG_STOPWORD_PATH = "data/stopwords/";
 	public static final int AUTODETECT_NUMKEYWORDS	= -1;
 	public static final int AUTODETECT_NUMTOPICS	= -1;
 
+	/**
+	 * @author thomas
+	 * getting rid of old stuff
+	 * 
+	 * public static final String DEFAULT_REL_LANG_MODELS_PATH = "data/langmodels/";
+	 * public static final String DEFAULT_REL_LANG_STOPWORD_PATH = "data/stopwords/";
+	 */
 }
