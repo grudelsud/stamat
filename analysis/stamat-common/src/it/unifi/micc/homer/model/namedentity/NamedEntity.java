@@ -1,7 +1,9 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model;
+package it.unifi.micc.homer.model.namedentity;
+
+import it.unifi.micc.homer.model.KeywordType;
 
 /**
  * @author bertini

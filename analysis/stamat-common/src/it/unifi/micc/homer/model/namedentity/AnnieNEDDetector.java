@@ -11,7 +11,6 @@ import gate.corpora.DocumentContentImpl;
 import gate.creole.ResourceInstantiationException;
 import gate.util.GateException;
 import it.unifi.micc.homer.model.KeywordType;
-import it.unifi.micc.homer.model.NamedEntity;
 
 import java.io.File;
 import java.io.IOException;

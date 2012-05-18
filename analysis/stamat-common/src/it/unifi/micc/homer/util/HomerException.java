@@ -7,7 +7,7 @@ package it.unifi.micc.homer.util;
  * @author bertini
  *
  */
-public class HomerException extends Throwable {
+public class HomerException extends Exception {
 	static final long serialVersionUID = 1L;
 
 	public HomerException() {

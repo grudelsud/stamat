@@ -4,10 +4,14 @@
 package com.londondroids.stamat.application;
 
 import it.unifi.micc.homer.Analyser;
+import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.stamat.visualSimilarity.*;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.cli.*;
@@ -33,13 +37,25 @@ public class Main {
 		// language detect
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("detect language of text input, requires options -t -lm -ls")
+				.withDescription("detect language of text input, requires options (-t | -tp) -lm -ls")
 				.withLongOpt("language-detect")
 				.create("L"));
+		// topic model train
+		ogMain.addOption( OptionBuilder
+				.hasArg(false)
+				.withDescription("train model, requires options (-t | -tp) -n -nk -lm -ls")
+				.withLongOpt("topic-train")
+				.create("Tt"));
+		// topic infer
+		ogMain.addOption( OptionBuilder
+				.hasArg(false)
+				.withDescription("infer topics from text using a reference model, requires options (-t | -tp) -n -lm -ls -m")
+				.withLongOpt("topic-infer")
+				.create("Ti"));
 		// topic extract
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("extract topics from text, requires options -t -n -nk -lm -ls")
+				.withDescription("extract topics from text, requires options (-t | -tp) -n -nk -lm -ls")
 				.withLongOpt("topic-extract")
 				.create("Tx"));
 		// image index create
@@ -84,6 +100,14 @@ public class Main {
 				.withLongOpt("image-path")
 				.create("i"));
 
+		// model path
+		options.addOption( OptionBuilder
+				.hasArg()
+				.withArgName("modelPath")
+				.withDescription("lda model path")
+				.withLongOpt("model-path")
+				.create("m"));
+
 		// number of outputs
 		options.addOption( OptionBuilder
 				.hasArg()
@@ -106,9 +130,17 @@ public class Main {
 		options.addOption( OptionBuilder
 				.hasArg()
 				.withArgName("textInput")
-				.withDescription("file or folder containing text input")
-				.withLongOpt("num-keywords")
+				.withDescription("text input from command line, can be used in combination with -tp")
+				.withLongOpt("text")
 				.create("t"));
+
+		// text input
+		options.addOption( OptionBuilder
+				.hasOptionalArgs()
+				.withArgName("f1 ... fn d1 ... dn")
+				.withDescription("space separated sequence of files and/or directories containing text input, can be used in combination with -t")
+				.withLongOpt("text-path")
+				.create("tp"));
 
 		// language profiles folder
 		options.addOption( OptionBuilder
@@ -137,6 +169,8 @@ public class Main {
 
 		// grab all the options available on the command line
 		String text = line.getOptionValue("t");
+		String[] textPaths = line.getOptionValues("tp");
+		String modelPath = line.getOptionValue("m");
 		String langModels = line.getOptionValue("lm");
 		String langStopwords = line.getOptionValue("ls");
 
@@ -146,7 +180,31 @@ public class Main {
 
 		int numOutputs = 0;
 		int numKeywords = 0;
-		
+
+		List<String> texts = new ArrayList<String>();
+
+		if( text != null ) {
+			texts.add(text);			
+		}
+		if( textPaths != null ) {
+			try {
+				for(String textPath : textPaths) {
+					File file = new File(textPath);
+					if( file.isDirectory() ) {
+						File[] files = file.listFiles();
+						for(File input : files) {
+							texts.add(Main.fileReader(input));
+						}
+					} else if( file.isFile() ) {
+						texts.add(Main.fileReader(file));
+					}
+				}
+			} catch(Exception e) {
+				System.out.println("Check text input!");
+				return;
+			}			
+		}
+
 		try {
 			if( line.getOptionValue("n") != null ) {
 				numOutputs = ((Number)line.getParsedOptionValue("n")).intValue();
@@ -192,10 +250,31 @@ public class Main {
 
 		// topic extract
 		} else if( line.hasOption("Tx")) {
-			if( text == null | numOutputs == 0 | numKeywords == 0 | langModels == null | langStopwords == null ) {
-				System.out.println("With -Tx use options: -t -n -nk -lm -ls");
-			} else {			
-				JSONObject result = Analyser.topicAnalysisJSON(text, numOutputs, numKeywords, langModels, langStopwords);
+			if( texts.size() < 1 | numOutputs == 0 | numKeywords == 0 | langModels == null | langStopwords == null ) {
+				System.out.println("With -Tx use options: (-t | -tp) -n -nk -lm -ls");
+			} else {
+				JSONObject result = Analyser.topicExtractJSON(texts, numOutputs, numKeywords, langModels, langStopwords);
+				System.out.println(result.toString());
+			}
+			return;
+
+		// topic infer
+		} else if( line.hasOption("Ti")) {
+			if( texts.size() < 1 | numOutputs == 0 | modelPath == null | langModels == null | langStopwords == null ) {
+				System.out.println("With -Ti use options: (-t | -tp) -n -lm -ls -m");
+			} else {
+				// TODO: check topic infer function, not sure it's working properly
+				JSONObject result = Analyser.topicInferJSON(texts, langModels, langStopwords, numOutputs, modelPath);
+				System.out.println(result.toString());
+			}
+			return;
+
+		// topic model train
+		} else if( line.hasOption("Tt")) {
+			if( texts.size() < 1 | numOutputs == 0 | langModels == null | langStopwords == null | modelPath == null ) {
+				System.out.println("With -Tt use options: (-t | -tp) -n -lm -ls -m");
+			} else {
+				JSONObject result = Analyser.trainModelJSON(texts, numOutputs, langModels, langStopwords, modelPath);
 				System.out.println(result.toString());
 			}
 			return;
@@ -212,6 +291,22 @@ public class Main {
 		} else {
 			System.out.println("Type 'java -jar stamat-cmdline.jar -h' for help");			
 		}
+	}
+
+	private static String fileReader(File file) throws HomerException
+	{
+		StringBuffer sb = new StringBuffer();
+		try {
+			FileInputStream fis = new FileInputStream(file);
+			int ch;
+			while((ch = fis.read()) != -1) {
+				sb.append((char)ch);
+			}
+			
+		} catch(Exception e) {
+			throw new HomerException(e);
+		}
+		return sb.toString();
 	}
 
 	/**

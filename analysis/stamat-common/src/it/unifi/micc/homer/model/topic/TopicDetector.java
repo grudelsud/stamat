@@ -38,7 +38,7 @@ import cc.mallet.types.InstanceList;
 import cc.mallet.util.MalletLogger;
 
 /**
- * @author bertini
+ * @author alisi
  * 
  */
 public class TopicDetector {
@@ -46,8 +46,6 @@ public class TopicDetector {
 
 	private static int numIterations = 2000;
 	private static int numInterval = 50;
-	private static int numRepetitions = 3;
-
 	private String langModelsPath = "";
 	private String langStopwordPath = "";
 	private int numberOfTopics = HomerConstants.AUTODETECT_NUMTOPICS;
@@ -64,22 +62,49 @@ public class TopicDetector {
 		this.langStopwordPath = langStopwordPath;
 	}
 
-	public static Vector<SemanticKeyword> extract(String text, String langModelsPath, String langStopwordPath)
+	public static Vector<SemanticKeyword> extract(List<String> texts, String langModelsPath, String langStopwordPath) throws Exception
 	{
 		int numTopics = HomerConstants.AUTODETECT_NUMTOPICS;
 		int numTopWords = HomerConstants.AUTODETECT_NUMKEYWORDS;
-		return TopicDetector.extract(text, langModelsPath, langStopwordPath, numTopics, numTopWords);
+		return TopicDetector.extract(texts, langModelsPath, langStopwordPath, numTopics, numTopWords, null);
 	}
 
-	public static Vector<SemanticKeyword> extract(String text, String langModelsPath, String langStopwordPath, int numTopics, int numTopWords)
+	public static Vector<SemanticKeyword> extract(List<String> texts, String langModelsPath, String langStopwordPath, int numTopics, int numTopWords) throws Exception
 	{
-		AsciiTextDocument textDocument = new AsciiTextDocument(text);
-		List<TextDocument> texts = new ArrayList<TextDocument>();
-		texts.add(textDocument);
-		
+		return TopicDetector.extract(texts, langModelsPath, langStopwordPath, numTopics, numTopWords, null);
+	}
+
+	public static Vector<SemanticKeyword> extract(List<String> texts, String langModelsPath, String langStopwordPath, int numTopics, int numTopWords, String ldaModelPath) throws Exception
+	{
+		ParallelTopicModel lda = null;
+		if( ldaModelPath != null ) {
+			TrainedModel trainedModel = TrainedModel.getInstance(ldaModelPath);
+			lda = trainedModel.getModel();
+		}
+
 		TopicDetector topicd = new TopicDetector(langModelsPath, langStopwordPath);
-		List<Topic> detectedTopics = topicd.extractTopics(texts, numTopics, numTopWords, null);
-		
+
+		StringBuffer allSanitizedText = new StringBuffer();
+		StringBuffer language = new StringBuffer();
+		InstanceList instances = TopicDetector.textDocumentList2instanceList(texts, langModelsPath, langStopwordPath, allSanitizedText, language);
+
+		if (numTopics == HomerConstants.AUTODETECT_NUMTOPICS) {
+			topicd.numberOfTopics = numTopics = estimateNumberOfTopics(allSanitizedText);
+		} else {
+			topicd.numberOfTopics = numTopics;
+		}
+
+		if (numTopWords == HomerConstants.AUTODETECT_NUMKEYWORDS) {
+			topicd.numTopWords = numTopWords = estimateNumTopWords(allSanitizedText);
+		} else {
+			topicd.numTopWords = numTopWords;
+		}
+
+		String text = allSanitizedText.toString();
+		int wordCount = WordCounter.countWords(text);
+		int topicLimit = wordCount < topicd.numberOfTopics ? wordCount : topicd.numberOfTopics;
+		List<Topic> detectedTopics = topicd.extract(instances, lda, topicLimit, language.toString());
+
 		Vector<SemanticKeyword> detectedSW = new Vector<SemanticKeyword>();
 		for( Topic topic : detectedTopics ) {
 			detectedSW.addAll(SemanticKeyword.convertTopicToSemanticKeyword(topic));
@@ -93,30 +118,37 @@ public class TopicDetector {
 		return result;
 	}
 
-	public static Vector<SemanticKeyword> extract(String text, String langModelsPath, String langStopwordPath, int numTopics, int numTopWords, String ldaModelPath) throws Exception
-	{		
-		AsciiTextDocument textDocument = new AsciiTextDocument(text);
-		List<TextDocument> texts = new ArrayList<TextDocument>();
-		texts.add(textDocument);
-		
-		TrainedModel trainedModel = TrainedModel.getInstance(ldaModelPath);
-		TopicDetector topicd = new TopicDetector(langModelsPath, langStopwordPath);
-		List<Topic> detectedTopics = topicd.extractTopics(texts, numTopics, numTopWords, trainedModel.getModel());
+	public static Vector<Topic> infer(List<String> texts, String langModelsPath, String langStopwordPath, int numTopWords, String ldaModelPath) throws Exception
+	{
+		StringBuffer allSanitizedText = new StringBuffer();
+		StringBuffer language = new StringBuffer();
+		InstanceList instances = TopicDetector.textDocumentList2instanceList(texts, langModelsPath, langStopwordPath, allSanitizedText, language);
+	
+		Instance inst = instances.get(0);
+	
+		Vector<Topic> topics = new Vector<Topic>();
+		TrainedModel tm = TrainedModel.getInstance(ldaModelPath);
+		ParallelTopicModel lda = tm.getModel();
+		TopicInferencer inferencer = lda.getInferencer();
+	
+		double[] alphaEstimated = inferencer.getSampledDistribution(inst, 10, 1, 5);
+	
+		Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(), lda.getNumTopics(), numTopWords, lda.getAlphabet());
 
-		Vector<SemanticKeyword> detectedSW = new Vector<SemanticKeyword>();
-		for( Topic topic : detectedTopics ) {
-			detectedSW.addAll(SemanticKeyword.convertTopicToSemanticKeyword(topic));
+		String text = allSanitizedText.toString();
+		int wordCount = WordCounter.countWords(text);
+		int topicLimit = wordCount < lda.getNumTopics() ? wordCount : lda.getNumTopics();
+		for (int topicCount = 0; topicCount < topicLimit; topicCount++) {
+			Topic topic = new Topic(alphaEstimated[topicCount], language.toString());
+			for (Object word : topWords[topicCount]) {
+				topic.addWord((TopicWord) word);
+			}
+			topics.add(topic);
 		}
-		Vector<SemanticKeyword> result = SemanticKeyword.selectTopSemanticKeywords(detectedSW, numTopWords*numTopics);
-		int docSize = WordCounter.countWords(text);
-		for( SemanticKeyword kw : result ) {
-			kw.setNumOccurrences(WordCounter.countWordInstances(text, kw.getKeyword()));
-			kw.setTf((float)((float)kw.getNumOccurrences()/(float)docSize));
-		}
-		return result;
+		return topics;
 	}
 
-	public static void train(List<TextDocument> trainingTexts, int numTopics, String langModelsPath, String langStopwordPath, String ldaModelPath) throws Exception
+	public static void train(List<String> trainingTexts, int numTopics, String langModelsPath, String langStopwordPath, String ldaModelPath) throws Exception
 	{
 		MalletLogger.getLogger(ParallelTopicModel.class.getName()).setLevel(Level.OFF);
 		TrainedModel tm;
@@ -136,92 +168,36 @@ public class TopicDetector {
 	}
 
 	/**
-	 * @param texts
+	 * Internal usage only, use the public extract methods for library purposes
+	 * 
+	 * @param instances
 	 * @param numberOfTopics
 	 * @param numTopWords
 	 * @param lda can be null, in this case it would create an empty lda model and add stuff to it
 	 * @return
 	 */
-	private List<Topic> extractTopics(List<TextDocument> texts, int numberOfTopics, int numTopWords, ParallelTopicModel lda)
+	private List<Topic> extract(InstanceList instances, ParallelTopicModel lda, int topicLimit, String language)
 	{
-		StringBuffer allSanitizedText = new StringBuffer();
-		StringBuffer language = new StringBuffer();
-		InstanceList instances = TopicDetector.textDocumentList2instanceList(texts, this.langModelsPath, this.langStopwordPath, allSanitizedText, language);
 		MalletLogger.getLogger(ParallelTopicModel.class.getName()).setLevel(Level.OFF);
 
-		if (numberOfTopics == HomerConstants.AUTODETECT_NUMTOPICS) {
-			this.numberOfTopics = numberOfTopics = estimateNumberOfTopics(allSanitizedText);
-		} else {
-			this.numberOfTopics = numberOfTopics;
-		}
-
-		if (numTopWords == HomerConstants.AUTODETECT_NUMKEYWORDS) {
-			this.numTopWords = numTopWords = estimateNumTopWords(allSanitizedText);
-		} else {
-			this.numTopWords = numTopWords;
-		}
-
 		List<Topic> topics = new ArrayList<Topic>();
 
+		if( lda == null ) {
+			lda = new ParallelTopicModel(this.numberOfTopics);
+		}
+		lda.setNumIterations(TopicDetector.numIterations);
+		lda.setOptimizeInterval(TopicDetector.numInterval);
+		lda.addInstances(instances);
 		try {
-//			for(int i=0; i < TopicDetector.numRepetitions; i++) {
-				if( lda == null ) {
-					lda = new ParallelTopicModel(this.numberOfTopics);
-				}
-				lda.setNumIterations(TopicDetector.numIterations);
-				lda.setOptimizeInterval(TopicDetector.numInterval);
-				lda.addInstances(instances);
-				try {
-					lda.estimate();
-				} catch (IllegalStateException e) {
-					e.printStackTrace();
-				}
-
-				// System.out.println(model.displayTopWords(5, true));
-				Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(),this.numberOfTopics, this.numTopWords, lda.getAlphabet());
-				int limit = WordCounter.countWords(allSanitizedText.toString()) < this.numberOfTopics ? WordCounter.countWords(allSanitizedText.toString()) : this.numberOfTopics;
-				// Object[][] topWords = model.getTopWords(numTopWords);
-				for (int topicCount = 0; topicCount < limit; topicCount++) {
-					Topic topic = new Topic(lda.alpha[topicCount], language.toString());
-					for (Object word : topWords[topicCount]) {
-						// topic.addWord(word.toString());
-						topic.addWord((TopicWord) word);
-					}
-					topics.add(topic);
-				}
-//			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
+			lda.estimate();
+		} catch (Exception e) {
+			// do nothing, it should be some silly & useless iteration exception
 		}
-		return topics;
-	}
 
-	private List<Topic> inferenceTopic(List<TextDocument> texts, String ldaModelPath, int numberTopWords) throws Exception
-	{
-		StringBuffer allSanitizedText = new StringBuffer();
-		StringBuffer language = new StringBuffer();
-		InstanceList instances = TopicDetector.textDocumentList2instanceList(texts, this.langModelsPath, this.langStopwordPath, allSanitizedText, language);
-
-		Instance inst = instances.get(0);
-	
-		List<Topic> topics = new ArrayList<Topic>();
-		TrainedModel tm = TrainedModel.getInstance(ldaModelPath);
-		ParallelTopicModel lda = tm.getModel();
-		TopicInferencer inferencer = lda.getInferencer();
-	
-		double[] alphaEstimated = inferencer.getSampledDistribution(inst, 10, 1, 5);
-		//System.out.println("0\t" + testProbabilities[0]);
-	
-		Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(),
-				lda.getNumTopics(), numberTopWords, lda.getAlphabet());
-		int limit = WordCounter.countWords(allSanitizedText.toString()) < lda.getNumTopics() ? WordCounter.countWords(allSanitizedText.toString()) : lda.getNumTopics();
-		// Object[][] topWords = model.getTopWords(numTopWords);
-		for (int topicCount = 0; topicCount < limit; topicCount++) {
-			Topic topic = new Topic(alphaEstimated[topicCount], language.toString());
+		Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(),this.numberOfTopics, this.numTopWords, lda.getAlphabet());
+		for (int topicCount = 0; topicCount < topicLimit; topicCount++) {
+			Topic topic = new Topic(lda.alpha[topicCount], language);
 			for (Object word : topWords[topicCount]) {
-				// topic.addWord(word.toString());
 				topic.addWord((TopicWord) word);
 			}
 			topics.add(topic);
@@ -229,7 +205,7 @@ public class TopicDetector {
 		return topics;
 	}
 
-	private static InstanceList textDocumentList2instanceList(List<TextDocument> texts, String langModelsPath, String langStopwordPath, StringBuffer allSanitizedText, StringBuffer language) {
+	private static InstanceList textDocumentList2instanceList(List<String> texts, String langModelsPath, String langStopwordPath, StringBuffer allSanitizedText, StringBuffer language) {
 		// Pipes: tokenize, lowercase, remove stopwords, map to features
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 		Pattern tokenPattern = Pattern.compile("[\\p{L}\\p{N}_]+");
@@ -246,8 +222,8 @@ public class TopicDetector {
 		List<Instance> tmpInstanceList = new ArrayList<Instance>();
 		Map<String, Integer> langFreq = new LinkedHashMap<String, Integer>();
 
-		for (TextDocument text : texts) {
-			String sanitizedText = text.getContent();
+		for (String text : texts) {
+			String sanitizedText = text;
 			sanitizedText = StringOperations.removeURLfromString(sanitizedText);
 			sanitizedText = StringOperations.removeMentions(sanitizedText);
 			sanitizedText = StringOperations.removeNonLettersFromString(sanitizedText);
@@ -257,8 +233,9 @@ public class TopicDetector {
 				String lang;
 				try {
 					lId = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
-					sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
-					lang = text.getLanguage();
+					TextDocument cleaned = lId.cleanTextDocumentStopwords(text);
+					sanitizedText = cleaned.getContent();
+					lang = cleaned.getLanguage();
 				} catch (HomerException e) {
 					lang = "unknown";
 				}
@@ -267,7 +244,7 @@ public class TopicDetector {
 			}
 
 			if (!sanitizedText.trim().equalsIgnoreCase("")) {
-				Instance inst = new Instance(sanitizedText, null, text, text.getContent());
+				Instance inst = new Instance(sanitizedText, null, (text.length() > 9 ? text.substring(0, 9) : "cut"), text);
 				tmpInstanceList.add(inst);
 				allSanitizedText.append(sanitizedText);
 			}

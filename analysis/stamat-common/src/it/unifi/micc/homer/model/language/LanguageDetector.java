@@ -14,13 +14,19 @@ import it.unifi.micc.homer.model.TextDocument;
 import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.StringOperations;
 
+/**
+ * 
+ * @author alisi
+ *
+ */
 public class LanguageDetector implements LanguageIdentifier {
 
 	private static String langModelsPath;
 	private static String langStopwordPath;
 	private static LanguageDetector instance = null;
 
-	private LanguageDetector(String modelsPath, String stopwordPath) throws LangDetectException {
+	private LanguageDetector(String modelsPath, String stopwordPath) throws LangDetectException
+	{
 		LanguageDetector.langModelsPath = modelsPath;
 		LanguageDetector.langStopwordPath = stopwordPath;
 		
@@ -28,7 +34,8 @@ public class LanguageDetector implements LanguageIdentifier {
 		LanguageDetector.instance = this;
 	}
 	
-	public static LanguageDetector getInstance(String modelsPath, String stopwordPath) throws HomerException {
+	public static LanguageDetector getInstance(String modelsPath, String stopwordPath) throws HomerException
+	{
 		if(LanguageDetector.instance == null) {
 			try {
 				LanguageDetector.instance = new LanguageDetector(modelsPath, stopwordPath);
@@ -39,7 +46,8 @@ public class LanguageDetector implements LanguageIdentifier {
 		return LanguageDetector.instance;
 	}
 
-	public String identifyLanguageOf(String text) {
+	public String identifyLanguageOf(String text)
+	{
 		try {
 			Detector detector = DetectorFactory.create();
 			detector.append(text);
@@ -49,59 +57,38 @@ public class LanguageDetector implements LanguageIdentifier {
 		}
 	}
 
-	/**
-	 * @param res
-	 * @return
-	 */
-	private Language getLanguageFromLanguageNameString(String lang) {
-		int barPosition = lang.indexOf("-");
-		if(barPosition == -1){
-			int dotPosition = lang.indexOf(".");
-			if(dotPosition == -1){
-				return Language.unknown;
-			}
-			else {
-				lang = lang.substring(0, dotPosition);					
-			}
-		} else {
-			lang = lang.substring(0, barPosition);
-		}
-		try{
-			Language language = Enum.valueOf(Language.class, lang);
-			return language;
-		} catch (IllegalArgumentException ex) {
-			return Language.unknown;
-		}
+	public TextDocument cleanTextDocumentStopwords(String text)
+	{
+		String lang = this.identifyLanguageOf(text);
+		lang = lang == "unknown" ? "en" : lang;
+		return new TextDocument(StringOperations.removeStopwords(text, lang, LanguageDetector.langStopwordPath), lang);
 	}
 
-
 	@Override
-	public TextDocument cleanTextDocumentStopwords(TextDocument text) {
-		TextDocument result;
+	public TextDocument cleanTextDocumentStopwords(TextDocument text)
+	{
 		String lang = text.getLanguage();
-		String t = text.getContent();
-		if( lang == null )
-			lang = identifyLanguageOf(t);
-		if( lang == "unknown" )
-			lang = "english";
-		else
-			text.setLanguage(lang);
-		result = new TextDocument(StringOperations.removeStopwords(t, lang, langStopwordPath));
-		result.setLanguage(text.getLanguage());
-		return result;
+		String source = text.getContent();
+		
+		lang = lang == null ? this.identifyLanguageOf(source) : lang;
+		lang = lang == "unknown" ? "en" : lang;
+
+		return new TextDocument(StringOperations.removeStopwords(source, lang, LanguageDetector.langStopwordPath), lang);
 	}
 	
 	/**
 	 * @return the langModelsPath
 	 */
-	public static String getLangModelsPath() {
+	public static String getLangModelsPath()
+	{
 		return langModelsPath;
 	}
 
 	/**
 	 * @param langModelsPath the langModelsPath to set
 	 */
-	public static void setLangModelsPath(String langModelsPath) {
+	public static void setLangModelsPath(String langModelsPath)
+	{
 		LanguageDetector.langModelsPath = langModelsPath;
 	}
 
@@ -109,14 +96,16 @@ public class LanguageDetector implements LanguageIdentifier {
 	/**
 	 * @return the langStopwordPath
 	 */
-	public static String getLangStopwordPath() {
+	public static String getLangStopwordPath()
+	{
 		return langStopwordPath;
 	}
 
 	/**
 	 * @param langStopwordPath the langStopwordPath to set
 	 */
-	public static void setLangStopwordPath(String langStopwordPath) {
+	public static void setLangStopwordPath(String langStopwordPath)
+	{
 		LanguageDetector.langStopwordPath = langStopwordPath;
 	}
 
