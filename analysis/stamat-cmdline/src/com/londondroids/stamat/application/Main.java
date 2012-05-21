@@ -40,6 +40,12 @@ public class Main {
 				.withDescription("detect language of text input, requires options (-t | -tp) -lm -ls")
 				.withLongOpt("language-detect")
 				.create("L"));
+		// entity extract
+		ogMain.addOption( OptionBuilder
+				.hasArg(false)
+				.withDescription("entity extraction, requires options (-t | -tp) -ep")
+				.withLongOpt("entity-extract")
+				.create("E"));
 		// topic model train
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
@@ -108,6 +114,14 @@ public class Main {
 				.withLongOpt("model-path")
 				.create("m"));
 
+		// entity classifier path
+		options.addOption( OptionBuilder
+				.hasArg()
+				.withArgName("entityClassPath")
+				.withDescription("entity classifier path")
+				.withLongOpt("entity-class-path")
+				.create("ep"));
+
 		// number of outputs
 		options.addOption( OptionBuilder
 				.hasArg()
@@ -173,7 +187,7 @@ public class Main {
 		String modelPath = line.getOptionValue("m");
 		String langModels = line.getOptionValue("lm");
 		String langStopwords = line.getOptionValue("ls");
-
+		String entityClassifierPath = line.getOptionValue("ep");
 		String imagePath = line.getOptionValue("i");
 		String indexPath = line.getOptionValue("I");
 		String imageFolderPath = line.getOptionValue("F");
@@ -275,6 +289,16 @@ public class Main {
 				System.out.println("With -Tt use options: (-t | -tp) -n -lm -ls -m");
 			} else {
 				JSONObject result = Analyser.trainModelJSON(texts, numOutputs, langModels, langStopwords, modelPath);
+				System.out.println(result.toString());
+			}
+			return;
+
+		// entity extract
+		} else if( line.hasOption("E")) {
+			if( texts.size() < 1 | entityClassifierPath == null ) {
+				System.out.println("With -E use options: (-t | -tp) -ep");
+			} else {
+				JSONObject result = Analyser.entityExtractStanford(texts.toString(), entityClassifierPath);
 				System.out.println(result.toString());
 			}
 			return;

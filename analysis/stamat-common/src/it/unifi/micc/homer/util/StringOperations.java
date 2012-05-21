@@ -2,6 +2,7 @@ package it.unifi.micc.homer.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -234,5 +235,21 @@ public class StringOperations {
 
 	public static String cleanHTML(String content) {
 		return Jsoup.parse(content).text();	//extract text from HTML document		
+	}
+
+	public static String tokenizeAndCorrect(String data) {
+		StringBuffer exactString = new StringBuffer("");
+		StringTokenizer token = new StringTokenizer(data);
+		while (token.hasMoreTokens()) {
+			exactString.append(StringOperations.firstLetterCaps(token.nextToken()));
+			exactString.append(" ");
+		}
+		return exactString.toString();
+	}
+
+	public static String firstLetterCaps(String data) {
+		String firstLetter = data.substring(0, 1).toUpperCase();
+		String restLetters = data.substring(1).toLowerCase();
+		return firstLetter + restLetters;
 	}
 }

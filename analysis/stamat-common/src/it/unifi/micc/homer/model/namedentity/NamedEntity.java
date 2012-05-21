@@ -18,7 +18,19 @@ public class NamedEntity implements Comparable<Object> {
 	/** Contains the start position of entity's value */
 	private int end;
 
-	public int compareTo(Object o) { // TODO check: is this really needed ?
+	public NamedEntity() {	
+	}
+
+	public NamedEntity(KeywordType type, String value) {
+		this.type = type;
+		this.value = value;
+		this.start = 0;
+		this.end = 0;
+	}
+
+	public int compareTo(Object o) 
+	{ 
+		// TODO check: is this really needed ?
 		NamedEntity aux = (NamedEntity) o;
 		if (this.getStart() < aux.getStart())
 			return -1;

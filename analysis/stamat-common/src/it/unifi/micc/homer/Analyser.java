@@ -5,6 +5,8 @@ import it.unifi.micc.homer.model.KeywordType;
 import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.namedentity.AnnieNEDDetector;
 import it.unifi.micc.homer.model.namedentity.NamedEntity;
+import it.unifi.micc.homer.model.namedentity.NamedEntityDetector;
+import it.unifi.micc.homer.model.namedentity.StanfordNERecognizer;
 import it.unifi.micc.homer.model.topic.Topic;
 import it.unifi.micc.homer.model.topic.TopicDetector;
 import it.unifi.micc.homer.model.topic.TopicWord;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -24,22 +27,34 @@ import org.json.JSONObject;
  */
 public class Analyser {
 
-	public static Vector<SemanticKeyword> entityExract(String text, ArrayList<KeywordType> keywordTypes) {
-		AnnieNEDDetector ned = AnnieNEDDetector.getInstance();
-		ArrayList<NamedEntity> result = ned.extractEntity(text, keywordTypes);	//returns entities without repetitions
-		
-		Vector<SemanticKeyword> v = new Vector<SemanticKeyword>(result.size());
-		int docSize = WordCounter.countWords(text);
-		for( NamedEntity an : result ) {
-			SemanticKeyword as = new SemanticKeyword(an.getValue(), (float) 1.0, an.getType(), 0.0);
-			as.setNumOccurrences(WordCounter.countWordInstances(text, as.getKeyword().trim()));
-			as.setTf((float)((float)as.getNumOccurrences()/(float)docSize));
-			if(as.getTf()==0)	// the regex of countWordInstances compute the presence of only separated words:
-				as.setTf(1);	// if entity has some symbols next to it then it won't be counted	 
-			v.add(as);
+	public static JSONObject entityExtractStanford(String text, String classifierPath) {
+		JSONObject result = new JSONObject();
+		NamedEntityDetector ned = StanfordNERecognizer.getInstance(classifierPath);
+		ArrayList<NamedEntity> entityList = ned.extractEntity(text, null);
+
+		Vector<SemanticKeyword> semanticKeywordVector = namedEntityList2semanticKeywordList(text, entityList);
+		JSONArray entities = Analyser.semanticKeywordList2JSON(semanticKeywordVector);
+		try {
+			result.put("success", entities);
+		} catch (JSONException e) {
+			System.err.println(e.getMessage());
 		}
+		return result;
+	}
+
+	public static JSONObject entityExractAnnie(String text, ArrayList<KeywordType> keywordTypes, String gateHome) {
+		JSONObject result = new JSONObject();
+		NamedEntityDetector ned = AnnieNEDDetector.getInstance(gateHome);
+		ArrayList<NamedEntity> entityList = ned.extractEntity(text, keywordTypes);	//returns entities without repetitions
 		
-		return v;
+		Vector<SemanticKeyword> semanticKeywordVector = namedEntityList2semanticKeywordList(text, entityList);
+		JSONArray entities = Analyser.semanticKeywordList2JSON(semanticKeywordVector);
+		try {
+			result.put("success", entities);
+		} catch (JSONException e) {
+			System.err.println(e.getMessage());
+		}
+		return result;
 	}
 
 	public static JSONObject topicExtractJSON(List<String> texts, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath)
@@ -153,5 +168,20 @@ public class Analyser {
 			}
 		}
 		return keywordsJSON;
+	}
+
+	private static Vector<SemanticKeyword> namedEntityList2semanticKeywordList(String text, ArrayList<NamedEntity> result) 
+	{
+		Vector<SemanticKeyword> v = new Vector<SemanticKeyword>(result.size());
+		int docSize = WordCounter.countWords(text);
+		for( NamedEntity an : result ) {
+			SemanticKeyword as = new SemanticKeyword(an.getValue(), (float) 1.0, an.getType(), 0.0);
+			as.setNumOccurrences(WordCounter.countWordInstances(text, as.getKeyword().trim()));
+			as.setTf((float)((float)as.getNumOccurrences()/(float)docSize));
+			if(as.getTf()==0)	// the regex of countWordInstances compute the presence of only separated words:
+				as.setTf(1);	// if entity has some symbols next to it then it won't be counted	 
+			v.add(as);
+		}
+		return v;
 	}
 }

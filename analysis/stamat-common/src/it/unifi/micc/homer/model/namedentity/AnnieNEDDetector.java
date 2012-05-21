@@ -11,6 +11,7 @@ import gate.corpora.DocumentContentImpl;
 import gate.creole.ResourceInstantiationException;
 import gate.util.GateException;
 import it.unifi.micc.homer.model.KeywordType;
+import it.unifi.micc.homer.util.StringOperations;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,40 +20,43 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.StringTokenizer;
 
-public class AnnieNEDDetector {
+public class AnnieNEDDetector implements NamedEntityDetector {
 
 	/** Contains Annie for NED */
 	private static AnnieNEDDetector instance = null;
 	private static AnnieNEDAnalyser annie = null;
+
 	/** Contains Entity detected */
 	private ArrayList<NamedEntity> entities;
 	int minNEDLength = 2; // entities must be > than minNEDLength
 
-	private AnnieNEDDetector() { // singleton
-		init();
+	File gateHome = null;
+
+	private AnnieNEDDetector() throws Exception {
+		throw new Exception("AnnieNEDDetector says: naughty boy, you shouldn't call this constructor without arguments!");
 	}
 
-	public static AnnieNEDDetector getInstance() {
+	private AnnieNEDDetector(String gateHomePath) { // singleton
+		init(gateHomePath);
+	}
+
+	public static AnnieNEDDetector getInstance(String gateHomePath) {
 		if (instance == null) {
-			instance = new AnnieNEDDetector();
+			instance = new AnnieNEDDetector(gateHomePath);
 		}
 		return instance;
 	}
 
 	/** Init Gate e call the method for to initialize Annie */
-	private void init() {
+	private void init(String gateHomePath) {
 		try {
 			// Initialize the GATE library
 			Gate.init();
 			// Load ANNIE plugin
-			File gateHome = Gate.getGateHome();
-			if (gateHome == null)
-				gateHome = new File("./WEB-INF/");
+			File gateHome = new File(gateHomePath);
 			File pluginsHome = new File(gateHome, "plugins");
-			Gate.getCreoleRegister().registerDirectories(
-					new File(pluginsHome, "ANNIE").toURI().toURL());
+			Gate.getCreoleRegister().registerDirectories(new File(pluginsHome, "ANNIE").toURI().toURL());
 			// Initialize ANNIE (this may take several minutes)
 			if (annie == null) {
 				AnnieNEDDetector.annie = new AnnieNEDAnalyser();
@@ -63,7 +67,10 @@ public class AnnieNEDDetector {
 		}
 	}
 
-	/** Find the Entity specified in type from the text */
+	/* (non-Javadoc)
+	 * @see it.unifi.micc.homer.model.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
+	 */
+	@Override
 	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) {
 
 		entities = new ArrayList<NamedEntity>();
@@ -116,7 +123,7 @@ public class AnnieNEDDetector {
 					boolean occurrence = false;
 					boolean substitute = false;
 					entity = "";
-					entity = tokenizeAndCorrect(doc
+					entity = StringOperations.tokenizeAndCorrect(doc
 							.getContent()
 							.getContent(new Long(auxAnnotation.getStartNode().getOffset().intValue()),
 									new Long(auxAnnotation.getEndNode().getOffset().intValue())).toString());
@@ -157,24 +164,12 @@ public class AnnieNEDDetector {
 		return this.getEntities();
 	}
 
+	/* (non-Javadoc)
+	 * @see it.unifi.micc.homer.model.namedentity.NamedEntityDetector#getEntities()
+	 */
+	@Override
 	public ArrayList<NamedEntity> getEntities() {
 		return entities;
-	}
-
-	public String tokenizeAndCorrect(String data) {
-		StringBuffer exactString = new StringBuffer("");
-		StringTokenizer token = new StringTokenizer(data);
-		while (token.hasMoreTokens()) {
-			exactString.append(firstLetterCaps(token.nextToken()));
-			exactString.append(" ");
-		}
-		return exactString.toString();
-	}
-
-	public String firstLetterCaps(String data) {
-		String firstLetter = data.substring(0, 1).toUpperCase();
-		String restLetters = data.substring(1).toLowerCase();
-		return firstLetter + restLetters;
 	}
 
 	/**
