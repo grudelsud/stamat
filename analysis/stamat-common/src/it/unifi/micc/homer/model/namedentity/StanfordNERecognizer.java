@@ -51,15 +51,15 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 		String out = "<xml>" + classifier.classifyWithInlineXML(text).replaceAll("(\\[|\\])", "") + "</xml>";
 		Document doc = Jsoup.parse(out, "", Parser.xmlParser());
 		try {
-			Elements people = doc.getElementsByTag("PERSON");
+			Elements people = doc.getElementsByTag("person");
 			for(Element element : people) {
 				entities.add(new NamedEntity(KeywordType.PERSON, element.html()));
 			}
-			Elements organizations = doc.getElementsByTag("ORGANIZATION");
+			Elements organizations = doc.getElementsByTag("organization");
 			for(Element element : organizations) {
 				entities.add(new NamedEntity(KeywordType.ORGANIZATION, element.html()));
 			}
-			Elements locations = doc.getElementsByTag("LOCATION");
+			Elements locations = doc.getElementsByTag("location");
 			for(Element element : locations) {
 				entities.add(new NamedEntity(KeywordType.LOCATION, element.html()));
 			}
@@ -67,7 +67,7 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return entities;
 	}
 
 	/* (non-Javadoc)
