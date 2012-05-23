@@ -40,6 +40,22 @@ class Tools extends CI_Controller
 		$this->db->truncate('scrapers');
 
 		/**
+		 diffbot
+		 */
+		$auth_params = array();
+		$post_params = array();
+		$data = array(
+			'name' => 'diffbot',
+			'rest_call' => 'http://www.diffbot.com/api/article?token='.DIFFBOT_API_KEY.'&url={SCRAPE_URL}&tags&summary&stats',
+			'request_type' => 'get',
+			'auth_type' => 'api_key',
+			'auth_params' => json_encode( $auth_params ),
+			'post_params' => json_encode( $post_params )
+		);
+		$this->db->insert('scrapers', $data);
+		$output = '<h1>diffbot</h1>'.var_export( $data, TRUE );
+
+		/**
 		 readitlater
 		 */
 		$auth_params = array();
@@ -53,7 +69,7 @@ class Tools extends CI_Controller
 			'post_params' => json_encode( $post_params )
 		);
 		$this->db->insert('scrapers', $data);
-		$output = '<h1>read it later</h1>'.var_export( $data, TRUE );
+		$output .= '<h1>read it later</h1>'.var_export( $data, TRUE );
 		
 		/**
 		 teamlife

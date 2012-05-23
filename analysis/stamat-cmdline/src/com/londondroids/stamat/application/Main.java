@@ -298,7 +298,7 @@ public class Main {
 			if( texts.size() < 1 | entityClassifierPath == null ) {
 				System.out.println("With -E use options: (-t | -tp) -ep");
 			} else {
-				JSONObject result = Analyser.entityExtractStanford(texts.toString(), entityClassifierPath);
+				JSONObject result = Analyser.entityExtractStanfordJSON(texts.toString(), entityClassifierPath);
 				System.out.println(result.toString());
 			}
 			return;

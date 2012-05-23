@@ -66,6 +66,7 @@ class Feed_model extends CI_Model
 		if( $user_id ) {
 			$this->db->where('user_id', $user_id );			
 		}
+		$this->db->where('show', 1 );
 		$query = $this->db->get('feeds');
 		if( $add_tags ) {
 			$result = array();

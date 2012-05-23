@@ -156,6 +156,9 @@
 			line-height: 10em;
 			background: transparent url(../img/sprite.png) no-repeat;
 		}
+		#admin.topics #vocabulary_detail button {
+			vertical-align: middle;
+		}
 		#admin #feed_content .item .entities {
 			margin: 15px 0;
 			padding: 10px 0 0 0;

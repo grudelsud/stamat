@@ -75,6 +75,15 @@ class Annotation_model extends CI_Model
 		return $this->annotate_subject_engine_objects( $vocabulary, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_KEYWORD, $keywords);
 	}
 
+	function annotate_tags($feeditem_id, $tags)
+	{
+		$object_type_id = $this->vocabulary_model->get_tag_id( STRUCT_OBJ_TAG );
+		$this->db->where('subject_entity_id', $feeditem_id);
+		$this->db->where('object_tag_id', $object_type_id);
+		$this->db->delete('tagtriples');
+		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_TAGS, STRUCT_OBJ_FEEDITEM, $feeditem_id, STRUCT_ENG_STAMAT, STRUCT_OBJ_TAG, $tags);
+	}
+
 	function annotate_micc_lda($feeditem_id, $topics, $entities, $prev_annotations)
 	{
 		$tagtriples_t = $this->annotate_feeditem_engine_topics( $feeditem_id, STRUCT_ENG_MICCLDA, $topics );
@@ -90,7 +99,7 @@ class Annotation_model extends CI_Model
 
 	function annotate_teamlife_sanr($feeditem_id, $lang, $keywords, $prev_annotations)
 	{
-		$tagtriples = $this->annotate_feeditem_engine_keywords( $feeditem_id, STRUCT_ENG_TEAMLIFE, $keywords, VOCABULARY_TEAMLIFE_SANR );
+		$tagtriples = $this->annotate_feeditem_engine_keywords( $feeditem_id, STRUCT_ENG_TEAMLIFE, $keywords, VOCABULARY_TEAMLIFE );
 		$language_id = $this->vocabulary_model->get_language_id( $lang, TRUE );
 
 		$this->db->where('id', $feeditem_id);

@@ -22,7 +22,7 @@ $(function() {
 	});
 	
 	$('#fetch_feeds button.fetch').click(function() {
-		var message = 'are you sure to fetch all the feeds manually? this operation can take a while';
+		var message = 'are you sure you want to fetch all the feeds manually? this operation can take several hundreds of minutes, even days, or years...';
 		$('#dialog').empty().append( message ).dialog('option', {
 			'title': 'confirm',
 			'buttons': {
@@ -65,7 +65,7 @@ $(function() {
 	// on button fetch feed permalinks
 	$('#feed_controls button.fetch_content').click(function() {
 		var feed_id = $(this).attr('id').replace('fetch_content_', '');
-		var message = 'are you sure you want fetch and store all the permalinks associated to this feed?';
+		var message = 'are you sure you want to fetch and store all the permalinks associated to this feed? this operation can take several hundreds of minutes, even days, or years...';
 		$('#dialog').empty().append( message ).dialog('option', {
 			'title': 'confirm',
 			'buttons': {

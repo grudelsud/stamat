@@ -64,7 +64,8 @@ class Api extends CI_Controller
 			$this->db->where('feed_id', $feed_id);
 			$query = $this->db->get('feeditems');
 			foreach($query->result() as $row) {
-				$result[] = $this->scraper_model->scrape_readitlater($row->id);
+				// $result[] = $this->scraper_model->scrape_readitlater($row->id);
+				$result[] = $this->scraper_model->scrape_diffbot($row->id);
 			}
 			$this->_return_json_success( $result );
 		} else {
@@ -72,6 +73,13 @@ class Api extends CI_Controller
 		}		
 	}
 	
+	function stupid_test()
+	{
+		$response = '{"tags":["Illinois","Copyright","Hagiography"],"icon":"http:\/\/www.repubblica.it\/images\/homepage\/apple-touch-icon.png","text":"Il corpo di un trentenne in vacanza in Spagna è stato recuperato in acqua, senza vestiti e con segni di lividi e percosse. Nei giorni scorsi il giovane aveva raccontato al padre, ex vicesindaco del capoluogo abruzzese, di essere stato rapinato\nUn\'immagine delle Canarie (ansa)L\'AQUILA - E\' stato trovato in acqua. Senza vestiti, con lividi e altri segni di percosse. Un giovane di 30 anni, Roberto Bonura, originario dell\'Aquila, è stato trovato senza vita nelle isole Canarie, in Spagna. Figlio dell\'avvocato Angelo - ex vicesindaco del capoluogo abruzzese - il ragazzo era in viaggio per festeggiare il compleanno ed è morto in circostanze ancora da chiarire completamente.\nIl corpo è stato rintracciato dopo le ricerche dovute a una denuncia al consolato italiano e alle forze dell\'ordine. Tra le ipotesi c\'è quella dell\'omicidio. Nei giorni scorsi Bonura aveva avvertito il padre di essere stato rapinato ed era stato invitato a tornare a casa.\nLa famiglia era già stata duramente colpita nel 2009: la madre del ragazzo, Nadia Ciuffini, era morta nel terremoto.\n(20 maggio 2012) © Riproduzione riservata","title":"Festeggiava compleanno alle Canarie giovane aquilano trovato morto","stats":{"fetchTime":5880,"confidence":"0.980"},"media":[{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/164630670-1629140f-a47a-43a7-a421-952a3c5a2caf-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/144523023-3c30acf3-187d-40b3-8306-be2f8697931f-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/131854728-ee2753b2-4d94-417d-931a-87ab71f1b744-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/173746166-015e1c84-fa65-42ae-9a22-674b8e7d982a-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/025644714-5f3dde5b-5882-4de3-9ab9-d2debacc8aaf-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/005746344-3901a58d-b14e-4fc6-8143-64fa68d7921e-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/004140594-5f6cac5f-a023-47b1-9155-ff8b279892f4-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/19\/175230741-fc3c3629-47d7-40db-a4bd-ed4a1fcab21f-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/19\/151410251-968fd3d5-f04a-42d1-9540-eeba21510258-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/19\/143445091-838b11e0-20cc-4d54-b0a7-441e23e2864a-th.jpg","type":"image"},{"link":"http:\/\/www.repubblica.it\/images\/2012\/05\/20\/204041096-1c3c443d-5181-4874-8a01-136216b5a30b.jpg","primary":"true","type":"image"}],"resolved_url":"http:\/\/www.repubblica.it\/cronaca\/2012\/05\/20\/news\/festeggiava_compleanno_alle_canarie_giovane_aquilano_trovato_morto-35568155\/?rss","url":"http:\/\/rss.feedsportal.com\/c\/32275\/f\/438637\/s\/1f879b35\/l\/0L0Srepubblica0Bit0Ccronaca0C20A120C0A50C20A0Cnews0Cfesteggiava0Icompleanno0Ialle0Icanarie0Igiovane0Iaquilano0Itrovato0Imorto0E355681550C0Drss\/story01.htm","xpath":"\/HTML[1]\/BODY[1]\/DIV[1]\/DIV[2]\/DIV[2]\/DIV[1]"}';
+		$response_arr = json_decode($response, TRUE);
+		print_r($response_arr);
+	}
+
 	function fetch_store_permalink()
 	{
 		$this->_user_check('API - fetch_store_permalink');
@@ -79,7 +87,8 @@ class Api extends CI_Controller
 		if( $feeditem_id = $this->input->post('feeditem_id') ) {
 			$result = array();
 			$this->load->model('scraper_model');
-			$result[] = $this->scraper_model->scrape_readitlater($feeditem_id);
+			// $result[] = $this->scraper_model->scrape_readitlater($feeditem_id);
+			$result[] = $this->scraper_model->scrape_diffbot($feeditem_id);
 			$this->_return_json_success( $result );
 		} else {
 			$this->_return_json_error('empty feeditem_id');

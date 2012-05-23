@@ -40,27 +40,40 @@ define('BASE_URL', (empty($_SERVER['HTTPS']) ? 'http' : 'https').'://'.$_SERVER[
 define('ASSETS_URL', BASE_URL.'application/public/');
 
 define('READITLATER_API_KEY', '972TpV1eg2b72H40VQdaN70u71paq15f');
+define('DIFFBOT_API_KEY', 'dcfac4d3dcd82a9d73db3fed0b522a8c');
 
 define('GROUP_ADMIN', 'admin');
 define('HOURLYLIMIT_MEMBERS', 1000);
 
 define('VOCABULARY_SYS_TAGS', 'system');
-define('VOCABULARY_TEAMLIFE_SANR', 'teamlife_sanr');
-define('VOCABULARY_EXTRACTED_TOPICS', 'topics');
-define('VOCABULARY_EXTRACTED_ENTITIES', 'entities');
 
-define('STRUCT_OBJ_FEEDITEM', 'feed-item');
+define('VOCABULARY_EXTRACTED_TAGS', 'tags');
+define('VOCABULARY_EXTRACTED_TOPICS', 'topics');
+define('VOCABULARY_EXTRACTED_PEOPLE', 'people');
+define('VOCABULARY_EXTRACTED_ORGANIZATIONS', 'organizations');
+define('VOCABULARY_EXTRACTED_LOCATIONS', 'locations');
+define('VOCABULARY_EXTRACTED_ENTITIES', 'entities');
+define('VOCABULARY_TEAMLIFE', 'teamlife');
+
 define('STRUCT_ACT_ANNOTATE', 'annotate');
 
 define('STRUCT_ENG_MICCLDA', 'micc-lda');
 define('STRUCT_ENG_TEAMLIFE', 'teamlife-sanr');
+define('STRUCT_ENG_DIFFBOT', 'diffbot');
+define('STRUCT_ENG_STAMAT', 'stamat');
 
 define('ANNOTATED_MICC', 1);
 define('ANNOTATED_SANR', 2);
+define('ANNOTATED_TAGS', 4);
 
+define('STRUCT_OBJ_FEEDITEM', 'feed-item');
 define('STRUCT_OBJ_KEYWORD', 'keyword');
 define('STRUCT_OBJ_TOPIC', 'topic');
 define('STRUCT_OBJ_ENTITY', 'entity');
+define('STRUCT_OBJ_LOCATION', 'location');
+define('STRUCT_OBJ_ORGANIZATION', 'organization');
+define('STRUCT_OBJ_PERSON', 'person');
+define('STRUCT_OBJ_TAG', 'tag');
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
