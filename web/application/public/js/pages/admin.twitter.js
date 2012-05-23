@@ -1,5 +1,7 @@
 $(function() {    
-    
+    // server replies with data.success objects containing
+    // data.success.text - text of selected tweets
+    // data.success.images_urls - array of urls for selected tweets
     $('#form_search_tweets').submit(function(e) { 
 		e.preventDefault();      
 		var data = $(this).serialize();
@@ -11,7 +13,7 @@ $(function() {
                                    $(this).dialog('close');
                                    store_tweets(data);
                                 },  
-                                'cancel': function() { $(this).dialog('close'); }
+                                'cancel': function() {$(this).dialog('close');}
                             }
                 }).dialog('open');
     });
@@ -19,35 +21,30 @@ $(function() {
     $('#form_show_tweets').submit(function(e) { 
 		e.preventDefault();      
 		var data = $(this).serialize();
-		api( 'get_tweets',load_tweets , data ); 
+		api('get_tweets',load_tweets , data); 
     });
     
 });    
 
 // load tweet content in tweets table
-function load_tweets(data) 
-{       tweets_table = $('#tweets_table').dataTable({
-		'bDestroy': true,   // ad ogni click, ricreo una nuova tabella...
+function load_tweets(data){ 
+      tweets_table = $('#tweets_table').dataTable({
+		'bDestroy': true,   // new table for each search
                 'bProcessing' : true,
 		'bJQueryUI' : true, 
                 'iDisplayLength': 50,
                 'sPaginationType': 'full_numbers', 
                 'aaData' : data.success, 
 		'aoColumns' : [
-		{ 'mDataProp': 'text',
-                    'sWidth': '50%',
-                    'sTitle': 'Text of tweet', 
-                    'sScrollX': '100%'
-                },
-		{ 'mDataProp': 'url', 
-                    'sWidth': '50%', 
-                    'sTitle': 'Image from tweet',
-                    'sDefaultContent': '  ---NO IMAGES FOUNDED---   '
-                },			
+                    { 'mDataProp': 'text',
+                      'sDefaultContent': '  ---   '
+                    },
+                    { 'mDataProp': '_id',  
+                      'sDefaultContent': '  ---   '
+                    },			
 		],
 	});
 }
 function store_tweets(data){
-    
-     api( 'search_tweets', function(){} , data );
+     api('search_tweets', load_tweets, data);
 }

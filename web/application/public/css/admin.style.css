@@ -197,3 +197,23 @@
 			clear: both;
 			border-top: 1px solid lightgrey;
 		}
+      /*  CSS Alex */
+                #admin #tweets_pagination a {
+			display: none;
+			padding: 1px;
+			line-height: 24px;
+			margin: 0 2px 0 0;
+			border: 1px solid #333;
+			background: #333;
+			color: #eee;
+			border-radius: 5px;
+			-moz-border-radius: 5px;
+		}
+		
+                table#tweets_table td {
+			padding: 3px;
+			border: 1px solid lightgrey;
+		}
+                table#tweets_table{
+                       border-collapse:collapse;
+                }

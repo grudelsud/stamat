@@ -392,7 +392,7 @@ class Api extends CI_Controller
 		
 		if( $key_word ) {
 			$this->load->model('scraper_model');
-			$result = $this->scraper_model->scrape_twitter( $key_word ); // result è il query_id
+			$result = $this->scraper_model->scrape_twitter( $key_word ); // result è il query_id, ma deve essere un vettore con tutti i tweet che hanno la parola chiave nel testo
 			$this->_return_json_success($result);
 		} else {
 			$this->_return_json_error('empty field');
@@ -408,10 +408,10 @@ class Api extends CI_Controller
                         $result = $this->twitter_model->get_tweets($key_word);
                         $this->_return_json_success($result);
 		} else {
-			$this->_return_json_error('empty field');
+			$this->_return_json_error('insert Key Word');
 		}    			
          }
-          
+         
 	// returns success message in json
 	private function _return_json_success($success) {
 		$this->_return_json('success', $success);

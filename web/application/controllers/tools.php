@@ -76,6 +76,27 @@ class Tools extends CI_Controller
 		$this->db->insert('scrapers', $data);
 		$output .= '<h1>teamlife semantic annotator</h1>'.var_export( $data, TRUE );
 		
+                  /**
+		 twitter
+		 */
+                $auth_params = array(
+			
+                    
+                        );
+		$post_params = array(
+			
+		);
+		$data = array(
+			'name' => 'twitter_scraper',
+			'rest_call' => 'http://search.twitter.com/search.json?q={KEY_WORD}&rpp=30&include_entities=true&result_type=mixed',
+			'request_type' => 'get',
+			'auth_type' => 'http_login',
+			'auth_params' => json_encode( $auth_params ),
+			'post_params' => json_encode( $post_params )
+		);
+		$this->db->insert('scrapers', $data);
+		$output .= '<h1>twitter query</h1>'.var_export( $data, TRUE );
+                
 		/**
 		 micc-lda
 		 */
@@ -107,7 +128,7 @@ class Tools extends CI_Controller
 		$output .= '<h1>micc lda</h1>'.var_export( $data, TRUE );
 
 		$this->data['output'] = $output;
-		$this->index();
+		$this->index();                
 	}
 
 	function create_slugs()

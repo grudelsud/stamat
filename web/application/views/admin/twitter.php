@@ -23,8 +23,8 @@
 			<table width="100%" id="tweets_table">
 				<thead>
 					<tr>
-						<th>text</th>
-						<th>image</th>
+						<th width="5%">text</th>
+						<th width="25%">images</th>
 					</tr>
 				</thead>
 				<tbody></tbody>

@@ -189,47 +189,101 @@ class Scraper_model extends CI_Model
 	{
 		$scraper = $this->_get_scraper('twitter_scraper');
 		$rest_call = preg_replace('/{KEY_WORD}/',  urlencode($key_word) , $scraper->rest_call);          
-                // valuto se i tweet che scarico vanno allegati ad una precedente query o hanno un nuovo query_id
-                $this->db->where('query', $rest_call );
-		$query_content = $this->db->get('twitter_queries');  
-		
-                if( $query_content->num_rows() == 1 ) {  
-                    $row = $query_content->row();
-                    $query_id = (int)$row->id;
-                }               
-                else { 
-                    $data = array(
-                      'query' => $rest_call,
-                      'key_word' => $key_word );
-                
-                    $this->db->insert('twitter_queries', $data);
-                    $query_id = $this->db->insert_id();
-                }                        
+                                        
                 $post_params = json_decode( $scraper->post_params, TRUE ); 
 		$auth_params = json_decode( $scraper->auth_params, TRUE );           
 		$response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params, $debug );
-	
                 $response_obj = json_decode( $response );
-		$tweet_data = array();
                   
-		foreach ($response_obj->results as $tweet_obj) {                                                  
-                       foreach ($tweet_obj->entities->media as $media_obj) {  //finding the image in the "media" array for each tweet
-                           if ( $media_obj->type == 'photo' ) {
-                                $tweet_data[url]= $media_obj->media_url;
-                           }
+		foreach ($response_obj->results as $tweet_obj) { 
+                       // store all "urls" from tweet: "url" and "expanded url"
+                       $tweet_exp_urls = array(); 
+                       $tweet_urls = array();
+                       foreach($tweet_obj->entities->urls as $urls_obj){
+                           $tweet_exp_urls[] = $urls_obj->expanded_url;
+                           $tweet_urls[] = $urls_obj->url; // used after, for removing urls before tokenize
                        }
-                       $tweet_data[text] = $tweet_obj->text;
-                      
+                       $images_urls = array(); // a tweet can contain more than one image
+                       //find the image from the "media" array 
+                       $this->load->model('scraper_tools_model'); 
+                       foreach($tweet_obj->entities->media as $media_obj) {  
+                            if($media_obj->type == 'photo') { $images_urls[] = $media_obj->media_url;}
+                       }
+                       // check for remote images from tweet "expanded urls"
+                       foreach($tweet_exp_urls as $url){
+                          $is_an_image  = $this->scraper_tools_model->image_detector($url);
+                          if($is_an_image == TRUE){ $images_urls[] = $url;}  
+                       }
+                       // store all "user mentions" from tweet
+                       $tweet_user_mentions = array();                                        
+                       foreach($tweet_obj->entities->user_mentions as $user_mentions_obj){
+                           $user_m = array (
+                            'id' => $user_mentions_obj->id,
+                           'id_str'=> $user_mentions_obj->id_str,
+                           'screen_name'=> $user_mentions_obj->screen_name,
+                           'name'=> $user_mentions_obj->name,
+                           'indices' => $user_mentions_obj->indices
+                           );
+                           $tweet_user_mentions[] = $user_m;  
+                       }                       
                        $data = array(
-                           'query_id' => $query_id,
-                           'text' => $tweet_data[text],
-                           'url' => $tweet_data[url],
-                           'error_code' => $this->curl->error_code,
-                           'error_string' => $this->curl->error_string,
-                           'curl_info' => json_encode($this->curl->info)
-                       );         
-                       $this->db->insert('tweets', $data);  
+                           // using the tweet ID (string version) instead the mongoId object
+                           '_id' => $tweet_obj->id_str,  
+                           'ids' => array(
+                               'tweet_id' => $tweet_obj->id,
+                               'tweet_id_str' => $tweet_obj->id_str,
+                               'from_user_id' => $tweet_obj->from_user_id,
+                               'to_user_id' => $tweet_obj->to_user_id,
+                               ),
+                           'from_user_name' => $tweet_obj->from_user_name,
+                           'from_user' => $tweet_obj->from_user,
+                           'to_user_name' => $tweet_obj->to_user_name,
+                           'to_user' => $tweet_obj->to_user,
+                           'source' => $tweet_obj->source,
+                           'metadata' => array(
+                             'result_type' => $tweet_obj->metadata->result_type,
+                             'recent_retweets' => $tweet_obj->metadata->recent_retweets
+                           ),
+                           'iso_language_code' => $tweet_obj->iso_language_code,
+                           'profile_image_url' => $tweet_obj->profile_image_url,
+                           'expanded_urls' => $tweet_exp_urls,
+                           'urls' => $tweet_urls,
+                           'user_mentions' => $tweet_user_mentions,
+                           'text' => $tweet_obj->text,
+                           'images_urls' => $images_urls,
+                           'created_at' => $tweet_obj->created_at,
+                       );            
+                       // check if the tweet already exists in db (no duplicates)
+                       $this->mongo_db->where(array ('_id' => $tweet_obj->id_str)); 
+                       $query = $this->mongo_db->get('tweets');
+                       if($query == NULL){
+                             $this->mongo_db->insert('tweets', $data);
+                             // tokenized text for full text search
+                             $string = $this->scraper_tools_model->delete_urls_from_text($data[text],$tweet_urls);
+                             $text_array = $this->scraper_tools_model->tokenizer($string);
+                             // download images on file system
+                             $images_names = array();  // the name of every images file, from the current tweet
+                             if($data[images_urls] != NULL){
+                                 foreach ($data[images_urls] as $im_url){                                                                                                                 
+                                        $directory_path = $this->scraper_tools_model->get_image_file_system_path();
+                                        $image_name = $this->scraper_tools_model->get_image_md5($im_url,'twitter',$data[_id]);// hash of the image
+                                        $file_system_path = $directory_path.$image_name; // completely path of the image
+                                        $this->scraper_tools_model->download_remote_file_with_curl($im_url, $file_system_path ); 
+                                        $images_names[] = $image_name;
+                                }
+                             }
+                             // insert the extra data for the tweet
+                             $extra_data = array('_id' => $tweet_obj->id_str, 
+                                                 'text' => $text_array, //tokenized text       
+                                                 'images_names' => $images_names,  // the hash string
+                                                 'error_code' => $this->curl->error_code,
+                                                 'error_string' => $this->curl->error_string,
+                                                 'curl_info' => json_encode($this->curl->info)
+                                            );
+                             $this->mongo_db->insert('tokenize_text', $extra_data);
+                       }
+                       
                 }                  
-                return $query_id;  
+                return;
         }        
 }

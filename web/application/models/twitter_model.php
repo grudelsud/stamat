@@ -11,23 +11,20 @@ class Twitter_model extends CI_Model{
 		parent::__construct();
 	}
     
-    function get_tweets( $key_word)  // get all tweets by key word
-	{
-           //get the query id for the next step: search tweets by query id 	   
-           $this->db->where('key_word', $key_word );
-	   $query_content = $this->db->get('twitter_queries');        
-           $row = $query_content->row();
-           $query_id = (int)$row->id;
-           // if i try to display absent tweet ???
-           if ($query_id == NULL) {
-               return NULL; // vedere meglio cosa fare...
-           }
-           // get tweets for this query id
-           $this->db->where('query_id', $query_id);     
-           $tweets = $this->db->get('tweets');
-           return $tweets->result();
-	}   
-        
+    function get_tweets( $key_word ){ // full text search by key word
+             $this->mongo_db->where(array('text' => $key_word));
+             $query = $this->mongo_db->get('tokenize_text'); 
+           
+             $results = array();
+             foreach($query as $text_obj){  // fetch single tweet by _id        
+               $number = $this->mongo_db->count('tweets'); //needed to clear the whereas array O_O
+               $query_obj = $this->mongo_db->where(array('_id' => $text_obj[_id]))->get('tweets');  
+               $results[] = $query_obj[0];
+              }
+           
+              return $results;
+	} 
+    
 }
 
 

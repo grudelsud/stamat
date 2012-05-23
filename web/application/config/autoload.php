@@ -49,10 +49,10 @@ $autoload['packages'] = array();
 |
 | Prototype:
 |
-|	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
+|	$autoload['libraries'] = array('database', 'session', 'xmlrpc');                
 */
 
-$autoload['libraries'] = array('database', 'session', 'curl','ion_auth');
+$autoload['libraries'] = array('database', 'session', 'curl','ion_auth','Mongo_db');
 
 /*
 | -------------------------------------------------------------------
