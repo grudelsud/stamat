@@ -47,7 +47,7 @@ define('HOURLYLIMIT_MEMBERS', 1000);
 
 define('VOCABULARY_SYS_TAGS', 'system');
 
-define('VOCABULARY_EXTRACTED_TAGS', 'tags');
+define('VOCABULARY_EXTRACTED_TAGS', 'keywords');
 define('VOCABULARY_EXTRACTED_TOPICS', 'topics');
 define('VOCABULARY_EXTRACTED_PEOPLE', 'people');
 define('VOCABULARY_EXTRACTED_ORGANIZATIONS', 'organizations');
