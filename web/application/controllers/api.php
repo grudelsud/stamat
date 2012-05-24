@@ -45,7 +45,13 @@ class Api extends CI_Controller
 						'abstract' => substr(strip_tags($item->get_description()), 0, 499)
 					);
 					$this->db->insert('feeditems', $data);
-					$result[] = $item_md5id;
+					$feeditem_id = $this->db->insert_id();
+
+					// serious stuff, we scrape content on the go...
+					$this->load->model('scraper_model');
+					$this->scraper_model->scrape_diffbot($feeditem_id);
+
+					$result[$feed->title][$item_md5id] = $item->get_title();
 				}
 			}
 		}

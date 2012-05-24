@@ -172,7 +172,9 @@ class Scraper_model extends CI_Model
 				'primary' => isset($item['primary']) ? 1 : 0
 			);
 		}
-		$this->db->insert_batch('feeditemmedia', $media);
+		if(!empty($media)) {
+			$this->db->insert_batch('feeditemmedia', $media);			
+		}
 
 		// annotate feeditem with tags
 		$this->load->model('annotation_model');

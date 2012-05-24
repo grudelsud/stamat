@@ -1,4 +1,4 @@
-var show_vocab = ['tags', 'topics', 'people', 'organizations', 'locations', 'entities', 'teamlife'];
+var show_vocab = ['keywords', 'topics', 'people', 'organizations', 'locations', 'entities', 'teamlife'];
 var selected_tags = Array();
 
 $(function() {
@@ -16,7 +16,7 @@ $(function() {
 		$(this).toggleClass('closed');
 	});
 
-	$('#vocabulary_detail ul li span').live({
+	$('#vocabulary_detail li span').live({
 		click: function() {
 			$(this).toggleClass('selected');
 			selected_tags.length = 0;
