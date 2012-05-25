@@ -1,7 +1,7 @@
 <div class="row">
 	<div id="feed_container" class="span2 scroll-top">
 		<h3>Select Feed</h3>
-		<div id="tag_list"></div>		
+		<div id="tag_directory"></div>		
 	</div>
 	<div id="feeditem_container" class="span6">
 		<h3>Read Articles</h3>

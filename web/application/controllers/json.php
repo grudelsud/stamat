@@ -36,6 +36,12 @@ class Json extends CI_Controller
 		return $this->_return_json_success( $query->result() );
 	}
 
+	/**
+	 * accepts param tag in the uri so it can be called as below:
+	 *
+	 * base_url/json/feeds - this will return all the feeds of the user currently logged in
+	 * base_url/json/feeds/tag/fashion - this will return the list of feeds tagged fashion for the user currently logged in
+	 */
 	public function feeds()
 	{
 		$params = $this->uri->uri_to_assoc();
@@ -54,8 +60,26 @@ class Json extends CI_Controller
 			$this->db->where('t.slug', $params['tag']);
 		}
 
+		// ok, now that we have all the data we need, we should organize the output this way:
+		// [{id:X, title:Y, url:Z, tags:[{id:x, name:y, slug:z}]}, ...]
 		$query = $this->db->get();
-		return $this->_return_json_success( $query->result() );
+		$result = array();
+		foreach ($query->result() as $row) {
+			if(empty($result[$row->id])) {
+				$feed = new stdClass();
+				$feed->id = $row->id;
+				$feed->title = $row->title;
+				$feed->url = $row->url;
+				$feed->tags = array();
+				$result[$row->id] = $feed;
+			}
+			$tag = new stdClass();
+			$tag->id = $row->tag_id;
+			$tag->name = $row->tag_name;
+			$tag->slug = $row->slug;
+			$result[$row->id]->tags[] = $tag;
+		}
+		return $this->_return_json_success( array_values($result) );
 	}
 
 	public function feeditems()

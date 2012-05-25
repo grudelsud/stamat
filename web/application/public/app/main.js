@@ -39,6 +39,7 @@ var readreactv = {
 };
 
 var feedItemCollection = feedItemCollectionView = {};
+var feedCollection = feedCollectionView = {};
 
 $(function() {
 
@@ -46,22 +47,22 @@ $(function() {
 	var Router = Backbone.Router.extend({
 		routes: {
 			'!/tags' : 'tags',
-			'!/feeds/:id' : 'feeds',
+			'!/feeds/*params' : 'feeds',
 			'!/feeditems/*params' : 'feeditems',
-			'!/reactions/:id' : 'reactions',
+			'!/reactions/*params' : 'reactions',
 			'': 'index'
 		},
 		tags: function() {
 			console.log('router - tags');
 		},
-		feeds: function( id ) {
-			console.log('router - feeds');
+		feeds: function( params ) {
+			console.log('router - feeds ' + params);
 		},
 		feeditems: function( params ) {
-			console.log('router - feeditems');
+			console.log('router - feeditems ' + params);
 		},
-		reactions: function( id ) {
-			console.log('router - reactions');
+		reactions: function( params ) {
+			console.log('router - reactions ' + params);
 		},
 		index: function() {
 			console.log('router - index');
@@ -69,6 +70,12 @@ $(function() {
 	});
 
 	var feedItemModule = readreactv.module('feeditem');
+	var feedModule = readreactv.module('feed');
+
+	feedCollection = new feedModule.Collection();
+	feedCollectionView = new feedModule.Views.Collection({collection: feedCollection});
+
+	feedCollection.fetch();
 
 	feedItemCollection = new feedItemModule.Collection();
 	feedItemCollectionView = new feedItemModule.Views.Collection({collection: feedItemCollection});
