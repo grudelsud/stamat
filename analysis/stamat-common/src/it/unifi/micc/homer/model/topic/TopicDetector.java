@@ -158,13 +158,19 @@ public class TopicDetector {
 			tm = TrainedModel.createInstance(ldaModelPath, numTopics);
 		}
 		ParallelTopicModel lda = tm.getModel();
-		InstanceList instances = TopicDetector.textDocumentList2instanceList(trainingTexts, langModelsPath, langStopwordPath, new StringBuffer(), new StringBuffer());
-
+		StringBuffer allSanitizedText = new StringBuffer();
+		StringBuffer language = new StringBuffer();
+		InstanceList instances = TopicDetector.textDocumentList2instanceList(trainingTexts, langModelsPath, langStopwordPath, allSanitizedText, language);
+		
 		lda.setNumIterations(numIterations);
 		lda.setOptimizeInterval(numInterval);
 		lda.addInstances(instances);
 		lda.estimate();
 		tm.saveModelFile(lda);
+		
+		// used in debug mode to see the extracted topic
+		//Object[][] topWords = MalletTopWordsExtractor.getTopWordsWithWeights(lda.getSortedWords(),numTopics, 3, lda.getAlphabet());
+		
 	}
 
 	/**

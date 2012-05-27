@@ -49,7 +49,7 @@ public class Main {
 		// topic model train
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("train model, requires options (-t | -tp) -n -nk -lm -ls")
+				.withDescription("train model, requires options (-t | -tp) -n -nk -lm -ls -m")
 				.withLongOpt("topic-train")
 				.create("Tt"));
 		// topic infer
