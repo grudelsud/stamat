@@ -35,11 +35,12 @@ var readreactv = {
 			// Set the global JST cache and return the template
 			done(JST[path] = tmpl);
 		});
-	}
+	},
+	models: {},
+	views: {},
+	collections: {},
+	routers: {}
 };
-
-var feedItemCollection = feedItemCollectionView = {};
-var feedCollection = feedCollectionView = {};
 
 $(function() {
 
@@ -52,11 +53,22 @@ $(function() {
 			'!/reactions/*params' : 'reactions',
 			'': 'index'
 		},
+		initialize: function() {
+			var feedModule = readreactv.module('feed');
+			readreactv.collections.feedCollection = new feedModule.Collection();
+			readreactv.views.feedCollectionView = new feedModule.Views.Collection({collection: readreactv.collections.feedCollection});
+
+			var feedItemModule = readreactv.module('feeditem');
+			readreactv.collections.feedItemCollection = new feedItemModule.Collection();
+			readreactv.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: readreactv.collections.feedItemCollection});
+		},
 		tags: function() {
 			console.log('router - tags');
 		},
 		feeds: function( params ) {
-			console.log('router - feeds ' + params);
+			// console.log('router - feeds ' + params);
+			readreactv.collections.feedItemCollection.setFilter(params);
+			readreactv.collections.feedItemCollection.fetch();
 		},
 		feeditems: function( params ) {
 			console.log('router - feeditems ' + params);
@@ -65,26 +77,15 @@ $(function() {
 			console.log('router - reactions ' + params);
 		},
 		index: function() {
-			console.log('router - index');
+			// console.log('hey');
+			readreactv.collections.feedCollection.fetch();
+			readreactv.collections.feedItemCollection.setFilter();
+			readreactv.collections.feedItemCollection.fetch();
 		}
 	});
 
-	var feedItemModule = readreactv.module('feeditem');
-	var feedModule = readreactv.module('feed');
-
-	feedCollection = new feedModule.Collection();
-	feedCollectionView = new feedModule.Views.Collection({collection: feedCollection});
-
-	feedCollection.fetch();
-
-	feedItemCollection = new feedItemModule.Collection();
-	feedItemCollectionView = new feedItemModule.Views.Collection({collection: feedItemCollection});
-
-	feedItemCollection.fetch();
-
 	//create router instance
-	var router = new Router();
-
+	readreactv.routers.appRouter = new Router();
 	//start history service
 	Backbone.history.start();
 });

@@ -8,7 +8,13 @@
 
 	FeedItem.Collection = Backbone.Collection.extend({
 		model: FeedItem.Model,
-		url: base_url+'index.php/json/feeditems',
+		setFilter: function(params) {
+			this.params = params || '';
+		},
+		url: function() {
+			var params = this.params || '';
+			return base_url + 'index.php/json/feeditems/' + params;
+		},
 		parse: function(response) {
 			return response.success;
 		}
@@ -36,7 +42,7 @@
 			this.collection.bind('change', this.render);
 		},
 		render: function() {
-			this.$el = $('#feed_directory');
+			this.$el = $('#feed_directory').empty();
 			var view = this;
 			_.each(this.collection.models, function(feed_item) {
 				var feed_item_view = new FeedItem.Views.Main({model: feed_item});

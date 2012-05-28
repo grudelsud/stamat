@@ -1,5 +1,5 @@
 <div class="row">
-	<div id="feed_container" class="span2 scroll-top">
+	<div id="feed_container" class="span2">
 		<h3>Select Feed</h3>
 		<div id="tag_directory"></div>		
 	</div>

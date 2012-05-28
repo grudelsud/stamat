@@ -9,3 +9,19 @@ article.feed_item_container {
 	article div.featured {
 		height: 100px;
 	}
+
+#tag_directory {
+	padding: 15px 0;
+}
+	#tag_directory ul {
+		list-style-type: none;
+		margin-left: 0;
+	}
+	#tag_directory li {
+		margin-bottom: 3px;
+	}
+	#tag_directory li ul a {
+		display: block;
+		padding: 4px 0 4px 3px;
+		border-bottom: 1px solid #eee;
+	}

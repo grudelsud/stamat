@@ -21,19 +21,21 @@ class Json extends CI_Controller
 		$this->_return_json_success('');
 	}
 
-	public function tags()
+	/**
+	 * so we need to pull out something like the following:
+	 * {success: {
+	 *  	tags: [{id:x, name:y, slug:z, type:a}, ...], 
+	 *  	media: [], 
+	 *  	content:[]
+	 * }}
+	 */
+	public function reactions()
 	{
-		$this->db->from('tags as t');
-		$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
+		$params = $this->uri->uri_to_assoc();
+		if(!empty($params['id'])) {
 
-		if( $this->logged_in ) {
-			$this->db->where('v.user_id', $this->logged_user['id'] );
-		} else {
-			$this->db->where('v.user_id', 1);
 		}
-		$this->db->where('v.name', VOCABULARY_SYS_TAGS);
-		$query = $this->db->get();
-		return $this->_return_json_success( $query->result() );
+		return $this->_return_json_success( array() );
 	}
 
 	/**
@@ -45,7 +47,6 @@ class Json extends CI_Controller
 	public function feeds()
 	{
 		$params = $this->uri->uri_to_assoc();
-		// return $this->_return_json_success( $params );
 
 		$this->db->select('f.id, f.title, f.url, t.id as tag_id, t.name as tag_name, t.slug');
 		$this->db->from('feeds as f');
@@ -60,8 +61,10 @@ class Json extends CI_Controller
 			$this->db->where('t.slug', $params['tag']);
 		}
 
-		// ok, now that we have all the data we need, we should organize the output this way:
-		// [{id:X, title:Y, url:Z, tags:[{id:x, name:y, slug:z}]}, ...]
+		/**
+		 * ok, now that we have all the data we need, we should organize the output this way:
+		 * [{id:X, title:Y, url:Z, tags:[{id:x, name:y, slug:z}]}, ...]
+		 */
 		$query = $this->db->get();
 		$result = array();
 		foreach ($query->result() as $row) {
@@ -90,6 +93,14 @@ class Json extends CI_Controller
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
 
+		if(!empty($params['tag'])) {
+			$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
+			$this->db->join('tags as t', 't.id = ft.tag_id');
+			$this->db->where('t.slug', $params['tag']);
+		}
+		if(!empty($params['id'])) {
+			$this->db->where('f.id', $params['id']);
+		}
 		if( $this->logged_in ) {
 			$this->db->where('f.user_id', $this->logged_user['id'] );
 		}

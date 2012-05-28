@@ -1,7 +1,7 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<a class="brand" href="<?php echo site_url('/'); ?>">ReadReac.TV</a>
+			<a class="brand" href="<?php echo BASE_URL; ?>">ReadReac.TV</a>
 
 			<?php if($template != 'login') : ?>
 			<ul class="nav">
