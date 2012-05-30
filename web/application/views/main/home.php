@@ -9,6 +9,6 @@
 	</div>
 	<div id="reaction_container" class="span4 scroll-top">
 		<h3>Read Reactions</h3>
-		<div id="feed_reactions"></div>		
+		<div id="reaction_directory"></div>		
 	</div>
 </div>

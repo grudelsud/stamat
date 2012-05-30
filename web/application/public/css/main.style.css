@@ -10,6 +10,10 @@ article.feed_item_container {
 		height: 100px;
 	}
 
+#reaction_directory span.label a {
+	color: white;
+}
+
 #tag_directory {
 	padding: 15px 0;
 }

@@ -47,10 +47,8 @@ $(function() {
 	// Defining the application router, you can attach sub routers here.
 	var Router = Backbone.Router.extend({
 		routes: {
-			'!/tags' : 'tags',
 			'!/feeds/*params' : 'feeds',
-			'!/feeditems/*params' : 'feeditems',
-			'!/reactions/*params' : 'reactions',
+			'!/reactions/id/:id' : 'reactions',
 			'': 'index'
 		},
 		initialize: function() {
@@ -62,22 +60,21 @@ $(function() {
 			readreactv.collections.feedItemCollection = new feedItemModule.Collection();
 			readreactv.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: readreactv.collections.feedItemCollection});
 		},
-		tags: function() {
-			console.log('router - tags');
-		},
 		feeds: function( params ) {
 			// console.log('router - feeds ' + params);
 			readreactv.collections.feedItemCollection.setFilter(params);
 			readreactv.collections.feedItemCollection.fetch();
 		},
-		feeditems: function( params ) {
-			console.log('router - feeditems ' + params);
-		},
-		reactions: function( params ) {
-			console.log('router - reactions ' + params);
+		reactions: function( id ) {
+			// console.log('router - reactions ' + id);
+			var reactionModule = readreactv.module('reaction');
+			readreactv.models.reactionModel = new reactionModule.Model({id: id});
+
+			readreactv.models.reactionModel.fetch();
+			readreactv.views.reactionView = new reactionModule.Views.Main({model: readreactv.models.reactionModel});
 		},
 		index: function() {
-			// console.log('hey');
+			// console.log('index');
 			readreactv.collections.feedCollection.fetch();
 			readreactv.collections.feedItemCollection.setFilter();
 			readreactv.collections.feedItemCollection.fetch();

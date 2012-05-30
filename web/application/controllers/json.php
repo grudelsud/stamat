@@ -32,10 +32,48 @@ class Json extends CI_Controller
 	public function reactions()
 	{
 		$params = $this->uri->uri_to_assoc();
-		if(!empty($params['id'])) {
+		$content = new stdClass();
+		$tags = array();
+		$media = array();
 
+		if(!empty($params['id'])) {
+			$this->db->select('fi.id, fi.title, fi.permalink, fi.date, fic.abstract, fic.content');
+			$this->db->from('feeditems as fi');
+			$this->db->join('feeditemcontents as fic', 'fi.id = fic.feeditem_id', 'left');
+			$this->db->where('fi.id', $params['id']);
+			$query = $this->db->get();
+			if( $query->num_rows() > 0 ) {
+				$row = $query->row();
+				$content->id = $row->id;
+				$content->title = $row->title;
+				$content->permalink = $row->permalink;
+				$content->date = $row->date;
+				$content->abstract = $row->abstract;
+				$content->content = $row->content;
+			}
+
+			$this->db->select('t.id, t.name, t.slug');
+			$this->db->from('tags as t');
+			$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
+			$this->db->where('tt.subject_entity_id', $params['id']);
+
+			$query = $this->db->get();
+			foreach ($query->result() as $row) {
+				$tags[] = $row;
+			}
+
+			$this->db->where('feeditem_id', $params['id']);
+			$query = $this->db->get('feeditemmedia');
+			foreach ($query->result() as $row) {
+				$media[] = $row;
+			}
 		}
-		return $this->_return_json_success( array() );
+
+		$result = new stdClass();
+		$result->content = $content;
+		$result->tags = $tags;
+		$result->media = $media;
+		return $this->_return_json_success( $result );
 	}
 
 	/**

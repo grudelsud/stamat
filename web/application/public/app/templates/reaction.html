@@ -1,0 +1,23 @@
+<p><a href="<%= permalink %>"><%= title %></a></p>
+<h3>Tags</h3>
+<div id="content_tags">
+	<% _.each(tags.models, function(tag) { %>
+	<span class="label"><a href="#!/tag/<%= tag.get('id') %>"><%= tag.get('name') %></a></span> 
+	<% }); %>
+</div>
+<div id="content_topics"></div>
+<div id="content_entities"></div>
+<h3>Media</h3>
+<div id="content_media">
+	<% _.each(media.models, function(item) { %>
+		<a href="<%= item.get('url') %>">
+		<% if(item.get('type') == 'image') { %>
+		<i class="icon-picture"></i>
+		<% } else if(item.get('type') == 'video') { %>
+		<i class="icon-film"></i>
+		<% } %>
+		</a>
+	<% }); %>	
+</div>
+<h3>Tweets</h3>
+<div id="content_tweets"></div>

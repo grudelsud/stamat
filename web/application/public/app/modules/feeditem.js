@@ -26,7 +26,6 @@
 		template: assets_url+'app/templates/feeditem.html',
 		render: function() {
 			var view = this;
-
 			// Fetch the template, render it to the View element and call done.
 			readreactv.fetchTemplate(this.template, function(tmpl) {
 				view.$el.html(tmpl(view.model.toJSON()));
@@ -37,9 +36,8 @@
 
 	FeedItem.Views.Collection = Backbone.View.extend({
 		initialize: function() {
-			_.bindAll(this, 'render');
-			this.collection.bind('reset', this.render);
-			this.collection.bind('change', this.render);
+			this.collection.on('reset', this.render, this);
+			this.collection.on('change', this.render, this);
 		},
 		render: function() {
 			this.$el = $('#feed_directory').empty();
@@ -48,7 +46,7 @@
 				var feed_item_view = new FeedItem.Views.Main({model: feed_item});
 				view.$el.append(feed_item_view.render().el);
 			}, this);
-		}
+		},
 	});
 
 })(readreactv.module('feeditem'));
