@@ -24,6 +24,9 @@
 		tagName: 'article',
 		className: 'feed_item_container',
 		template: assets_url+'app/templates/feeditem.html',
+		events: {
+			'click h3': 'itemSelect'
+		},
 		render: function() {
 			var view = this;
 			// Fetch the template, render it to the View element and call done.
@@ -31,6 +34,10 @@
 				view.$el.html(tmpl(view.model.toJSON()));
 			});
 			return this;
+		},
+		itemSelect: function(e) {
+			var scroll = (e.pageY - 77) + 'px';
+			$('.scroll-top').animate({'padding-top': scroll}, 'fast');
 		}
 	});
 
