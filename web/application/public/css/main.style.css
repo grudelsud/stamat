@@ -13,6 +13,24 @@ article.feed_item_container {
 #reaction_directory span.label a {
 	color: white;
 }
+	#reaction_directory .tweet {
+		padding: 3px 3px 8px 0;
+		border-bottom: 1px solid #EEE;
+		position: relative;
+	}
+	#reaction_directory img {
+		position: absolute;
+		top: 24px
+	}
+	#reaction_directory .tweet_content {
+		margin-left: 54px;
+	}
+
+	#reaction_directory .tweet_meta {
+		margin-left: 54px;
+		font-size: 11px;
+		color: #666;
+	}
 
 #tag_directory {
 	padding: 15px 0;

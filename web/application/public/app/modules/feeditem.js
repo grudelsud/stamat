@@ -42,12 +42,13 @@
 	});
 
 	FeedItem.Views.Collection = Backbone.View.extend({
+		el: '#feed_directory',
 		initialize: function() {
 			this.collection.on('reset', this.render, this);
 			this.collection.on('change', this.render, this);
 		},
 		render: function() {
-			this.$el = $('#feed_directory').empty();
+			this.$el.empty();
 			var view = this;
 			_.each(this.collection.models, function(feed_item) {
 				var feed_item_view = new FeedItem.Views.Main({model: feed_item});

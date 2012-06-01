@@ -17,8 +17,8 @@
 			var result = response.success;
 			if( typeof result !== undefined ) {
 				var content = result.content;
-				content.tags = new Tag.Collection(result.tags);
-				content.media = new Media.Collection(result.media);
+				content.tags = new Tag.Collection(result.tags), 
+				content.media = new Media.Collection(result.media)
 				return content;
 			}
 		}
@@ -26,12 +26,14 @@
 
 	Reaction.Views.Main = Backbone.View.extend({
 		template: assets_url+'app/templates/reaction.html',
+		templateTweet: assets_url+'app/templates/tweet.html',
+		el: '#reaction_directory',
 		events: {
 			'click .label': 'tagSelect'
 		},
 		initialize: function() {
-			this.setElement( $('#reaction_directory') );
 			this.model.on('change', this.render, this);
+			this.loadingTweets = false;
 		},
 		render: function() {
 			var view = this;
@@ -41,11 +43,35 @@
 			});
 			return this;
 		},
+		loadTweets: function() {
+			this.loadingTweets = true;
+			var selected_tags = this.model.get('tags').where({selected: true});
+			var query_terms = [];
+			_.each(selected_tags, function(tag) { query_terms.push(encodeURI(tag.get('name'))); });
+			var tweet_collection = this.model.get('tweets');
+			var tweet_template;
+			readreactv.fetchTemplate(this.templateTweet, function(tmpl) {tweet_template = tmpl;});
+			tweet_collection.query = query_terms.join('+');
+			tweet_collection.fetch({
+				success: function(tweets) {
+					var $tweet_list = $('#content_tweets').empty();
+					_.each(tweets.models, function(tweet) {
+						$tweet_list.append(tweet_template(tweet.toJSON()));
+					});
+				}
+			});
+		},
 		tagSelect: function(e) {
 			// pretty awful, this should be made at model-level instead of view-level
 			// means we should change the selected value of the underlying model instance of the label
-			var $label = $(e.target).parent();
+			var $label = $(e.target);
 			$label.toggleClass('label-success');
+			if($label.hasClass('label-success')) {
+				this.model.get('tags').get($label.attr('data-id')).set({selected: true});
+			} else {
+				this.model.get('tags').get($label.attr('data-id')).set({selected: false});
+			}
+			this.loadTweets();
 		}
 	});
 

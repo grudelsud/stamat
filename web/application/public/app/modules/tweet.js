@@ -22,7 +22,7 @@
 	Tweet.Collection = Backbone.Collection.extend({
 		model: Tweet.Model,
 		url: function() {
-			return 'http://search.twitter.com/search.json?q='+this.query+'&page='+this.page+'&include_entities=true&result_type=mixed';
+			return 'http://search.twitter.com/search.json?q='+this.query+'&page='+this.page+'&include_entities=true&callback=?&result_type=mixed';
 		},
 		parse: function(response) {
 			return response.results;

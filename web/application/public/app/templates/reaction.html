@@ -2,7 +2,7 @@
 <h3>Tags</h3>
 <div id="content_tags">
 	<% _.each(tags.models, function(tag) { %>
-	<span class="label"><a href="#!/tag/<%= tag.get('id') %>"><%= tag.get('name') %></a></span> 
+	<span class="label" data-id="<%= tag.get('id') %>"><%= tag.get('name') %></span> 
 	<% }); %>
 </div>
 <div id="content_topics"></div>

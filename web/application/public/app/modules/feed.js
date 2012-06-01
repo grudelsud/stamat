@@ -23,13 +23,14 @@
 	});
 
 	Feed.Views.Collection = Backbone.View.extend({
+		el: '#tag_directory',
 		initialize: function() {
 			_.bindAll(this, 'render');
 			this.collection.bind('reset', this.render);
 			this.collection.bind('change', this.render);
 		},
 		render: function() {
-			this.$el = $('#tag_directory').empty().append('<ul></ul>');
+			this.$el.empty().append('<ul></ul>');
 			var view = this;
 			_.each(this.collection.models, function(feed) {
 				_.each(feed.get('tags').models, function(tag) {
