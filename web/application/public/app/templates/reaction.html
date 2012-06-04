@@ -9,15 +9,19 @@
 <div id="content_entities"></div>
 <h3>Media</h3>
 <div id="content_media">
+	<ul class="thumbnails">
 	<% _.each(media.models, function(item) { %>
-		<a href="<%= item.get('url') %>">
+		<li class="span2">
+		<a href="<%= item.get('url') %>" class="thumbnail">
 		<% if(item.get('type') == 'image') { %>
-		<i class="icon-picture"></i>
+		<img src="<%= item.get('url') %>">
 		<% } else if(item.get('type') == 'video') { %>
 		<i class="icon-film"></i>
 		<% } %>
 		</a>
+		</li>
 	<% }); %>	
+	</ul>
 </div>
 <h3>Tweets</h3>
 <div id="content_tweets"></div>

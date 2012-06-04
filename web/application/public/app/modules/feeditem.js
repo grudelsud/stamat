@@ -16,7 +16,9 @@
 			return base_url + 'index.php/json/feeditems/' + params;
 		},
 		parse: function(response) {
-			return response.success;
+			var result = response.success;
+			this.meta = result.meta;
+			return result.items;
 		}
 	});
 

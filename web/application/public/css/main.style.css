@@ -13,12 +13,18 @@ article.feed_item_container {
 #reaction_directory span.label a {
 	color: white;
 }
+
+	#reaction_directory #content_media, #reaction_directory #content_tweets {
+		max-height: 300px;
+		overflow-x: none;
+		overflow-y: scroll;
+	}
 	#reaction_directory .tweet {
 		padding: 3px 3px 8px 0;
 		border-bottom: 1px solid #EEE;
 		position: relative;
 	}
-	#reaction_directory img {
+	#reaction_directory #content_tweets img {
 		position: absolute;
 		top: 24px
 	}

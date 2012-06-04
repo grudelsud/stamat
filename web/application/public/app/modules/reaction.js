@@ -9,18 +9,18 @@
 		defaults: {
 			tags: new Tag.Collection(),
 			media: new Media.Collection(),
-			tweets: new Tweet.Collection(),
-			content: {}
+			tweets: new Tweet.Collection()
 		},
 		urlRoot: base_url + 'index.php/json/reactions/id',
 		parse: function(response) {
 			var result = response.success;
-			if( typeof result !== undefined ) {
-				var content = result.content;
-				content.tags = new Tag.Collection(result.tags), 
-				content.media = new Media.Collection(result.media)
-				return content;
-			}
+			var content = result.content;
+			this.set({
+				tags: new Tag.Collection(result.tags),
+				media: new Media.Collection(result.media)
+			});
+			console.log('parse');
+			return content;
 		}
 	});
 
@@ -35,12 +35,21 @@
 			this.model.on('change', this.render, this);
 			this.loadingTweets = false;
 		},
+		empty: function() {
+			var view = this;
+			view.$el.empty();
+		},
 		render: function() {
 			var view = this;
 			// Fetch the template, render it to the View element and call done.
-			readreactv.fetchTemplate(this.template, function(tmpl) {
-				view.$el.html(tmpl(view.model.toJSON()));
-			});
+			if(typeof this.model.get('permalink') !== 'undefined') {
+				readreactv.fetchTemplate(this.template, function(tmpl) {
+					view.$el.html(tmpl(view.model.toJSON()));
+				});
+				console.log('render ok');
+			} else {
+				console.log('render false');
+			}
 			return this;
 		},
 		loadTweets: function() {
@@ -58,18 +67,21 @@
 					_.each(tweets.models, function(tweet) {
 						$tweet_list.append(tweet_template(tweet.toJSON()));
 					});
+					this.loadingTweets = false;
 				}
 			});
 		},
 		tagSelect: function(e) {
-			// pretty awful, this should be made at model-level instead of view-level
-			// means we should change the selected value of the underlying model instance of the label
 			var $label = $(e.target);
+			var tag_id = $label.attr('data-id');
+			var tag_obj = this.model.get('tags').get(tag_id);
+			console.log(this.model);
+
 			$label.toggleClass('label-success');
 			if($label.hasClass('label-success')) {
-				this.model.get('tags').get($label.attr('data-id')).set({selected: true});
+				tag_obj.set({selected: true});
 			} else {
-				this.model.get('tags').get($label.attr('data-id')).set({selected: false});
+				tag_obj.set({selected: false});
 			}
 			this.loadTweets();
 		}

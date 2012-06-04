@@ -52,9 +52,10 @@ class Json extends CI_Controller
 				$content->content = $row->content;
 			}
 
-			$this->db->select('t.id, t.name, t.slug');
+			$this->db->select('t.id, t.name, t.slug, v.name as type');
 			$this->db->from('tags as t');
 			$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
+			$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
 			$this->db->where('tt.subject_entity_id', $params['id']);
 
 			$query = $this->db->get();
@@ -63,6 +64,7 @@ class Json extends CI_Controller
 			}
 
 			$this->db->where('feeditem_id', $params['id']);
+			$this->db->order_by('primary desc, type asc');
 			$query = $this->db->get('feeditemmedia');
 			foreach ($query->result() as $row) {
 				$media[] = $row;
@@ -143,10 +145,21 @@ class Json extends CI_Controller
 			$this->db->where('f.user_id', $this->logged_user['id'] );
 		}
 		$this->db->order_by('date', 'desc');
-		$this->db->limit(20);
+
+		$page = 1;
+		$pagesize = 20;
+		if(!empty($params['page'])) {
+			if(!is_numeric($params['page'])) {
+				$page = 1;
+			} else {
+				$page = $params['page'] > 0 ? $params['page'] : 1;
+			}
+		}
+		$this->db->limit($pagesize, $pagesize * ($page - 1));
+
 		$query = $this->db->get();
 
-		$result = array();
+		$items = array();
 		foreach($query->result() as $row) {
 			$item = new stdClass();
 			$item->id = $row->id;
@@ -158,8 +171,30 @@ class Json extends CI_Controller
 			$item->feed_title = $row->feed_title;
 			$item->url = $row->url;
 
-			$result[] = $item;
+			$items[] = $item;
 		}
+		$result = new stdClass();
+		$meta = new stdClass();
+		$result->items = $items;
+
+		// now rebuild the query to count the results for pagination
+		$this->db->from('feeditems as fi');
+		$this->db->join('feeds as f', 'fi.feed_id = f.id');
+
+		if(!empty($params['tag'])) {
+			$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
+			$this->db->join('tags as t', 't.id = ft.tag_id');
+			$this->db->where('t.slug', $params['tag']);
+		}
+		if(!empty($params['id'])) {
+			$this->db->where('f.id', $params['id']);
+		}
+		if( $this->logged_in ) {
+			$this->db->where('f.user_id', $this->logged_user['id'] );
+		}
+		$meta->count_all_results = $this->db->count_all_results();
+		$result->meta = $meta;
+
 		return $this->_return_json_success( $result );
 	}
 

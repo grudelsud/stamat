@@ -36,48 +36,91 @@ var readreactv = {
 			done(JST[path] = tmpl);
 		});
 	},
-	models: {},
-	views: {},
-	collections: {},
 	routers: {}
 };
 
 $(function() {
+
+	var feedModule = readreactv.module('feed');
+	var feedItemModule = readreactv.module('feeditem');
+	var reactionModule = readreactv.module('reaction');
 
 	// Defining the application router, you can attach sub routers here.
 	var Router = Backbone.Router.extend({
 		routes: {
 			'!/feeds/*params' : 'feeds',
 			'!/reactions/id/:id' : 'reactions',
-			'': 'index'
+			'': 'index',
+			// '*': 'clear'
 		},
 		initialize: function() {
-			var feedModule = readreactv.module('feed');
-			readreactv.collections.feedCollection = new feedModule.Collection();
-			readreactv.views.feedCollectionView = new feedModule.Views.Collection({collection: readreactv.collections.feedCollection});
+			this.status = {};
+			this.status.feedParams = '';
+			this.status.reactionId = '';
+			this.status.fetchFeeds = true;
+			this.status.fetchFeedItems = true;
+			this.status.fetchFeedReactions = false;
 
-			var feedItemModule = readreactv.module('feeditem');
-			readreactv.collections.feedItemCollection = new feedItemModule.Collection();
-			readreactv.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: readreactv.collections.feedItemCollection});
+			this.views = {};
+			this.models = {};
+			this.collections = {};
+
+			this.collections.feedCollection = new feedModule.Collection();
+			this.views.feedCollectionView = new feedModule.Views.Collection({collection: this.collections.feedCollection});
+
+			this.collections.feedItemCollection = new feedItemModule.Collection();
+			this.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: this.collections.feedItemCollection});
+
+			this.models.reactionModel = new reactionModule.Model();
+			this.views.reactionView = new reactionModule.Views.Main({model: this.models.reactionModel});
+		},
+		setupPanels: function() {
+			if(this.status.fetchFeeds) {
+				this.collections.feedCollection.fetch();
+				this.status.fetchFeeds = false;
+			}
+			if(this.status.fetchFeedItems) {
+				this.collections.feedItemCollection.setFilter(this.status.feedParams);
+				this.collections.feedItemCollection.fetch();
+				this.status.fetchFeedItems = false;
+			}
+			if(this.status.fetchFeedReactions) {
+				this.models.reactionModel.set({id: this.status.reactionId});
+				this.models.reactionModel.fetch();
+				this.status.fetchFeedReactions = false;
+			} else {
+				this.views.reactionView.empty();
+			}
+
 		},
 		feeds: function( params ) {
-			// console.log('router - feeds ' + params);
-			readreactv.collections.feedItemCollection.setFilter(params);
-			readreactv.collections.feedItemCollection.fetch();
+			console.log('router - feeds ' + params);
+			this.status.fetchFeedItems = true;
+			this.status.feedParams = params;
+			this.status.reactionId = '';
+
+			this.setupPanels();
 		},
 		reactions: function( id ) {
-			// console.log('router - reactions ' + id);
-			var reactionModule = readreactv.module('reaction');
-			readreactv.models.reactionModel = new reactionModule.Model({id: id});
+			console.log('router - reactions ' + id);
+			this.status.fetchFeedReactions = true;
+			this.status.feedParams = '';
+			this.status.reactionId = id;
 
-			readreactv.models.reactionModel.fetch();
-			readreactv.views.reactionView = new reactionModule.Views.Main({model: readreactv.models.reactionModel});
+			this.setupPanels();
 		},
 		index: function() {
-			// console.log('index');
-			readreactv.collections.feedCollection.fetch();
-			readreactv.collections.feedItemCollection.setFilter();
-			readreactv.collections.feedItemCollection.fetch();
+			console.log('index');
+			this.status.fetchFeeds = true;
+			this.status.fetchFeedItems = true;
+			this.status.fetchFeedReactions = false;
+			this.status.feedParams = '';
+			this.status.reactionId = '';
+
+			this.setupPanels();
+		},
+		clear: function() {
+			this.navigate('/', {trigger: true, replace: true});
 		}
 	});
 
