@@ -38,8 +38,8 @@
 			return this;
 		},
 		itemSelect: function(e) {
-			var scroll = (e.pageY - 77) + 'px';
-			$('.scroll-top').animate({'padding-top': scroll}, 'fast');
+			var scroll = (e.pageY - 160) + 'px';
+			$('.scroll-top').animate({'margin-top': scroll}, 'fast');
 		}
 	});
 
@@ -56,7 +56,20 @@
 				var feed_item_view = new FeedItem.Views.Main({model: feed_item});
 				view.$el.append(feed_item_view.render().el);
 			}, this);
+			this.addPagination();
 		},
+		addPagination: function() {
+			var $pagination = $('.pagination');
+			var $list = $('<ul></ul>');
+			if( this.collection.meta.page > 1 ) {
+				$list.append('<li><a href="#!/feeds/'+this.collection.meta.prev+'">&larr; Previous</a></li>');
+			}
+			$list.append('<li class="disabled"><a href="#">'+this.collection.meta.page+'/'+this.collection.meta.count_all_pages+'</a></li>');
+			if( this.collection.meta.page < this.collection.meta.count_all_pages ) {
+				$list.append('<li><a href="#!/feeds/'+this.collection.meta.next+'">Next &rarr;</a></li>');
+			}
+			$pagination.empty().append($list);
+		}
 	});
 
 })(readreactv.module('feeditem'));

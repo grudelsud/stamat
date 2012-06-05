@@ -18,7 +18,7 @@
 	<body id="admin" class="<?php echo $template; ?>">
 
 		<?php $this->load->view('admin/header'); ?>
-		<div class="container">
+		<div class="container head-margin">
 			<?php $this->load->view('admin/'.$template); ?>		
 			<?php $this->load->view('admin/footer'); ?>
 		</div>

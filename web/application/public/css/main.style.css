@@ -1,7 +1,10 @@
-.row {
-	background: #fff;
+.head-margin {
+	margin-top: 55px;
 }
-
+.pagination {
+	margin: 0;
+	height: 44px;
+}
 article.feed_item_container {
 	padding: 15px 0;
 	border-bottom: 1px solid #ddd;

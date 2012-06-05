@@ -5,6 +5,10 @@
 	height: 16px;
 	display: none;
 }
+
+.head-margin {
+	margin-top: 75px;
+}
 /* STRUCTURE */
 		#admin #feed_container #feed_controls {
 			/* can be replaced with a .pull-right probably */

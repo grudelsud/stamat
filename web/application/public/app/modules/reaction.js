@@ -19,7 +19,6 @@
 				tags: new Tag.Collection(result.tags),
 				media: new Media.Collection(result.media)
 			});
-			console.log('parse');
 			return content;
 		}
 	});
@@ -46,9 +45,6 @@
 				readreactv.fetchTemplate(this.template, function(tmpl) {
 					view.$el.html(tmpl(view.model.toJSON()));
 				});
-				console.log('render ok');
-			} else {
-				console.log('render false');
 			}
 			return this;
 		},
@@ -75,7 +71,6 @@
 			var $label = $(e.target);
 			var tag_id = $label.attr('data-id');
 			var tag_obj = this.model.get('tags').get(tag_id);
-			console.log(this.model);
 
 			$label.toggleClass('label-success');
 			if($label.hasClass('label-success')) {

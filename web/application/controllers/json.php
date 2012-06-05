@@ -56,6 +56,7 @@ class Json extends CI_Controller
 			$this->db->from('tags as t');
 			$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
 			$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
+			$this->db->where('t.stop_word', 0);
 			$this->db->where('tt.subject_entity_id', $params['id']);
 
 			$query = $this->db->get();
@@ -133,30 +134,33 @@ class Json extends CI_Controller
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
 
+		$meta = new stdClass();
+		$meta->params = '';
 		if(!empty($params['tag'])) {
 			$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
 			$this->db->join('tags as t', 't.id = ft.tag_id');
 			$this->db->where('t.slug', $params['tag']);
+			$meta->params = 'tag/'.$params['tag'].'/';
 		}
 		if(!empty($params['id'])) {
 			$this->db->where('f.id', $params['id']);
+			$meta->params = 'id/'.$params['id'].'/';
 		}
 		if( $this->logged_in ) {
 			$this->db->where('f.user_id', $this->logged_user['id'] );
 		}
 		$this->db->order_by('date', 'desc');
 
-		$page = 1;
-		$pagesize = 20;
+		$meta->page = 1;
+		$meta->pagesize = 20;
 		if(!empty($params['page'])) {
 			if(!is_numeric($params['page'])) {
-				$page = 1;
+				$meta->page = 1;
 			} else {
-				$page = $params['page'] > 0 ? $params['page'] : 1;
+				$meta->page = (int)($params['page'] > 0 ? $params['page'] : 1);
 			}
 		}
-		$this->db->limit($pagesize, $pagesize * ($page - 1));
-
+		$this->db->limit($meta->pagesize, $meta->pagesize * ($meta->page - 1));
 		$query = $this->db->get();
 
 		$items = array();
@@ -174,7 +178,6 @@ class Json extends CI_Controller
 			$items[] = $item;
 		}
 		$result = new stdClass();
-		$meta = new stdClass();
 		$result->items = $items;
 
 		// now rebuild the query to count the results for pagination
@@ -193,6 +196,10 @@ class Json extends CI_Controller
 			$this->db->where('f.user_id', $this->logged_user['id'] );
 		}
 		$meta->count_all_results = $this->db->count_all_results();
+		$meta->count_all_pages = ceil($meta->count_all_results / $meta->pagesize);
+
+		$meta->prev = $meta->params.'page/'.($meta->page > 1 ? $meta->page - 1 : 1);
+		$meta->next = $meta->params.'page/'.($meta->page < $meta->count_all_pages ? $meta->page + 1 : $meta->count_all_pages);
 		$result->meta = $meta;
 
 		return $this->_return_json_success( $result );

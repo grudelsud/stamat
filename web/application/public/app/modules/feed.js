@@ -40,6 +40,7 @@
 					view.$el.find('li.'+tag.get('slug')+' ul').append('<li><a href="#!/feeds/id/'+feed.get('id')+'">'+feed.get('title')+'</a></li>');
 				}, view);
 			}, this);
+			view.$el.find(':first').prepend('<li><a class="btn btn-inverse" href="#!/feeds/">all</a></li>');
 		}
 
 	});
