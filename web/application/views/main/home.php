@@ -1,4 +1,4 @@
-<div class="head-margin tabbable">
+<div class="tabbable">
 	<div class="row">
 		<div class="span12">
 			<ul class="nav nav-tabs">
@@ -28,7 +28,8 @@
 			</div>
 			<div id="feeditem_container" class="span6">
 				<h3>Read Articles</h3>
-				<div id="feed_directory"></div>		
+				<div id="feed_directory"></div>
+				<div class="pagination"></div>
 			</div>
 			<div id="reaction_container" class="span4 scroll-top">
 				<h3>Read Reactions</h3>
@@ -56,3 +57,4 @@
 	</div><!-- #tab_media -->
 
 </div>
+<?php $this->load->view('modal_permalink'); ?>

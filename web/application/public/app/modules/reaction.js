@@ -28,7 +28,8 @@
 		templateTweet: assets_url+'app/templates/tweet.html',
 		el: '#reaction_directory',
 		events: {
-			'click .label': 'tagSelect'
+			'click .label': 'tagSelect',
+			'click .read-text': 'openPermalink'
 		},
 		initialize: function() {
 			this.model.on('change', this.render, this);
@@ -79,6 +80,14 @@
 				tag_obj.set({selected: false});
 			}
 			this.loadTweets();
+		},
+		openPermalink: function(e) {
+			e.preventDefault();
+			var url = base_url + 'index.php/admin/permalink/' + this.model.id;
+			console.log(url);
+			$('#permalink_content').empty().append('<iframe src="'+url+'"></iframe>');
+			$('#permalink_container').modal('show');
+
 		}
 	});
 

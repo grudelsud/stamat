@@ -2,7 +2,8 @@
 
 	FeedItem.Model = Backbone.Model.extend({
 		defaults: {
-			pic: assets_url+'img/app/feed_item_placeholder.png'
+			pic: 'http://placehold.it/160x120'
+			// pic: assets_url+'img/app/feed_item_placeholder.png'
 		}
 	});
 

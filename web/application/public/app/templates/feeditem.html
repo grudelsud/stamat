@@ -2,7 +2,9 @@
 <p class="meta"><%= date %> - <a href="<%= permalink %>">read source</a></p>
 <div class="row">
 	<div class="span2">
-		<div class="featured" style="background: url('<%= pic %>') no-repeat;"></div>
+		<ul class="thumbnails">
+			<li class="span2"><a href="<%= pic %>" class="thumbnail"><img src="<%= pic %>" alt=""></a></li>
+		</ul>
 	</div>
 	<div class="span4">
 		<div class="content"><%= description %></div>

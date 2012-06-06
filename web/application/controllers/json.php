@@ -22,64 +22,6 @@ class Json extends CI_Controller
 	}
 
 	/**
-	 * so we need to pull out something like the following:
-	 * {success: {
-	 *  	tags: [{id:x, name:y, slug:z, type:a}, ...], 
-	 *  	media: [], 
-	 *  	content:[]
-	 * }}
-	 */
-	public function reactions()
-	{
-		$params = $this->uri->uri_to_assoc();
-		$content = new stdClass();
-		$tags = array();
-		$media = array();
-
-		if(!empty($params['id'])) {
-			$this->db->select('fi.id, fi.title, fi.permalink, fi.date, fic.abstract, fic.content');
-			$this->db->from('feeditems as fi');
-			$this->db->join('feeditemcontents as fic', 'fi.id = fic.feeditem_id', 'left');
-			$this->db->where('fi.id', $params['id']);
-			$query = $this->db->get();
-			if( $query->num_rows() > 0 ) {
-				$row = $query->row();
-				$content->id = $row->id;
-				$content->title = $row->title;
-				$content->permalink = $row->permalink;
-				$content->date = $row->date;
-				$content->abstract = $row->abstract;
-				$content->content = $row->content;
-			}
-
-			$this->db->select('t.id, t.name, t.slug, v.name as type');
-			$this->db->from('tags as t');
-			$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
-			$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
-			$this->db->where('t.stop_word', 0);
-			$this->db->where('tt.subject_entity_id', $params['id']);
-
-			$query = $this->db->get();
-			foreach ($query->result() as $row) {
-				$tags[] = $row;
-			}
-
-			$this->db->where('feeditem_id', $params['id']);
-			$this->db->order_by('primary desc, type asc');
-			$query = $this->db->get('feeditemmedia');
-			foreach ($query->result() as $row) {
-				$media[] = $row;
-			}
-		}
-
-		$result = new stdClass();
-		$result->content = $content;
-		$result->tags = $tags;
-		$result->media = $media;
-		return $this->_return_json_success( $result );
-	}
-
-	/**
 	 * accepts param tag in the uri so it can be called as below:
 	 *
 	 * base_url/json/feeds - this will return all the feeds of the user currently logged in
@@ -165,6 +107,7 @@ class Json extends CI_Controller
 
 		$items = array();
 		foreach($query->result() as $row) {
+
 			$item = new stdClass();
 			$item->id = $row->id;
 			$item->feed_id = $row->feed_id;
@@ -174,6 +117,14 @@ class Json extends CI_Controller
 			$item->description = strip_tags( $row->description, '<div><p><a>');
 			$item->feed_title = $row->feed_title;
 			$item->url = $row->url;
+
+			$this->db->where('feeditem_id', $row->id);
+			$this->db->where('type', 'image');
+			$this->db->order_by('primary', 'desc');
+			$query_media = $this->db->get('feeditemmedia');
+			if($query_media->num_rows() > 0) {
+				$item->pic = $query_media->row()->url;
+			}
 
 			$items[] = $item;
 		}
@@ -202,6 +153,64 @@ class Json extends CI_Controller
 		$meta->next = $meta->params.'page/'.($meta->page < $meta->count_all_pages ? $meta->page + 1 : $meta->count_all_pages);
 		$result->meta = $meta;
 
+		return $this->_return_json_success( $result );
+	}
+
+	/**
+	 * so we need to pull out something like the following:
+	 * {success: {
+	 *  	tags: [{id:x, name:y, slug:z, type:a}, ...], 
+	 *  	media: [], 
+	 *  	content:[]
+	 * }}
+	 */
+	public function reactions()
+	{
+		$params = $this->uri->uri_to_assoc();
+		$content = new stdClass();
+		$tags = array();
+		$media = array();
+
+		if(!empty($params['id'])) {
+			$this->db->select('fi.id, fi.title, fi.permalink, fi.date, fic.abstract, fic.content');
+			$this->db->from('feeditems as fi');
+			$this->db->join('feeditemcontents as fic', 'fi.id = fic.feeditem_id', 'left');
+			$this->db->where('fi.id', $params['id']);
+			$query = $this->db->get();
+			if( $query->num_rows() > 0 ) {
+				$row = $query->row();
+				$content->id = $row->id;
+				$content->title = $row->title;
+				$content->permalink = $row->permalink;
+				$content->date = $row->date;
+				$content->abstract = $row->abstract;
+				$content->content = $row->content;
+			}
+
+			$this->db->select('t.id, t.name, t.slug, v.name as type');
+			$this->db->from('tags as t');
+			$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
+			$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
+			$this->db->where('t.stop_word', 0);
+			$this->db->where('tt.subject_entity_id', $params['id']);
+
+			$query = $this->db->get();
+			foreach ($query->result() as $row) {
+				$tags[] = $row;
+			}
+
+			$this->db->where('feeditem_id', $params['id']);
+			$this->db->order_by('primary desc, type asc');
+			$query = $this->db->get('feeditemmedia');
+			foreach ($query->result() as $row) {
+				$media[] = $row;
+			}
+		}
+
+		$result = new stdClass();
+		$result->content = $content;
+		$result->tags = $tags;
+		$result->media = $media;
 		return $this->_return_json_success( $result );
 	}
 

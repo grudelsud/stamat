@@ -1,4 +1,5 @@
 
+		<meta charset="UTF-8" />
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/libs/modernizr.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>js/libs/underscore-min.js"></script>
 		<script type="text/javascript" src="https://www.google.com/jsapi"></script>

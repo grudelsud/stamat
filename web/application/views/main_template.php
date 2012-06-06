@@ -37,7 +37,9 @@
 
 		<div class="container">
 			<?php $this->load->view('main/header'); ?>
-			<?php $this->load->view('main/'.$template); ?>
+			<div class="head-margin">
+			<?php $this->load->view('main/'.$template); ?>				
+			</div>
 			<?php $this->load->view('main/footer'); ?>
 		</div><!-- end of .container -->
 	</body>

@@ -53,4 +53,4 @@
 	</div>
 </div>
 
-<?php $this->load->view('admin/modal_permalink'); ?>
+<?php $this->load->view('modal_permalink'); ?>
