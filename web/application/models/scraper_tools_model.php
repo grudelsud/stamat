@@ -30,7 +30,7 @@ class Scraper_tools_model extends CI_Model {
     
     // create the "db name" of an image
     function get_image_md5 ($url, $source, $source_id){
-        $string = $url.$source.$source_id;
+        $string = $url.$source.$source_id;   // source is: 'twitter' or 'facebook' or...
         $image_name = md5($string);
         return $image_name;
     }
@@ -44,8 +44,10 @@ class Scraper_tools_model extends CI_Model {
 
     // tokenize text     
     function tokenizer ($text){
-        $lover_case_text = strtolower($text); // eliminate upper case
-        $stripped_string = preg_replace('/[^a-z0-9]+/i', ' ', $lover_case_text);// eliminate the punctuation: "stripped string"        
+        // eliminate upper case
+        $lover_case_text = strtolower($text); 
+        // eliminate the punctuation: "stripped string" 
+        $stripped_string = preg_replace('/[^a-z0-9]+/i', ' ', $lover_case_text);       
         $tok = strtok($stripped_string, " \n\t");
         $text_array = array();
         while ($tok !== false) {
@@ -82,6 +84,15 @@ class Scraper_tools_model extends CI_Model {
         fclose($fp);
         return false;
     }
-          
+   
+// check if a word is in the text
+    function word_is_in($text, $word){
+         // eliminate upper case
+        $lover_case_text = strtolower($text); 
+        // eliminate the punctuation: "stripped string" 
+        $stripped_string = preg_replace('/[^a-z0-9]+/i', ' ', $lover_case_text);    
+        return strpos($stripped_string, $word);
+    }
+    
 }
 ?>

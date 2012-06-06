@@ -194,7 +194,7 @@ class Scraper_model extends CI_Model
 		$auth_params = json_decode( $scraper->auth_params, TRUE );           
 		$response = $this->_execute_curl( $rest_call, $scraper->request_type, $scraper->auth_type, $auth_params, $post_params, $debug );
                 $response_obj = json_decode( $response );
-                  
+                 // parsing tweets one by one 
 		foreach ($response_obj->results as $tweet_obj) { 
                        // store all "urls" from tweet: "url" and "expanded url"
                        $tweet_exp_urls = array(); 
@@ -203,16 +203,20 @@ class Scraper_model extends CI_Model
                            $tweet_exp_urls[] = $urls_obj->expanded_url;
                            $tweet_urls[] = $urls_obj->url; // used after, for removing urls before tokenize
                        }
-                       $images_urls = array(); // a tweet can contain more than one image
+                       $images_urls = array(); //NB: a tweet can contain more than one image (urls can be remote images)
                        //find the image from the "media" array 
-                       $this->load->model('scraper_tools_model'); 
-                       foreach($tweet_obj->entities->media as $media_obj) {  
-                            if($media_obj->type == 'photo') { $images_urls[] = $media_obj->media_url;}
+                       $this->load->model('scraper_tools_model');
+                       if(isset($tweet_obj->entities->media)){     
+                            foreach($tweet_obj->entities->media as $media_obj) {  
+                                    if($media_obj->type == 'photo') { 
+                                        $images_urls[] = $media_obj->media_url;}
+                            }
                        }
-                       // check for remote images from tweet "expanded urls"
+                        // check for remote images from tweet "expanded urls"
                        foreach($tweet_exp_urls as $url){
                           $is_an_image  = $this->scraper_tools_model->image_detector($url);
-                          if($is_an_image == TRUE){ $images_urls[] = $url;}  
+                          if($is_an_image == TRUE){
+                              $images_urls[] = $url;}  
                        }
                        // store all "user mentions" from tweet
                        $tweet_user_mentions = array();                                        
@@ -225,25 +229,25 @@ class Scraper_model extends CI_Model
                            'indices' => $user_mentions_obj->indices
                            );
                            $tweet_user_mentions[] = $user_m;  
-                       }                       
+                       }
+                       $recent_retweets = null;
+                       if(isset($tweet_obj->entities->media)){$recent_retweets = $tweet_obj->entities->media;}
                        $data = array(
-                           // using the tweet ID (string version) instead the mongoId object
+                           // using original tweet ID (string version) instead mongoId object
                            '_id' => $tweet_obj->id_str,  
-                           'ids' => array(
-                               'tweet_id' => $tweet_obj->id,
-                               'tweet_id_str' => $tweet_obj->id_str,
-                               'from_user_id' => $tweet_obj->from_user_id,
-                               'to_user_id' => $tweet_obj->to_user_id,
-                               ),
+                           'ids' => array('tweet_id' => $tweet_obj->id,
+                                          'tweet_id_str' => $tweet_obj->id_str,
+                                          'from_user_id' => $tweet_obj->from_user_id,
+                                          'to_user_id' => $tweet_obj->to_user_id),
                            'from_user_name' => $tweet_obj->from_user_name,
                            'from_user' => $tweet_obj->from_user,
                            'to_user_name' => $tweet_obj->to_user_name,
                            'to_user' => $tweet_obj->to_user,
                            'source' => $tweet_obj->source,
                            'metadata' => array(
-                             'result_type' => $tweet_obj->metadata->result_type,
-                             'recent_retweets' => $tweet_obj->metadata->recent_retweets
-                           ),
+                                            'result_type' => $tweet_obj->metadata->result_type,
+                                            'recent_retweets' => $recent_retweets
+                                            ),
                            'iso_language_code' => $tweet_obj->iso_language_code,
                            'profile_image_url' => $tweet_obj->profile_image_url,
                            'expanded_urls' => $tweet_exp_urls,
@@ -251,23 +255,25 @@ class Scraper_model extends CI_Model
                            'user_mentions' => $tweet_user_mentions,
                            'text' => $tweet_obj->text,
                            'images_urls' => $images_urls,
-                           'created_at' => $tweet_obj->created_at,
-                       );            
-                       // check if the tweet already exists in db (no duplicates)
-                       $this->mongo_db->where(array ('_id' => $tweet_obj->id_str)); 
+                           'created_at' => $tweet_obj->created_at);
+                   
+                       // check if tweet already exists in db (avoid duplicates)
+                       $this->mongo_db->where(array('_id' => $tweet_obj->id_str)); 
                        $query = $this->mongo_db->get('tweets');
-                       if($query == NULL){
-                             $this->mongo_db->insert('tweets', $data);
+                       // store only tweets containing the keyword in the text
+                       $word_is_in_the_text = $this->scraper_tools_model->word_is_in($tweet_obj->text,$key_word);
+                       if($query == NULL && $word_is_in_the_text!== FALSE){
+                             $this->mongo_db->insert('tweets', $data);  
                              // tokenized text for full text search
-                             $string = $this->scraper_tools_model->delete_urls_from_text($data[text],$tweet_urls);
+                             $string = $this->scraper_tools_model->delete_urls_from_text($data['text'],$tweet_urls);
                              $text_array = $this->scraper_tools_model->tokenizer($string);
                              // download images on file system
-                             $images_names = array();  // the name of every images file, from the current tweet
-                             if($data[images_urls] != NULL){
-                                 foreach ($data[images_urls] as $im_url){                                                                                                                 
+                             $images_names = array();  //name of each image file (from the current tweet)
+                             if($data['images_urls'] != NULL){
+                                 foreach ($data['images_urls'] as $im_url){                                                                                                                 
                                         $directory_path = $this->scraper_tools_model->get_image_file_system_path();
-                                        $image_name = $this->scraper_tools_model->get_image_md5($im_url,'twitter',$data[_id]);// hash of the image
-                                        $file_system_path = $directory_path.$image_name; // completely path of the image
+                                        $image_name = $this->scraper_tools_model->get_image_md5($im_url,'twitter',$data['_id']);// hash of the image
+                                        $file_system_path = $directory_path.$image_name; // complete path of the image
                                         $this->scraper_tools_model->download_remote_file_with_curl($im_url, $file_system_path ); 
                                         $images_names[] = $image_name;
                                 }
@@ -275,15 +281,14 @@ class Scraper_model extends CI_Model
                              // insert the extra data for the tweet
                              $extra_data = array('_id' => $tweet_obj->id_str, 
                                                  'text' => $text_array, //tokenized text       
-                                                 'images_names' => $images_names,  // the hash string
+                                                 'images_names' => $images_names,  // the hash string for each image
                                                  'error_code' => $this->curl->error_code,
                                                  'error_string' => $this->curl->error_string,
-                                                 'curl_info' => json_encode($this->curl->info)
-                                            );
+                                                 'curl_info' => json_encode($this->curl->info) );
                              $this->mongo_db->insert('tokenize_text', $extra_data);
                        }
                        
                 }                  
-                return;
+                return true;  // TODO: find a right or more usefull value to return
         }        
 }

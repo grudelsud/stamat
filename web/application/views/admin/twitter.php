@@ -10,14 +10,6 @@
                         <?php echo form_submit( 'submit', 'search tweets' ); ?>
 			<?php echo form_close(); ?>
 		</div>
-                <div id="show_tweets"> 
-			<?php echo form_open( 'show_tweets', array('id' => 'form_show_tweets') ); ?>
-                        <?php echo form_label( 'Key Word to show', 'key word' ); ?>
-                        <?php echo form_input( array('name'=>'key word', 'id'=>'key word') ); ?>
-			
-                        <?php echo form_submit( 'submit', 'show tweets' ); ?>
-			<?php echo form_close(); ?>
-		</div>
 		
 		<div id="tweets">
 			<table width="100%" id="tweets_table">

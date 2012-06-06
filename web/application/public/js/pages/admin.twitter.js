@@ -5,25 +5,8 @@ $(function() {
     $('#form_search_tweets').submit(function(e) { 
 		e.preventDefault();      
 		var data = $(this).serialize();
-		var message = 'Do you want to store your requested tweets? ';
-                        $('#dialog').empty().append( message ).dialog('option', {
-                            'title': 'Attention',
-                            'buttons': {
-                                'ok': function(){
-                                   $(this).dialog('close');
-                                   store_tweets(data);
-                                },  
-                                'cancel': function() {$(this).dialog('close');}
-                            }
-                }).dialog('open');
-    });
-    
-    $('#form_show_tweets').submit(function(e) { 
-		e.preventDefault();      
-		var data = $(this).serialize();
-		api('get_tweets',load_tweets , data); 
-    });
-    
+                api('search_tweets', load_tweets,data);
+    });   
 });    
 
 // load tweet content in tweets table
@@ -34,17 +17,22 @@ function load_tweets(data){
 		'bJQueryUI' : true, 
                 'iDisplayLength': 50,
                 'sPaginationType': 'full_numbers', 
-                'aaData' : data.success, 
-		'aoColumns' : [
-                    { 'mDataProp': 'text',
+                'aaData': data.success, 
+		'aoColumns': [
+                    { 'mDataProp': "text"},
+                    { 'mDataProp': "images_urls.0",  
                       'sDefaultContent': '  ---   '
-                    },
-                    { 'mDataProp': '_id',  
-                      'sDefaultContent': '  ---   '
-                    },			
+                    },	
 		],
+                'fnRowCallback': load_Images_RowCallback
 	});
 }
-function store_tweets(data){
-     api('search_tweets', load_tweets, data);
+// generate img tags at render time
+function load_Images_RowCallback( nRow, aData, iDisplayIndex ){  // aData is the data.success current element
+    $.each(aData['images_urls'], function(key, val) {
+	$('td:eq(1)', nRow).html( '<a href="' + aData['images_urls'][key] + '"><img src="' + aData['images_urls'][key] + '" /></a>' );	
+	});
+    return nRow;
 }
+
+

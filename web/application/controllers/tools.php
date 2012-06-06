@@ -79,18 +79,13 @@ class Tools extends CI_Controller
                   /**
 		 twitter
 		 */
-                $auth_params = array(
-			
-                    
-                        );
-		$post_params = array(
-			
-		);
+                $auth_params = array();
+		$post_params = array();
 		$data = array(
 			'name' => 'twitter_scraper',
 			'rest_call' => 'http://search.twitter.com/search.json?q={KEY_WORD}&rpp=30&include_entities=true&result_type=mixed',
 			'request_type' => 'get',
-			'auth_type' => 'http_login',
+			'auth_type' => '',  // no auth needed for twitter server
 			'auth_params' => json_encode( $auth_params ),
 			'post_params' => json_encode( $post_params )
 		);
