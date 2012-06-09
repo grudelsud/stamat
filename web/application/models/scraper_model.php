@@ -268,20 +268,28 @@ class Scraper_model extends CI_Model
                              $string = $this->scraper_tools_model->delete_urls_from_text($data['text'],$tweet_urls);
                              $text_array = $this->scraper_tools_model->tokenizer($string);
                              // download images on file system
-                             $images_names = array();  //name of each image file (from the current tweet)
+                             $images_names = array();  //name of each image file (from current tweet)
+                             $images_hashes = array();  // hash of each image file (from current tweet)
                              if($data['images_urls'] != NULL){
                                  foreach ($data['images_urls'] as $im_url){                                                                                                                 
                                         $directory_path = $this->scraper_tools_model->get_image_file_system_path();
-                                        $image_name = $this->scraper_tools_model->get_image_md5($im_url,'twitter',$data['_id']);// hash of the image
-                                        $file_system_path = $directory_path.$image_name; // complete path of the image
-                                        $this->scraper_tools_model->download_remote_file_with_curl($im_url, $file_system_path ); 
+                                        $image_name = $this->scraper_tools_model->get_image_name_md5($im_url,'twitter',$data['_id']);// hash of the image
                                         $images_names[] = $image_name;
+                                        $image_hash = $this->scraper_tools_model->get_image_md5($im_url);
+                                        $this->load->model('twitter_model');
+                                        // avoid image duplicates on the file system
+                                        if($this->twitter_model->check_image_presence($image_hash)== false){
+                                            $file_system_path = $directory_path.$image_name; // complete path of the image
+                                            $this->scraper_tools_model->download_remote_file_with_curl($im_url, $file_system_path ); 
+                                        }
+                                        $images_hashes[] = $image_hash;
                                 }
                              }
                              // insert the extra data for the tweet
                              $extra_data = array('_id' => $tweet_obj->id_str, 
                                                  'text' => $text_array, //tokenized text       
-                                                 'images_names' => $images_names,  // the hash string for each image
+                                                 'images_names' => $images_names,  // name (hash string) for each image file
+                                                 'images_hashs' => $images_hashes,  // hash for each image file
                                                  'error_code' => $this->curl->error_code,
                                                  'error_string' => $this->curl->error_string,
                                                  'curl_info' => json_encode($this->curl->info) );

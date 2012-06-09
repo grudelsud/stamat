@@ -29,7 +29,7 @@ class Scraper_tools_model extends CI_Model {
     }
     
     // create the "db name" of an image
-    function get_image_md5 ($url, $source, $source_id){
+    function get_image_name_md5 ($url, $source, $source_id){
         $string = $url.$source.$source_id;   // source is: 'twitter' or 'facebook' or...
         $image_name = md5($string);
         return $image_name;
@@ -93,6 +93,14 @@ class Scraper_tools_model extends CI_Model {
         $stripped_string = preg_replace('/[^a-z0-9]+/i', ' ', $lover_case_text);    
         return strpos($stripped_string, $word);
     }
+ 
+// make hash of an image file
+    function get_image_md5($image_url){
+        $byte_string = file_get_contents($image_url);  // reads entire file into a string
+        $byte_string_hash = md5($byte_string);
+        return $byte_string_hash;
+    }
+    
     
 }
 ?>

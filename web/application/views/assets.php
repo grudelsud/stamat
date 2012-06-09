@@ -51,3 +51,4 @@
 		<link rel="stylesheet" type="text/css" media="all" href="<?php echo ASSETS_URL; ?>bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" media="all" href="<?php echo ASSETS_URL; ?>bootstrap/css/bootstrap-responsive.min.css" />
 		<link rel="stylesheet" type="text/css" media="all" href="<?php echo ASSETS_URL; ?>css/style.all.css" />
+                

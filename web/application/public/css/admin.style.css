@@ -197,12 +197,12 @@
 			clear: both;
 			border-top: 1px solid lightgrey;
 		}
-      /*  CSS Alex */
+      /*  CSS Twitter */
                 
                 table#tweets_table td {
                         padding: 3px;
-			border: 2px solid lightgrey;
-                        text-align: justify;
+			border: 2px solid grey;
+                        text-align: center;
 		}
                 table#tweets_table {
                         border-collapse:collapse;
@@ -210,12 +210,17 @@
                 table#tweets_table .odd {
 			background: #FFF;
 		}
+               .tweet_img{     /* image size is managed in admin.twitter.js */
+                       height:180px;
+                       width:320px;
+                       text-align: left;  /* image alignement */
+                }
                 
-               table#tweets_table_info { 
-                        font-weight: bold;
+                /* Use themeroller instead of next CSSs, to get a more complex table pagination */
+                #tweets_table_paginate > *{
+                    font-weight: bold;
+                    padding: 1%;
                 }
-               table#tweets_table_paginate{                       
-                        font-weight: bold;
-                        padding: 10%;
+                #tweets_table_info { 
+                    font-weight: bold;
                 }
-             

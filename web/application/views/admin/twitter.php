@@ -10,19 +10,20 @@
                         <?php echo form_submit( 'submit', 'search tweets' ); ?>
 			<?php echo form_close(); ?>
 		</div>
-		
+            
 		<div id="tweets">
 			<table width="100%" id="tweets_table">
 				<thead>
 					<tr>
-						<th width="5%">text</th>
-						<th width="25%">images</th>
+                                                <th width="10%">Date</th>
+                                                <th width="10%">Text</th>
+						<th width="35%">Images</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
 			</table>
 		</div>
-		
+                                             
 	</div>
 	
 </div>
