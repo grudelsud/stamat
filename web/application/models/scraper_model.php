@@ -55,6 +55,35 @@ class Scraper_model extends CI_Model
 		return $content;
 	}
 
+	function scrape_url( $url )
+	{
+		$rest_call = $url;
+		$request_type = 'get';
+		$auth_type = '';
+		$auth_params = '';
+		$post_params = array();
+		$response_e = $this->_execute_curl($rest_call, $request_type, $auth_type, $auth_params, $post_params);
+		return json_decode($response_e);
+	}
+
+	function scrape_stamat_ner( $feeditem_id )
+	{
+		$this->db->where('feeditem_id', $feeditem_id);
+		$query = $this->db->get('feeditemcontents');
+		if($query->num_rows() == 0) {
+			return FALSE;
+		} else {
+			$row = $query->row();
+			$rest_call = 'http://hack4europe.net:9000/extractEntities';
+			$request_type = 'post';
+			$auth_type = '';
+			$auth_params = '';
+			$post_params['content'] = strip_tags($row->content);
+			$response_e = $this->_execute_curl($rest_call, $request_type, $auth_type, $auth_params, $post_params);
+			return json_decode($response_e);
+		}
+	}
+
 	function scrape_micc_lda( $feeditem_id )
 	{
 		// check if feeditem exists and is already annotated

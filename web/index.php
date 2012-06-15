@@ -28,6 +28,9 @@ case 'stamat.net':
 	$fb_app_id = '105746679556989';
 	$fb_app_secret = '29759386d9ead63d70318c41e5219696';
 	break;
+case 'hack4europe.net':
+	$environment = 'hack4europe';
+	break;
 case 'londondroids.com':
 default:
 	$environment = 'production';
@@ -50,6 +53,7 @@ if (defined('ENVIRONMENT'))
 {
 	switch (ENVIRONMENT)
 	{
+		case 'hack4europe':
 		case 'development':
 			error_reporting(E_ALL);
 		break;

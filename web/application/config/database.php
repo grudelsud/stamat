@@ -48,11 +48,30 @@ switch( ENVIRONMENT ) {
 case 'production':
 	$active_group = 'default';
 	break;
+case 'hack4europe':
+	$active_group = 'h4e';
+	break;
 case 'development':
 default:
 	$active_group = 'dev';
 }
 $active_record = TRUE;
+
+$db['h4e']['hostname'] = 'localhost';
+$db['h4e']['username'] = 'root';
+$db['h4e']['password'] = 'root';
+$db['h4e']['database'] = 'stamat_h4e';
+$db['h4e']['dbdriver'] = 'mysql';
+$db['h4e']['dbprefix'] = '';
+$db['h4e']['pconnect'] = TRUE;
+$db['h4e']['db_debug'] = TRUE;
+$db['h4e']['cache_on'] = FALSE;
+$db['h4e']['cachedir'] = '';
+$db['h4e']['char_set'] = 'utf8';
+$db['h4e']['dbcollat'] = 'utf8_general_ci';
+$db['h4e']['swap_pre'] = '';
+$db['h4e']['autoinit'] = TRUE;
+$db['h4e']['stricton'] = FALSE;
 
 $db['dev']['hostname'] = 'localhost';
 $db['dev']['username'] = 'root';

@@ -57,3 +57,12 @@ article.feed_item_container {
 		padding: 4px 0 4px 3px;
 		border-bottom: 1px solid #eee;
 	}
+
+#media_directory .thumbnail {
+	height: 170px;
+	overflow: hidden;
+}
+
+#map_container {
+	height: 600px;
+}

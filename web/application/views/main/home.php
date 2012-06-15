@@ -41,8 +41,7 @@
 	<!-- #tab_map -->
 	<div class="tab-pane" id="tab_map">
 		<div class="row">
-			<div class="span12">
-				<p>howdy, map</p>
+			<div id="map_container" class="span12">
 			</div>
 		</div>
 	</div><!-- #tab_map -->

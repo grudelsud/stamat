@@ -24,6 +24,9 @@
 
 	Feed.Views.Collection = Backbone.View.extend({
 		el: '#tag_directory',
+		events: {
+			'click a.btn': 'feedSelect'
+		},
 		initialize: function() {
 			_.bindAll(this, 'render');
 			this.collection.bind('reset', this.render);
@@ -41,8 +44,18 @@
 				}, view);
 			}, this);
 			view.$el.find(':first').prepend('<li><a class="btn btn-inverse" href="#!/feeds/">all</a></li>');
+		},
+		feedSelect: function(e) {
+			var $btnSelect = $(e.target);
+			this.$el.find('li a.btn').removeClass('btn-primary');
+			$btnSelect.addClass('btn-primary');
+			this.$el.find('li ul').addClass('hidden');
+			$btnSelect.parent().find('ul').removeClass('hidden');
+			// $('#tag_directory li a.btn').removeClass('btn-primary');
+			// $(this).addClass('btn-primary');
+			// $('#tag_directory li ul').addClass('hidden');
+			// $(this).parent().find('ul').removeClass('hidden');
 		}
-
 	});
 
 })(readreactv.module('feed'));
