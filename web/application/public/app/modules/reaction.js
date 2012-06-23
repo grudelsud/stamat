@@ -29,7 +29,8 @@
 		el: '#reaction_directory',
 		events: {
 			'click .label': 'tagSelect',
-			'click .read-text': 'openPermalink'
+			'click .read-text': 'openPermalink',
+			'click .last-tweet': 'nextTweetPage'
 		},
 		initialize: function() {
 			this.model.on('change', this.render, this);
@@ -50,13 +51,17 @@
 			return this;
 		},
 		loadTweets: function() {
-			this.loadingTweets = true;
-			var selected_tags = this.model.get('tags').where({selected: true});
-			var query_terms = [];
-			_.each(selected_tags, function(tag) { query_terms.push(encodeURI(tag.get('name'))); });
-			var tweet_collection = this.model.get('tweets');
+			var view = this;
+			view.loadingTweets = true;
+
 			var tweet_template;
 			readreactv.fetchTemplate(this.templateTweet, function(tmpl) {tweet_template = tmpl;});
+
+			var query_terms = [];
+			var selected_tags = this.model.get('tags').where({selected: true});
+			_.each(selected_tags, function(tag) { query_terms.push(encodeURI(tag.get('name'))); });
+
+			var tweet_collection = this.model.get('tweets');
 			tweet_collection.query = query_terms.join('+');
 			tweet_collection.fetch({
 				success: function(tweets) {
@@ -64,9 +69,16 @@
 					_.each(tweets.models, function(tweet) {
 						$tweet_list.append(tweet_template(tweet.toJSON()));
 					});
-					this.loadingTweets = false;
+					$tweet_list.append('<div class="tweet"><div class="tweet_content"><i class="icon-refresh"></i> click to load another page</div></div>')
+					$('.tweet').removeClass('last-tweet');
+					$('.tweet:last').addClass('last-tweet');
+					view.loadingTweets = false;
 				}
 			});
+		},
+		nextTweetPage: function() {
+			this.model.get('tweets').page += 1;
+			this.loadTweets();
 		},
 		tagSelect: function(e) {
 			var $label = $(e.target);
@@ -79,6 +91,8 @@
 			} else {
 				tag_obj.set({selected: false});
 			}
+			this.model.get('tweets').reset();
+			this.model.get('tweets').page = 1;
 			this.loadTweets();
 		},
 		openPermalink: function(e) {

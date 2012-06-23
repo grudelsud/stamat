@@ -20,8 +20,7 @@ article.feed_item_container {
 
 	#reaction_directory #content_media, #reaction_directory #content_tweets {
 		max-height: 300px;
-		overflow-x: none;
-		overflow-y: scroll;
+		overflow: scroll;
 	}
 	#reaction_directory .tweet {
 		padding: 3px 3px 8px 0;

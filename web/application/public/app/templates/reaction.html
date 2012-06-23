@@ -9,19 +9,46 @@
 <div id="content_entities"></div>
 <h3>Media</h3>
 <div id="content_media">
-	<ul class="thumbnails">
-	<% _.each(media.models, function(item) { %>
-		<li class="span2">
-		<a href="<%= item.get('url') %>" class="thumbnail">
-		<% if(item.get('type') == 'image') { %>
-		<img src="<%= item.get('url') %>">
-		<% } else if(item.get('type') == 'video') { %>
-		<i class="icon-film"></i>
-		<% } %>
-		</a>
-		</li>
-	<% }); %>	
-	</ul>
+	<div class="row">
+		<div class="span2 list1">
+		<ul class="thumbnails">
+		<% var count = 0; %>
+		<% _.each(media.models, function(item) { %>
+			<% count++; %>
+			<% if(count % 2 == 1) { %>
+			<li class="span2">
+			<a href="<%= item.get('url') %>" class="thumbnail">
+			<% if(item.get('type') == 'image') { %>
+			<img src="<%= item.get('url') %>">
+			<% } else if(item.get('type') == 'video') { %>
+			<i class="icon-film"></i>
+			<% } %>
+			</a>
+			</li>
+			<% } %>
+		<% }); %>	
+		</ul>		
+		</div>
+		<div class="span2 list2">
+		<ul class="thumbnails">
+		<% count = 0; %>
+		<% _.each(media.models, function(item) { %>
+			<% count++; %>
+			<% if(count % 2 == 0) { %>
+			<li class="span2">
+			<a href="<%= item.get('url') %>" class="thumbnail">
+			<% if(item.get('type') == 'image') { %>
+			<img src="<%= item.get('url') %>">
+			<% } else if(item.get('type') == 'video') { %>
+			<i class="icon-film"></i>
+			<% } %>
+			</a>
+			</li>
+			<% } %>
+		<% }); %>
+		</ul>
+		</div>
+	</div>
 </div>
 <h3>Tweets</h3>
 <div id="content_tweets"></div>

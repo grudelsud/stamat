@@ -8,7 +8,7 @@
 			tags: new Tag.Collection()
 		},
 		parse: function(response) {
-			// this is a little bit of magic
+			// a little bit of magic
 			response.tags = new Tag.Collection(response.tags)
 			return response;
 		}
@@ -51,10 +51,6 @@
 			$btnSelect.addClass('btn-primary');
 			this.$el.find('li ul').addClass('hidden');
 			$btnSelect.parent().find('ul').removeClass('hidden');
-			// $('#tag_directory li a.btn').removeClass('btn-primary');
-			// $(this).addClass('btn-primary');
-			// $('#tag_directory li ul').addClass('hidden');
-			// $(this).parent().find('ul').removeClass('hidden');
 		}
 	});
 
