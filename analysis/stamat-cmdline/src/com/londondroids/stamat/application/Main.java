@@ -67,7 +67,7 @@ public class Main {
 		// image index create
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("create image index, requires options -iI and -iF")
+				.withDescription("create image index, requires options -iI, -iF, -i")
 				.withLongOpt("image-create-index")
 				.create("Vc"));
 		// image similarity query
@@ -189,8 +189,8 @@ public class Main {
 		String langStopwords = line.getOptionValue("ls");
 		String entityClassifierPath = line.getOptionValue("ep");
 		String imagePath = line.getOptionValue("i");
-		String indexPath = line.getOptionValue("I");
-		String imageFolderPath = line.getOptionValue("F");
+		String indexPath = line.getOptionValue("iI");
+		String imageFolderPath = line.getOptionValue("iF");
 
 		int numOutputs = 0;
 		int numKeywords = 0;
@@ -236,7 +236,7 @@ public class Main {
 		// image query
 		if( line.hasOption("Vq")) {
 			if(imagePath == null | indexPath == null | numOutputs == 0) {
-				System.out.println("With -Vq use options: -i, -I, -n");
+				System.out.println("With -Vq use options: -i, -iI, -n");
 			} else {
 				try {
 					List<SearchResult> results = VisualSimilarity.queryImage(imagePath, indexPath, numOutputs);
@@ -251,14 +251,21 @@ public class Main {
 
 		// image index create
 		} else if( line.hasOption("Vc")) {
-			if( indexPath == null | imageFolderPath == null ) {
-				System.out.println("With -Vc use options: -I, -F");
-			} else {
-				try {
-					VisualSimilarity.createIndex(indexPath, imageFolderPath);
-				} catch (IOException e) {
-					System.err.println(e.getMessage());
+			if( indexPath == null) {
+				System.out.println("With -Vc use options: -iI");
+			} else if(line.hasOption("i")) {
+					try {
+						VisualSimilarity.updateIndex(indexPath, imagePath);
+					} catch (IOException e) {
+						System.err.println(e.getMessage());
+					}
 				}				
+				else{
+					try {
+						VisualSimilarity.createIndex(indexPath, imageFolderPath);
+					} catch (IOException e) {
+						System.err.println(e.getMessage());
+					}				
 			}
 			return;
 

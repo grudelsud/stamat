@@ -14,17 +14,20 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 
+
+
 public class Indexing {
 	private String indexPath;
-	private String imageFolderPath;
 	
-	public Indexing(String indexPath, String imageFolderPath) {
+	
+	public Indexing(String indexPath) {
 		this.indexPath = indexPath;
-		this.imageFolderPath = imageFolderPath;
 	}
 	
-	public void createIndex() throws CorruptIndexException, LockObtainFailedException, IOException{
+	public void createIndex(String imageFolderPath) throws CorruptIndexException, LockObtainFailedException, IOException{
 		long starttime = System.currentTimeMillis();
+		
+		
 		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), new SimpleAnalyzer(), true, IndexWriter.MaxFieldLength.UNLIMITED);
 		// Create an appropriate DocumentBuilder
 		// getExtensiveDocumentBuilder(): ColorLayout, EdgeHistogram and ScalableColor
@@ -34,12 +37,28 @@ public class Indexing {
 		int i = 0;
 		int n = dir.listFiles().length;
 		for(File file : dir.listFiles()){
-			Document doc = builder.createDocument(new FileInputStream(file), file.getName());
-			iw.addDocument(doc);
-			System.out.println((++i)+"/"+n);
+			String fName = file.getName();
+			if (fName.lastIndexOf(".")>0){
+				Document doc = builder.createDocument(new FileInputStream(file), file.getName());
+				iw.addDocument(doc);
+				System.out.println((++i)+"/"+n);
+			}
 		}
 		iw.optimize();
 		iw.close();
 		System.out.println("Indexing time: "+ (System.currentTimeMillis()-starttime) + " ms");
 	}
+	
+	public void updateIndex(String imagePath) throws CorruptIndexException, LockObtainFailedException, IOException{
+		long starttime = System.currentTimeMillis();
+		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), new SimpleAnalyzer(), false, IndexWriter.MaxFieldLength.UNLIMITED);
+		DocumentBuilder builder = DocumentBuilderFactory.getExtensiveDocumentBuilder();
+		File file = new File(imagePath);
+		Document doc = builder.createDocument(new FileInputStream(file), file.getName());
+		iw.addDocument(doc);
+		iw.optimize();
+		iw.close();
+		System.out.println("Indexing time: "+ (System.currentTimeMillis()-starttime) + " ms");
+	}
+	
 }

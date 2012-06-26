@@ -36,10 +36,14 @@ public class VisualSimilarity {
 	 * @throws IOException
 	 */
 	public static void createIndex(String indexPath, String imageFolderPath) throws IOException {
-		Indexing indexing = new Indexing(indexPath, imageFolderPath);
-		indexing.createIndex();
+		Indexing indexing = new Indexing(indexPath);
+		indexing.createIndex(imageFolderPath);
 	}
 
+	public static void updateIndex(String indexPath, String imagePath) throws IOException {
+		Indexing indexing = new Indexing(indexPath);
+		indexing.updateIndex(imagePath);
+	}
 	/**
 	 * @param imagePath
 	 * @param numberOfResults
