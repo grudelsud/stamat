@@ -5,9 +5,6 @@
 	<classpathentry kind="lib" path="lib/commons-math3-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-3.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/caliph-emir-cbir.jar"/>
-	<classpathentry kind="lib" path="lib/Jama-1.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/lire.jar"/>
 	<classpathentry kind="lib" path="lib/concurrent.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/mallet-deps.jar"/>
@@ -17,5 +14,7 @@
 	<classpathentry kind="lib" path="lib/langdetect.jar"/>
 	<classpathentry kind="lib" path="lib/jsonic-1.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/stanford-ner.jar"/>
+	<classpathentry kind="lib" path="lib/JOpenSurf.jar"/>
+	<classpathentry kind="lib" path="lib/lire.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

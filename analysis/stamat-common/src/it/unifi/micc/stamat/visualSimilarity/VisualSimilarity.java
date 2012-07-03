@@ -35,14 +35,14 @@ public class VisualSimilarity {
 	 * @throws LockObtainFailedException
 	 * @throws IOException
 	 */
-	public static void createIndex(String indexPath, String imageFolderPath) throws IOException {
+	public static void createIndexCEDD(String indexPath, String imageFolderPath) throws IOException {
 		Indexing indexing = new Indexing(indexPath);
-		indexing.createIndex(imageFolderPath);
+		indexing.createIndexCEDD(imageFolderPath);
 	}
 
-	public static void updateIndex(String indexPath, String imagePath) throws IOException {
+	public static void updateIndexCEDD(String indexPath, String imagePath) throws IOException {
 		Indexing indexing = new Indexing(indexPath);
-		indexing.updateIndex(imagePath);
+		indexing.updateIndexCEDD(imagePath);
 	}
 	/**
 	 * @param imagePath
@@ -68,17 +68,14 @@ public class VisualSimilarity {
 
 	/**
 	 * @param queryImage
-	 * @param weightSCD
-	 * @param weightCLD
-	 * @param weightEHD
 	 * @param numberOfResults
 	 * @return
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
 	private static List<SearchResult> getQueryImageResults(File queryImage,String indexPath, float weightSCD, float weightCLD, float weightEHD, int numberOfResults) throws CorruptIndexException, IOException {
-		Search search = new Search(indexPath, weightSCD, weightCLD, weightEHD, numberOfResults+1);
-		List<SearchResult> currentResult = search.search(queryImage);
+		Search search = new Search(indexPath, numberOfResults+1);
+		List<SearchResult> currentResult = search.searcherCEDD(queryImage);
 		return currentResult;
 	}
 

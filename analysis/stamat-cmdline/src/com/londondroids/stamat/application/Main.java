@@ -255,14 +255,14 @@ public class Main {
 				System.out.println("With -Vc use options: -iI");
 			} else if(line.hasOption("i")) {
 					try {
-						VisualSimilarity.updateIndex(indexPath, imagePath);
+						VisualSimilarity.updateIndexCEDD(indexPath, imagePath);
 					} catch (IOException e) {
 						System.err.println(e.getMessage());
 					}
 				}				
 				else{
 					try {
-						VisualSimilarity.createIndex(indexPath, imageFolderPath);
+						VisualSimilarity.createIndexCEDD(indexPath, imageFolderPath);
 					} catch (IOException e) {
 						System.err.println(e.getMessage());
 					}				
