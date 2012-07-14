@@ -8,15 +8,21 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+import javax.swing.ProgressMonitor;
 
 import net.semanticmetadata.lire.DocumentBuilder;
 import net.semanticmetadata.lire.DocumentBuilderFactory;
+import net.semanticmetadata.lire.imageanalysis.bovw.SiftFeatureHistogramBuilder;
+import net.semanticmetadata.lire.impl.ChainedDocumentBuilder;
+import net.semanticmetadata.lire.impl.SiftDocumentBuilder;
 import net.semanticmetadata.lire.utils.FileUtils;
+import net.semanticmetadata.lire.utils.LuceneUtils;
 
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
@@ -89,5 +95,30 @@ public class Indexing {
     	iw.close();
 		//System.out.println("Indexing time: "+ (System.currentTimeMillis()-starttime) + " ms");
 	}
+	
+	public void createIndexSIFT(String imageFolderPath) throws IOException {
+	       
+        // create the initial local features:
+        ChainedDocumentBuilder builder = new ChainedDocumentBuilder();
+        builder.addBuilder(new SiftDocumentBuilder());
+        IndexWriter iw = LuceneUtils.createIndexWriter(indexPath, true);
+        ArrayList<String> images = FileUtils.getAllImages(new File(imageFolderPath), true);
+        for (String identifier : images) {
+        	Document doc = builder.createDocument(new FileInputStream(identifier), identifier);
+            iw.addDocument(doc);
+            
+        }
+        iw.close();
+ 
+        // create the visual words.
+        IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
+        // create a BoVW indexer
+        int numDocsForVocabulary = 1500; // gives the number of documents for building the vocabulary (clusters).
+        int numClusters= 8000;
+        SiftFeatureHistogramBuilder sh = new SiftFeatureHistogramBuilder(ir, numDocsForVocabulary, numClusters);
+        // progress monitoring is optional and opens a window showing you the progress.
+        sh.setProgressMonitor(new ProgressMonitor(null, "", "", 0, 100));  
+        sh.index();
+}
 	
 }
