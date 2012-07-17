@@ -1,12 +1,12 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.topic;
+package it.unifi.micc.homer.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
+import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 
 /**
  * @author bertini

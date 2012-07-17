@@ -1,9 +1,10 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.namedentity;
+package it.unifi.micc.homer.controller.namedentity;
 
 import it.unifi.micc.homer.model.KeywordType;
+import it.unifi.micc.homer.model.NamedEntity;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 	}
 
 	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.model.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
+	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
 	 */
 	@Override
 	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) {
@@ -71,7 +72,7 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 	}
 
 	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.model.namedentity.NamedEntityDetector#getEntities()
+	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#getEntities()
 	 */
 	@Override
 	public ArrayList<NamedEntity> getEntities() {

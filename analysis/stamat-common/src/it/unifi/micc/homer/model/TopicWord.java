@@ -1,13 +1,13 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.topic;
+package it.unifi.micc.homer.model;
 
 /**
  * @author bertini
  *
  */
-public class TopicWord {
+public class TopicWord extends SemanticKeyword {
 	private String word;
 	private double weight;
 	private int count;

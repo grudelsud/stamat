@@ -64,17 +64,17 @@ public class Main {
 				.withDescription("extract topics from text, requires options (-t | -tp) -n -nk -lm -ls")
 				.withLongOpt("topic-extract")
 				.create("Tx"));
-		// image index create
+		// visual index create
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("create image index, requires options -iI, -iF, -i")
-				.withLongOpt("image-create-index")
+				.withDescription("create visual index, requires options -iI, -iF, -i")
+				.withLongOpt("visual-create-index")
 				.create("Vc"));
-		// image similarity query
+		// visual similarity query
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("query for image similarity, requires options -i, -iI and -n")
-				.withLongOpt("image-query")
+				.withDescription("query for visual similarity, requires options -i, -iI and -n")
+				.withLongOpt("visual-query")
 				.create("Vq"));
 		options.addOptionGroup(ogMain);
 
@@ -249,23 +249,22 @@ public class Main {
 			}
 			return;
 
-		// image index create
+		// visual index create
 		} else if( line.hasOption("Vc")) {
 			if( indexPath == null) {
-				System.out.println("With -Vc use options: -iI");
-			} else if(line.hasOption("i")) {
-					try {
-						VisualSimilarity.updateIndexCEDD(indexPath, imagePath);
-					} catch (IOException e) {
-						System.err.println(e.getMessage());
-					}
+				System.out.println("create visual index, requires options -iI, -iF, -i");
+			} else if( imagePath != null ) {
+				try {
+					VisualSimilarity.updateIndexCEDD(indexPath, imagePath);
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
+				}
+			} else if( imageFolderPath != null ) {
+				try {
+					VisualSimilarity.createIndexCEDD(indexPath, imageFolderPath);
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
 				}				
-				else{
-					try {
-						VisualSimilarity.createIndexCEDD(indexPath, imageFolderPath);
-					} catch (IOException e) {
-						System.err.println(e.getMessage());
-					}				
 			}
 			return;
 

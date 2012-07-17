@@ -5,7 +5,7 @@ package it.unifi.micc.homer;
 
 import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.model.SemanticKeyword;
-import it.unifi.micc.homer.model.tagcloud.TagCloud;
+import it.unifi.micc.homer.model.TagCloud;
 import it.unifi.micc.homer.util.HomerConstants;
 import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;

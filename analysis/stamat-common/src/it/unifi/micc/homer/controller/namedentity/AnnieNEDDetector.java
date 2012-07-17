@@ -1,4 +1,4 @@
-package it.unifi.micc.homer.model.namedentity;
+package it.unifi.micc.homer.controller.namedentity;
 
 import gate.Annotation;
 import gate.AnnotationSet;
@@ -11,6 +11,7 @@ import gate.corpora.DocumentContentImpl;
 import gate.creole.ResourceInstantiationException;
 import gate.util.GateException;
 import it.unifi.micc.homer.model.KeywordType;
+import it.unifi.micc.homer.model.NamedEntity;
 import it.unifi.micc.homer.util.StringOperations;
 
 import java.io.File;
@@ -68,7 +69,7 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 	}
 
 	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.model.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
+	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
 	 */
 	@Override
 	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) {
@@ -130,10 +131,10 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 					iter = auxEntities.iterator();
 					while (iter.hasNext() && occurrence == false && substitute == false) {
 						NamedEntity ed = iter.next();
-						if (ed.getValue().equals(entity) == true || ed.getValue().length() > entity.length()
-								&& ed.getValue().indexOf(entity) >= 0) {
+						if (ed.getKeyword().equals(entity) == true || ed.getKeyword().length() > entity.length()
+								&& ed.getKeyword().indexOf(entity) >= 0) {
 							occurrence = true;
-						} else if (ed.getValue().length() < entity.length() && entity.indexOf(ed.getValue()) >= 0) {
+						} else if (ed.getKeyword().length() < entity.length() && entity.indexOf(ed.getKeyword()) >= 0) {
 							substitute = true;
 							index = auxEntities.indexOf(ed);
 						}
@@ -142,14 +143,14 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 						NamedEntity currEntity = new NamedEntity();
 						currEntity.setStart((auxAnnotation.getStartNode().getOffset().intValue()));
 						currEntity.setEnd((auxAnnotation.getEndNode().getOffset().intValue()));
-						currEntity.setValue(entity.trim());
+						currEntity.setKeyword(entity.trim());
 						currEntity.setType(KeywordType.fromString(auxAnnotation.getType()));
 						auxEntities.add(currEntity);
 					} else if (substitute == true) {
 						NamedEntity currEntity = new NamedEntity();
 						currEntity.setStart((auxAnnotation.getStartNode().getOffset().intValue()));
 						currEntity.setEnd((auxAnnotation.getEndNode().getOffset().intValue()));
-						currEntity.setValue(entity.trim());
+						currEntity.setKeyword(entity.trim());
 						currEntity.setType(KeywordType.fromString(auxAnnotation.getType()));
 						auxEntities.set(index, currEntity);
 					}
@@ -165,7 +166,7 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 	}
 
 	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.model.namedentity.NamedEntityDetector#getEntities()
+	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#getEntities()
 	 */
 	@Override
 	public ArrayList<NamedEntity> getEntities() {

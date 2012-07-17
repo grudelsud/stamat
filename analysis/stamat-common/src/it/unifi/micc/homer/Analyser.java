@@ -1,15 +1,15 @@
 package it.unifi.micc.homer;
 
+import it.unifi.micc.homer.controller.namedentity.AnnieNEDDetector;
+import it.unifi.micc.homer.controller.namedentity.NamedEntityDetector;
+import it.unifi.micc.homer.controller.namedentity.StanfordNERecognizer;
+import it.unifi.micc.homer.controller.topic.TopicDetector;
 import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.model.KeywordType;
+import it.unifi.micc.homer.model.NamedEntity;
 import it.unifi.micc.homer.model.SemanticKeyword;
-import it.unifi.micc.homer.model.namedentity.AnnieNEDDetector;
-import it.unifi.micc.homer.model.namedentity.NamedEntity;
-import it.unifi.micc.homer.model.namedentity.NamedEntityDetector;
-import it.unifi.micc.homer.model.namedentity.StanfordNERecognizer;
-import it.unifi.micc.homer.model.topic.Topic;
-import it.unifi.micc.homer.model.topic.TopicDetector;
-import it.unifi.micc.homer.model.topic.TopicWord;
+import it.unifi.micc.homer.model.Topic;
+import it.unifi.micc.homer.model.TopicWord;
 import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;
 
@@ -28,14 +28,23 @@ import org.json.JSONObject;
  */
 public class Analyser {
 
-	public static Vector<SemanticKeyword> entityExtractStanford(String text, String classifierPath)
+	/**
+	 * @param text
+	 * @param classifierPath
+	 * @return
+	 */
+	public static ArrayList<NamedEntity> entityExtractStanford(String text, String classifierPath)
 	{
 		NamedEntityDetector ned = StanfordNERecognizer.getInstance(classifierPath);
 		ArrayList<NamedEntity> entityList = ned.extractEntity(text, null);
-		Vector<SemanticKeyword> semanticKeywordVector = namedEntityList2semanticKeywordList(text, entityList);
-		return semanticKeywordVector;
+		return evalTFs(text, entityList);
 	}
 
+	/**
+	 * @param text
+	 * @param classifierPath
+	 * @return
+	 */
 	public static JSONObject entityExtractStanfordJSON(String text, String classifierPath)
 	{
 		JSONObject result = new JSONObject();
@@ -48,14 +57,25 @@ public class Analyser {
 		return result;
 	}
 
-	public static Vector<SemanticKeyword> entityExractAnnie(String text, ArrayList<KeywordType> keywordTypes, String gateHome)
+	/**
+	 * @param text
+	 * @param keywordTypes
+	 * @param gateHome
+	 * @return
+	 */
+	public static ArrayList<NamedEntity> entityExractAnnie(String text, ArrayList<KeywordType> keywordTypes, String gateHome)
 	{
 		NamedEntityDetector ned = AnnieNEDDetector.getInstance(gateHome);
 		ArrayList<NamedEntity> entityList = ned.extractEntity(text, keywordTypes);	//returns entities without repetitions		
-		Vector<SemanticKeyword> semanticKeywordVector = namedEntityList2semanticKeywordList(text, entityList);
-		return semanticKeywordVector;
+		return evalTFs(text, entityList);
 	}
 
+	/**
+	 * @param text
+	 * @param keywordTypes
+	 * @param gateHome
+	 * @return
+	 */
 	public static JSONObject entityExractAnnieJSON(String text, ArrayList<KeywordType> keywordTypes, String gateHome)
 	{
 		JSONObject result = new JSONObject();
@@ -68,12 +88,29 @@ public class Analyser {
 		return result;
 	}
 
+	/**
+	 * @param texts
+	 * @param numTopics
+	 * @param numTopWords
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @return
+	 * @throws Exception
+	 */
 	public static Vector<SemanticKeyword> topicExtract(List<String> texts, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath) throws Exception
 	{
 		Vector<SemanticKeyword> semanticKeywordVector = TopicDetector.extract(texts, langModelsPath, langStopwordPath, numTopics, numTopWords);
 		return semanticKeywordVector;
 	}
 
+	/**
+	 * @param texts
+	 * @param numTopics
+	 * @param numTopWords
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @return
+	 */
 	public static JSONObject topicExtractJSON(List<String> texts, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath)
 	{
 		JSONObject result = new JSONObject();
@@ -86,12 +123,31 @@ public class Analyser {
 		return result;
 	}
 
+	/**
+	 * @param texts
+	 * @param numTopics
+	 * @param numTopWords
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @param ldaModelPath
+	 * @return
+	 * @throws Exception
+	 */
 	public static Vector<SemanticKeyword> topicExtract(List<String> texts, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath, String ldaModelPath) throws Exception 
 	{
 		Vector<SemanticKeyword> semanticKeywordVector = TopicDetector.extract(texts, langModelsPath, langStopwordPath, numTopics, numTopWords, ldaModelPath);
 		return semanticKeywordVector;
 	}
 
+	/**
+	 * @param texts
+	 * @param numTopics
+	 * @param numTopWords
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @param ldaModelPath
+	 * @return
+	 */
 	public static JSONObject topicExtractJSON(List<String> texts, int numTopics, int numTopWords, String langModelsPath, String langStopwordPath, String ldaModelPath) 
 	{
 		JSONObject result = new JSONObject();
@@ -104,12 +160,29 @@ public class Analyser {
 		return result;
 	}
 
+	/**
+	 * @param texts
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @param numTopWords
+	 * @param ldaModelPath
+	 * @return
+	 * @throws Exception
+	 */
 	public static List<Topic> topicInfer(List<String> texts, String langModelsPath, String langStopwordPath, int numTopWords, String ldaModelPath) throws Exception
 	{
 		List<Topic> topics = TopicDetector.infer(texts, langModelsPath, langStopwordPath, numTopWords, ldaModelPath);
 		return topics;
 	}
 
+	/**
+	 * @param texts
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @param numTopWords
+	 * @param ldaModelPath
+	 * @return
+	 */
 	public static JSONObject topicInferJSON(List<String> texts, String langModelsPath, String langStopwordPath, int numTopWords, String ldaModelPath)
 	{
 		JSONObject result = new JSONObject();
@@ -122,6 +195,14 @@ public class Analyser {
 		return result;
 	}
 
+	/**
+	 * @param trainingTexts
+	 * @param numTopics
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @param ldaModelPath
+	 * @return
+	 */
 	public static JSONObject trainModelJSON(List<String> trainingTexts, int numTopics, String langModelsPath, String langStopwordPath, String ldaModelPath) 
 	{
 		JSONObject result = new JSONObject();
@@ -134,6 +215,13 @@ public class Analyser {
 		return result;
 	}
 
+	/**
+	 * @param text
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @return
+	 * @throws Exception
+	 */
 	public static Vector<SemanticKeyword> languageDetection(String text, String langModelsPath, String langStopwordPath) throws Exception 
 	{
 		AsciiTextDocument textDocument = new AsciiTextDocument(text);
@@ -144,6 +232,12 @@ public class Analyser {
 		return semanticKeywordVector;
 	}
 
+	/**
+	 * @param text
+	 * @param langModelsPath
+	 * @param langStopwordPath
+	 * @return
+	 */
 	public static JSONObject languageDetectionJSON(String text, String langModelsPath, String langStopwordPath) 
 	{
 		JSONObject result = new JSONObject();
@@ -156,6 +250,10 @@ public class Analyser {
 		return result;
 	}
 	
+	/**
+	 * @param topicList
+	 * @return
+	 */
 	private static JSONArray topicList2JSON(List<Topic> topicList) 
 	{
 		JSONArray topicsJSON = new JSONArray();
@@ -182,7 +280,11 @@ public class Analyser {
 		return topicsJSON;
 	}
 
-	private static JSONArray semanticKeywordList2JSON(List<SemanticKeyword> semanticKeywordList) 
+	/**
+	 * @param semanticKeywordList
+	 * @return
+	 */
+	private static JSONArray semanticKeywordList2JSON(List<? extends SemanticKeyword> semanticKeywordList) 
 	{
 		JSONArray keywordsJSON = new JSONArray();
 		for(SemanticKeyword semanticKeyword : semanticKeywordList) {
@@ -201,18 +303,25 @@ public class Analyser {
 		return keywordsJSON;
 	}
 
-	private static Vector<SemanticKeyword> namedEntityList2semanticKeywordList(String text, ArrayList<NamedEntity> result) 
+	/**
+	 * @param text
+	 * @param result
+	 * @return
+	 */
+	private static ArrayList<NamedEntity> evalTFs(String text, ArrayList<NamedEntity> result) 
 	{
-		Vector<SemanticKeyword> v = new Vector<SemanticKeyword>(result.size());
 		int docSize = WordCounter.countWords(text);
 		for( NamedEntity an : result ) {
-			SemanticKeyword as = new SemanticKeyword(an.getValue(), (float) 1.0, an.getType(), 0.0);
-			as.setNumOccurrences(WordCounter.countWordInstances(text, as.getKeyword().trim()));
-			as.setTf((float)((float)as.getNumOccurrences()/(float)docSize));
-			if(as.getTf()==0)	// the regex of countWordInstances compute the presence of only separated words:
-				as.setTf(1);	// if entity has some symbols next to it then it won't be counted	 
-			v.add(as);
+			String keyword = an.getKeyword().trim();
+			int numOccurrences = WordCounter.countWordInstances(text, keyword);
+			an.setNumOccurrences(numOccurrences);
+			an.setTf((float)numOccurrences / (float)docSize);
+
+			// the regex of countWordInstances compute the presence of only separated words: if entity has some symbols next to it then it won't be counted	 
+			if(an.getTf()==0) {
+				an.setTf(1);
+			}
 		}
-		return v;
+		return result;
 	}
 }

@@ -1,31 +1,28 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.namedentity;
+package it.unifi.micc.homer.model;
 
-import it.unifi.micc.homer.model.KeywordType;
 
 /**
  * @author bertini
  * 
  */
-public class NamedEntity implements Comparable<Object> {
+public class NamedEntity extends SemanticKeyword implements Comparable<Object> {
 
-	private KeywordType type;
-	private String value;
 	/** Contains the start position of entity's value */
-	private int start;
+	private int start = 0;
 	/** Contains the start position of entity's value */
-	private int end;
+	private int end = 0;
 
 	public NamedEntity() {	
 	}
 
-	public NamedEntity(KeywordType type, String value) {
+	public NamedEntity(KeywordType type, String keyword)
+	{
+		super();
 		this.type = type;
-		this.value = value;
-		this.start = 0;
-		this.end = 0;
+		this.keyword = keyword;
 	}
 
 	public int compareTo(Object o) 
@@ -38,23 +35,6 @@ public class NamedEntity implements Comparable<Object> {
 			return 0;
 		else
 			return 1;
-	}
-
-	// Getter and Setter methods
-	public KeywordType getType() {
-		return type;
-	}
-
-	public void setType(KeywordType type) {
-		this.type = type;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
 	}
 
 	public int getStart() {

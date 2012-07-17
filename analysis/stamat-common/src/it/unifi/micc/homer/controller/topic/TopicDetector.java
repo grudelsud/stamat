@@ -1,13 +1,15 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.topic;
+package it.unifi.micc.homer.controller.topic;
 
+import it.unifi.micc.homer.controller.language.LanguageDetector;
+import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.TextDocument;
-import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
-import it.unifi.micc.homer.model.language.LanguageDetector;
+import it.unifi.micc.homer.model.Topic;
+import it.unifi.micc.homer.model.TopicWord;
 import it.unifi.micc.homer.util.HomerConstants;
 import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.StringOperations;

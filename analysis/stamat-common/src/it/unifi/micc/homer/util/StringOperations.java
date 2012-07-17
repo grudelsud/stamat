@@ -10,7 +10,7 @@ import java.text.Normalizer;
 
 import org.jsoup.Jsoup;
 
-import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
+import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 
 public class StringOperations {
 	private static final String PLAIN_ASCII = "AaEeIiOoUu" // grave

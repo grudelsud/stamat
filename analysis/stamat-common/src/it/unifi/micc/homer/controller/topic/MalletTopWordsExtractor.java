@@ -1,7 +1,9 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.topic;
+package it.unifi.micc.homer.controller.topic;
+
+import it.unifi.micc.homer.model.TopicWord;
 
 import java.util.ArrayList;
 import java.util.Iterator;

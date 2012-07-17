@@ -1,4 +1,4 @@
-package it.unifi.micc.homer.model.topic;
+package it.unifi.micc.homer.controller.topic;
 
 import java.io.File;
 import cc.mallet.topics.ParallelTopicModel;

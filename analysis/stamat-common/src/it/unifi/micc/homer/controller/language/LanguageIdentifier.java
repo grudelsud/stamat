@@ -1,4 +1,4 @@
-package it.unifi.micc.homer.model.language;
+package it.unifi.micc.homer.controller.language;
 
 import it.unifi.micc.homer.model.TextDocument;
 import it.unifi.micc.homer.util.HomerException;

@@ -1,6 +1,7 @@
-package it.unifi.micc.homer.model.namedentity;
+package it.unifi.micc.homer.controller.namedentity;
 
 import it.unifi.micc.homer.model.KeywordType;
+import it.unifi.micc.homer.model.NamedEntity;
 
 import java.util.ArrayList;
 

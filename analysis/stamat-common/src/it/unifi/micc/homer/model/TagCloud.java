@@ -1,12 +1,9 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.tagcloud;
+package it.unifi.micc.homer.model;
 
-import it.unifi.micc.homer.model.KeywordType;
-import it.unifi.micc.homer.model.SemanticKeyword;
-import it.unifi.micc.homer.model.TextDocument;
-import it.unifi.micc.homer.model.language.LanguageDetector;
+import it.unifi.micc.homer.controller.language.LanguageDetector;
 import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;
 

@@ -5,8 +5,8 @@ package it.unifi.micc.homer.model;
 
 import java.util.List;
 
-import it.unifi.micc.homer.model.language.LanguageDetector;
-import it.unifi.micc.homer.model.language.LanguageIdentifier.Language;
+import it.unifi.micc.homer.controller.language.LanguageDetector;
+import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 import it.unifi.micc.homer.util.HomerException;
 
 /**

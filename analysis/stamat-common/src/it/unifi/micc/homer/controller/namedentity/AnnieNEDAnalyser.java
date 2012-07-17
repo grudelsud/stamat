@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.unifi.micc.homer.model.namedentity;
+package it.unifi.micc.homer.controller.namedentity;
 
 /**
  * @author bertini
