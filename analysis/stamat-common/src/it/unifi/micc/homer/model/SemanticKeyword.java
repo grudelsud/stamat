@@ -53,8 +53,8 @@ public class SemanticKeyword {
 		this.keyword = keyword;
 		this.confidence = confidence;
 		this.type = type;
-		numOccurrences = 0;
-		tf = (float) 0.0;
+		numOccurrences = 1;
+		tf = (float)1.0;
 		this.probability=probability;
 	}
 

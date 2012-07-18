@@ -10,10 +10,20 @@ import views.html.*;
 
 public class Application extends Controller {
 
-	public static Result index() {
+	public static Result index()
+	{
 		ObjectNode result = Json.newObject();
 		result.put("success", "all good");
 		return ok(result);
 	}
 
+	public static Result entitiesExtract()
+	{
+		
+	}
+	
+	public static Result visualSimilarity()
+	{
+		
+	}
 }

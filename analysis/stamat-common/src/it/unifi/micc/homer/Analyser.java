@@ -227,7 +227,7 @@ public class Analyser {
 		AsciiTextDocument textDocument = new AsciiTextDocument(text);
 		Vector<SemanticKeyword> semanticKeywordVector = new Vector<SemanticKeyword>();
 		textDocument.autoSetLanguage(langModelsPath, langStopwordPath);
-		SemanticKeyword sw = new SemanticKeyword(textDocument.getLanguage().toString(), (float) 1.0, KeywordType.LANGUAGE, 0.0);
+		SemanticKeyword sw = new SemanticKeyword(textDocument.getLanguage().toString(), (float)1.0, KeywordType.LANGUAGE, 1.0);
 		semanticKeywordVector.add(sw);
 		return semanticKeywordVector;
 	}

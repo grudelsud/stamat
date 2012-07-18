@@ -311,8 +311,8 @@ public class Main {
 
 		// language detect
 		} else if( line.hasOption("L")) {
-			if( text == null | langModels == null | langStopwords == null ) {
-				System.out.println("With -L use options: -t -lm -ls");
+			if( texts.size() < 1 | langModels == null | langStopwords == null ) {
+				System.out.println("With -L use options: (-t | -tp) -lm -ls");
 			} else {			
 				JSONObject result = Analyser.languageDetectionJSON(text, langModels, langStopwords);
 				System.out.println(result.toString());
