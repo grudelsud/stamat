@@ -34,7 +34,8 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 	private StanfordNERecognizer() {
 	}
 
-	public static StanfordNERecognizer getInstance(String serializedClassifier) {
+	public static StanfordNERecognizer getInstance(String serializedClassifier) 
+	{
 		if(instance == null) {
 			instance = new StanfordNERecognizer();
 			StanfordNERecognizer.serializedClassifier = serializedClassifier;
@@ -42,16 +43,23 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 		return instance;
 	}
 
+	public String extractEntity2XML(String text, ArrayList<KeywordType> type)
+	{
+		entities = new ArrayList<NamedEntity>();
+		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(this.serializedClassifier);
+		String out = "<xml>" + classifier.classifyWithInlineXML(text).replaceAll("(\\[|\\])", "") + "</xml>";
+		return out;
+	}
+	
 	/* (non-Javadoc)
 	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
 	 */
 	@Override
-	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) {
-		entities = new ArrayList<NamedEntity>();
-		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(this.serializedClassifier);
-		String out = "<xml>" + classifier.classifyWithInlineXML(text).replaceAll("(\\[|\\])", "") + "</xml>";
+	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) 
+	{
+		String out = this.extractEntity2XML(text, type);
 		Document doc = Jsoup.parse(out, "", Parser.xmlParser());
-		try {
+//		try {
 			Elements people = doc.getElementsByTag("person");
 			for(Element element : people) {
 				entities.add(new NamedEntity(KeywordType.PERSON, element.html()));
@@ -64,10 +72,10 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 			for(Element element : locations) {
 				entities.add(new NamedEntity(KeywordType.LOCATION, element.html()));
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		return entities;
 	}
 

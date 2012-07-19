@@ -45,6 +45,18 @@ public class Analyser {
 	 * @param classifierPath
 	 * @return
 	 */
+	public static String entityExtractStanfordXML(String text, String classifierPath)
+	{
+		StanfordNERecognizer sner = StanfordNERecognizer.getInstance(classifierPath);
+		String result = sner.extractEntity2XML(text, null);
+		return result;
+	}
+
+	/**
+	 * @param text
+	 * @param classifierPath
+	 * @return
+	 */
 	public static JSONObject entityExtractStanfordJSON(String text, String classifierPath)
 	{
 		JSONObject result = new JSONObject();

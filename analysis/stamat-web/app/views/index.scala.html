@@ -1,7 +1,46 @@
-@(message: String)
+@(title: String)
 
-@main("Welcome to Play 2.0") {
-    
-    @play20.welcome(message, style = "Java")
-    
-}
+<!DOCTYPE html>
+<html>
+	<head>
+        <title>@title</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+		<link rel="stylesheet" type="text/css" media="all" href="@routes.Assets.at("bootstrap/css/bootstrap.min.css")">
+		<link rel="stylesheet" type="text/css" media="all" href="@routes.Assets.at("bootstrap/css/bootstrap-responsive.min.css")">
+		<link rel="stylesheet" media="all" href="@routes.Assets.at("stylesheets/main.css")">
+
+		<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")"></script>
+		<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")"></script>
+	</head>
+	<body>
+	<div class="container">
+
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="/">@title</a>
+				</div>
+			</div>
+		</div>
+		<div class="row head-margin">
+			<div class="span12">
+				<form action="/entitiesExtract" class="form-horizontal" method="post">
+					<fieldset>
+						<div class="control-group">
+							<label class="control-label" for="text">Text</label>
+							<div class="controls">
+								<textarea class="input-xlarge" id="text" name="text" rows="3"></textarea>
+							</div>
+						</div>
+						<div class="form-actions">
+							<button type="submit" class="btn btn-primary">Extract</button>
+							<button class="btn">Cancel</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
+	</body>
+</html>

@@ -4,6 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index()
+GET     /async                      controllers.Application.asyncTest()
 
 POST    /entitiesExtract            controllers.Application.entitiesExtract()
 POST    /visualSimilarity           controllers.Application.visualSimilarity()
