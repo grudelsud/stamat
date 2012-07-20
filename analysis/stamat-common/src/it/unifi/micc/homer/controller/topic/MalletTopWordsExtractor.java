@@ -3,11 +3,12 @@
  */
 package it.unifi.micc.homer.controller.topic;
 
-import it.unifi.micc.homer.model.TopicWord;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
+
+import stamat.model.TopicWord;
 
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.IDSorter;

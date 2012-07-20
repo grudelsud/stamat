@@ -5,6 +5,8 @@ package it.unifi.micc.homer.model;
 
 import java.util.List;
 
+import stamat.model.SemanticKeyword;
+
 import it.unifi.micc.homer.controller.language.LanguageDetector;
 import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 import it.unifi.micc.homer.util.HomerException;

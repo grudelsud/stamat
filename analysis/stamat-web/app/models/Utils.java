@@ -1,7 +1,5 @@
 package models;
 
-import it.unifi.micc.homer.model.SemanticKeyword;
-
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
@@ -9,6 +7,7 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import play.libs.Json;
+import stamat.model.SemanticKeyword;
 
 public class Utils {
 

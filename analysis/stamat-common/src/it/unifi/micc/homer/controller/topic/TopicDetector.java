@@ -6,10 +6,7 @@ package it.unifi.micc.homer.controller.topic;
 import it.unifi.micc.homer.controller.language.LanguageDetector;
 import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 import it.unifi.micc.homer.model.AsciiTextDocument;
-import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.TextDocument;
-import it.unifi.micc.homer.model.Topic;
-import it.unifi.micc.homer.model.TopicWord;
 import it.unifi.micc.homer.util.HomerConstants;
 import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.StringOperations;
@@ -26,6 +23,10 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+
+import stamat.model.SemanticKeyword;
+import stamat.model.Topic;
+import stamat.model.TopicWord;
 
 import cc.mallet.pipe.CharSequence2TokenSequence;
 import cc.mallet.pipe.Input2CharSequence;

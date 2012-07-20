@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import stamat.model.KeywordType;
+import stamat.model.SemanticKeyword;
+
 /**
  * @author bertini
  * 

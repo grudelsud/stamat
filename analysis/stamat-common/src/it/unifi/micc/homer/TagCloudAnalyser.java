@@ -4,7 +4,6 @@
 package it.unifi.micc.homer;
 
 import it.unifi.micc.homer.model.AsciiTextDocument;
-import it.unifi.micc.homer.model.SemanticKeyword;
 import it.unifi.micc.homer.model.TagCloud;
 import it.unifi.micc.homer.util.HomerConstants;
 import it.unifi.micc.homer.util.HomerException;
@@ -15,6 +14,8 @@ import java.util.Map.Entry;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.Vector;
+
+import stamat.model.SemanticKeyword;
 
 /**
  * @author bertini

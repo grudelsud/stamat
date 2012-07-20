@@ -10,8 +10,6 @@ import gate.Gate;
 import gate.corpora.DocumentContentImpl;
 import gate.creole.ResourceInstantiationException;
 import gate.util.GateException;
-import it.unifi.micc.homer.model.KeywordType;
-import it.unifi.micc.homer.model.NamedEntity;
 import it.unifi.micc.homer.util.StringOperations;
 
 import java.io.File;
@@ -21,6 +19,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import stamat.model.KeywordType;
+import stamat.model.NamedEntity;
 
 public class AnnieNEDDetector implements NamedEntityDetector {
 

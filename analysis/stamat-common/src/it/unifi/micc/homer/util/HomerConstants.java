@@ -1,6 +1,6 @@
 package it.unifi.micc.homer.util;
 
-import it.unifi.micc.homer.model.KeywordType;
+import stamat.model.KeywordType;
 
 /**
  * Used to store all the Homer constants and parameters, which are roughly categorized in:

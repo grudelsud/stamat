@@ -3,9 +3,7 @@
  */
 package com.londondroids.stamat.application;
 
-import it.unifi.micc.homer.Analyser;
 import it.unifi.micc.homer.util.HomerException;
-import it.unifi.micc.stamat.visualSimilarity.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +14,9 @@ import java.util.List;
 
 import org.apache.commons.cli.*;
 import org.json.JSONObject;
+
+import stamat.Analyser;
+import stamat.controller.visual.*;
 
 
 /**
@@ -239,7 +240,7 @@ public class Main {
 				System.out.println("With -Vq use options: -i, -iI, -n");
 			} else {
 				try {
-					List<SearchResult> results = VisualSimilarity.queryImage(imagePath, indexPath, numOutputs);
+					List<SearchResult> results = Analyser.visual.query(imagePath, indexPath, numOutputs);
 					for( SearchResult res : results ) {
 						System.out.println(res.getPosition() + " - " +  res.getResult() + " [" + res.getSimilarity() + "]");
 					}
@@ -255,13 +256,13 @@ public class Main {
 				System.out.println("create visual index, requires options -iI, -iF, -i");
 			} else if( imagePath != null ) {
 				try {
-					VisualSimilarity.updateIndexCEDD(indexPath, imagePath);
+					Analyser.visual.updateIndexCEDD(indexPath, imagePath);
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
 				}
 			} else if( imageFolderPath != null ) {
 				try {
-					VisualSimilarity.createIndexCEDD(indexPath, imageFolderPath);
+					Analyser.visual.createIndexCEDD(indexPath, imageFolderPath);
 				} catch (IOException e) {
 					System.err.println(e.getMessage());
 				}				
@@ -273,7 +274,7 @@ public class Main {
 			if( texts.size() < 1 | numOutputs == 0 | numKeywords == 0 | langModels == null | langStopwords == null ) {
 				System.out.println("With -Tx use options: (-t | -tp) -n -nk -lm -ls");
 			} else {
-				JSONObject result = Analyser.topicExtractJSON(texts, numOutputs, numKeywords, langModels, langStopwords);
+				JSONObject result = Analyser.topic.extract2JSON(texts, numOutputs, numKeywords, langModels, langStopwords);
 				System.out.println(result.toString());
 			}
 			return;
@@ -284,7 +285,7 @@ public class Main {
 				System.out.println("With -Ti use options: (-t | -tp) -n -lm -ls -m");
 			} else {
 				// TODO: check topic infer function, not sure it's working properly
-				JSONObject result = Analyser.topicInferJSON(texts, langModels, langStopwords, numOutputs, modelPath);
+				JSONObject result = Analyser.topic.infer2JSON(texts, langModels, langStopwords, numOutputs, modelPath);
 				System.out.println(result.toString());
 			}
 			return;
@@ -294,7 +295,7 @@ public class Main {
 			if( texts.size() < 1 | numOutputs == 0 | langModels == null | langStopwords == null | modelPath == null ) {
 				System.out.println("With -Tt use options: (-t | -tp) -n -lm -ls -m");
 			} else {
-				JSONObject result = Analyser.trainModelJSON(texts, numOutputs, langModels, langStopwords, modelPath);
+				JSONObject result = Analyser.topic.trainModel2JSON(texts, numOutputs, langModels, langStopwords, modelPath);
 				System.out.println(result.toString());
 			}
 			return;
@@ -304,7 +305,7 @@ public class Main {
 			if( texts.size() < 1 | entityClassifierPath == null ) {
 				System.out.println("With -E use options: (-t | -tp) -ep");
 			} else {
-				JSONObject result = Analyser.entityExtractStanfordJSON(texts.toString(), entityClassifierPath);
+				JSONObject result = Analyser.ned.extractStanford2JSON(texts.toString(), entityClassifierPath);
 				System.out.println(result.toString());
 			}
 			return;
@@ -314,7 +315,7 @@ public class Main {
 			if( texts.size() < 1 | langModels == null | langStopwords == null ) {
 				System.out.println("With -L use options: (-t | -tp) -lm -ls");
 			} else {			
-				JSONObject result = Analyser.languageDetectionJSON(text, langModels, langStopwords);
+				JSONObject result = Analyser.language.detection2JSON(text, langModels, langStopwords);
 				System.out.println(result.toString());
 			}
 			return;
