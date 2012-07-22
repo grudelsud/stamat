@@ -21,6 +21,14 @@ $(function() {
                 }
                 ,data);
     });   
+    $('#twitter-tab-content a[href="#tweet_section"]').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+    $('#twitter-tab-content a[href="#cluster_section"]').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
 });    
 
 // load tweet content in tweets table
