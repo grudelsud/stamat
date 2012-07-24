@@ -29,7 +29,7 @@ class Spider:
 
 	def db_fetch_urls(self):
 		cur = self.db_con.cursor(MySQLdb.cursors.DictCursor)
-		cur.execute("SELECT id, url FROM feeditemmedia WHERE type='image' AND flags=0 ORDER BY created DESC LIMIT 10")
+		cur.execute("SELECT id, url FROM feeditemmedia WHERE type='image' AND flags=0 ORDER BY created DESC LIMIT 1000")
 		return cur.fetchall()
 
 	def db_update_flag_fetched(self, data):
