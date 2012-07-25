@@ -93,7 +93,7 @@ class Main:
 				ioerror_dir = 'ioerrors'
 				if not os.path.exists(ioerror_dir):
 					os.makedirs(ioerror_dir)
-				shutil.move(hash, ioerror_dir + '/' + row['id'])
+				shutil.move(hash, ioerror_dir + '/' + str(row['id']))
 				logging.error("ioerror reading file: %s" % (hash))
 
 			s.db_update_flag_fetched(row)
