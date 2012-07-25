@@ -88,6 +88,7 @@ class Main:
 				row['width'] = 0
 				row['height'] = 0
 				row['flags'] = constants.INVALID
+				row['abs_path'] = 'IOError'
 				logging.error("ioerror reading file: %s" % (hash))
 
 			s.db_update_flag_fetched(row)
