@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 
-source /home/ubuntu/FOM2/python/fetch_images/bin/activate
+cd /home/ubuntu/FOM2/python/fetch_images/
+source bin/activate
 cd /home/ubuntu/FOM2/git/capture/images/
 python imgspyder.py -c settings.telecom.cfg
