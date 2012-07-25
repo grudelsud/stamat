@@ -5,6 +5,7 @@ import ConfigParser
 import MySQLdb
 import urllib
 import os
+import shutil
 import datetime
 import Image
 import logging
@@ -89,6 +90,10 @@ class Main:
 				row['height'] = 0
 				row['flags'] = constants.INVALID
 				row['abs_path'] = 'IOError'
+				ioerror_dir = 'ioerrors'
+				if not os.path.exists(ioerror_dir):
+					os.makedirs(ioerror_dir)
+				shutil.move(hash, ioerror_dir + '/' + row['id'])
 				logging.error("ioerror reading file: %s" % (hash))
 
 			s.db_update_flag_fetched(row)
