@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 
 cd /home/ubuntu/FOM2/python/fetch_images/
