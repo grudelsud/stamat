@@ -3,8 +3,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-        <title>@title</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+		<title>@title</title>
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
 		<link rel="stylesheet" type="text/css" media="all" href="@routes.Assets.at("bootstrap/css/bootstrap.min.css")">
 		<link rel="stylesheet" type="text/css" media="all" href="@routes.Assets.at("bootstrap/css/bootstrap-responsive.min.css")">
@@ -12,6 +12,7 @@
 
 		<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")"></script>
 		<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")"></script>
+		<script type="text/javascript" src="@routes.Assets.at("javascripts/main.js")"></script>
 	</head>
 	<body>
 	<div class="container">
@@ -24,21 +25,47 @@
 			</div>
 		</div>
 		<div class="row head-margin">
-			<div class="span12">
-				<form action="/entitiesExtract" class="form-horizontal" method="post">
-					<fieldset>
-						<div class="control-group">
-							<label class="control-label" for="text">Text</label>
-							<div class="controls">
-								<textarea class="input-xlarge" id="text" name="text" rows="3"></textarea>
+			<div class="span6">
+				<div class="accordion" id="form-group">
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a href="#form-extract" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Extract entities</a>
+						</div>
+						<div class="accordion-body collapse" id="form-extract">
+							<div class="accordion-inner">
+								<form action="/entitiesExtract" class="form-horizontal" method="post">
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="text">Text</label>
+											<div class="controls">
+												<textarea class="input-xlarge" id="text" name="text" rows="3"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button type="submit" class="btn btn-primary">Extract</button>
+											<button class="btn">Cancel</button>
+										</div>
+									</fieldset>
+								</form>
 							</div>
 						</div>
-						<div class="form-actions">
-							<button type="submit" class="btn btn-primary">Extract</button>
-							<button class="btn">Cancel</button>
+					</div>
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a href="#form-somethingelse" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Something else</a>
 						</div>
-					</fieldset>
-				</form>
+						<div class="accordion-body collapse" id="form-somethingelse">
+							<div class="accordion-inner">
+								bla bla bla
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="span6">
+				<div id="response">
+					<pre id="response-inner" class="prettyprint linenums"></pre>
+				</div>
 			</div>
 		</div>
 	</div>

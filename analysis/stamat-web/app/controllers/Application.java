@@ -8,19 +8,17 @@ import models.Utils;
 import models.requests.EntitiesExtract;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 
-import play.*;
+import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Akka;
-import play.libs.F.Promise;
 import play.libs.F.Function;
-import play.libs.Json;
-import play.mvc.*;
-import stamat.Analyser;
+import play.libs.F.Promise;
+import play.mvc.Controller;
+import play.mvc.Result;
+import stamat.main.Analyser;
 import stamat.model.NamedEntity;
-
-import views.html.*;
+import views.html.index;
 
 public class Application extends Controller {
 
@@ -49,6 +47,7 @@ public class Application extends Controller {
 
 		public static Result newIndex()
 		{
+			DynamicForm form = form().bindFromRequest();
 			return TODO;
 		}		
 
