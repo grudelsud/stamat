@@ -1,16 +1,14 @@
 package it.unifi.micc.homer.util;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import java.text.Normalizer;
-
 import org.jsoup.Jsoup;
 
-import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 
 public class StringOperations {
 	private static final String PLAIN_ASCII = "AaEeIiOoUu" // grave

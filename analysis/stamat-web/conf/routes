@@ -4,10 +4,15 @@
 
 # Home page
 GET     /                           controllers.Application.index()
-GET     /async                      controllers.Application.asyncTest()
 
 POST    /entitiesExtract            controllers.Application.entitiesExtract()
-POST    /visualSimilarity           controllers.Application.visualSimilarity()
+
+GET     /visualIndex                controllers.Application.visual.index()
+POST    /visualIndex                controllers.Application.visual.newIndex()
+POST    /visualIndexImages          controllers.Application.visual.indexImages()
+POST    /visualSimilarity           controllers.Application.visual.similarity()
+
+GET     /asyncTest                  controllers.Application.asyncTest()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

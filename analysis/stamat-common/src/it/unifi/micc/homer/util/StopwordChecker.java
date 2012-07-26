@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 
 public class StopwordChecker {
 	private Set<String> stopwords;

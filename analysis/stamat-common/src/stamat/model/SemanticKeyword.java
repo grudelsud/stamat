@@ -3,6 +3,8 @@
  */
 package stamat.model;
 
+import it.unifi.micc.homer.util.HomerException;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,15 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import it.unifi.micc.homer.util.HomerException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-
-
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;

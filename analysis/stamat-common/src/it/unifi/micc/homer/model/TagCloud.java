@@ -3,8 +3,6 @@
  */
 package it.unifi.micc.homer.model;
 
-import it.unifi.micc.homer.controller.language.LanguageDetector;
-import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;
 
 import java.util.ArrayList;
@@ -15,8 +13,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import stamat.controller.language.LanguageDetector;
 import stamat.model.KeywordType;
 import stamat.model.SemanticKeyword;
+import stamat.util.StamatException;
 
 /**
  * @author bertini
@@ -36,7 +36,7 @@ public class TagCloud {
 		this.langModelsPath = langModelsPath;
 	}
 
-	public TreeMap<Integer, List<SemanticKeyword>> computeTagCloud(TextDocument text) throws HomerException {
+	public TreeMap<Integer, List<SemanticKeyword>> computeTagCloud(TextDocument text) throws StamatException {
 		LanguageDetector lId = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
 		String sanitizedText = lId.cleanTextDocumentStopwords(text).getContent();
 		Map<String, Integer> wc = WordCounter.doWordCount(sanitizedText);

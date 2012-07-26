@@ -38,65 +38,97 @@ public class Indexing {
 	private String indexPath;
 	private static Logger logger = Logger.getLogger(Indexing.class.getName());
 
+	/**
+	 * Creates an instance of indexing, which basically is a dummy object where all the create / update index methods must be run explicitly.
+	 * With the only exception of method createEmptyIndex, all the other create / update methods will try to open an existing indexPath,
+	 * or create a new index if the path does not contain a valid Lucene 3.6 index.
+	 * 
+	 * @param indexPath
+	 */
 	public Indexing(String indexPath) 
 	{
 		this.indexPath = indexPath;
 	}
 
+	/**
+	 * Creates an empty index
+	 * 
+	 * @throws CorruptIndexException
+	 * @throws LockObtainFailedException
+	 * @throws IOException
+	 */
 	public void createEmptyIndex() throws CorruptIndexException, LockObtainFailedException, IOException
 	{
 		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+		conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), conf);
 		iw.close();
 	}
 
-	public void createIndexCEDD(String imageFolderPath) throws IOException
+	/**
+	 * Adds image from URL to this index instance. 
+	 * Image Identifier is used to store a reference to this image on the index, URL will be used if set to null.
+	 * 
+	 * @param URL
+	 * @param imageIdentifier
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public String updateIndexCEDDfromUrl(String URL, String imageIdentifier) throws MalformedURLException, IOException 
+	{
+		if( imageIdentifier == null ) {
+			imageIdentifier = URL;
+		}
+		InputStream is = (new java.net.URL(URL)).openStream();
+		return updateIndexCEDD(is, imageIdentifier);
+	}
+
+	/**
+	 * Adds image from path to this index instance.
+	 * Image Identifier is used to store a reference to this image on the index, imagePath will be used if set to null.
+	 * 
+	 * @param imagePath
+	 * @param imageIdentifier
+	 * @return
+	 * @throws IOException
+	 */
+	public String updateIndexCEDDfromPath(String imagePath, String imageIdentifier) throws IOException
+	{
+		if( imageIdentifier == null ) {
+			imageIdentifier = imagePath;
+		}
+		FileInputStream fis = new FileInputStream(imagePath);
+		return updateIndexCEDD(fis, imageIdentifier);
+	}
+
+	/**
+	 * Add all files contained in folder to this index instance. Image identifiers will automatically set to filenames
+	 * 
+	 * @param imageFolderPath
+	 * @throws IOException
+	 */
+	public void updateIndexCEDDfromFolder(String imageFolderPath) throws IOException
 	{
 		long startTime = System.currentTimeMillis();
 		// Getting all images from a directory and its sub directories.
 		ArrayList<String> images = FileUtils.getAllImages(new File(imageFolderPath), true);
-
-		// Creating a CEDD document builder and indexing al files.
-		DocumentBuilder builder = DocumentBuilderFactory.getCEDDDocumentBuilder();
-		// Creating an Lucene IndexWriter
-		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
-		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), conf);
+	
 		// Iterating through images building the low level features
 		for (Iterator<String> iterator = images.iterator(); iterator.hasNext(); ) {
 			String imageFilePath = iterator.next();
-			//System.out.println("Indexing " + imageFilePath);
-			try {
-				BufferedImage img = ImageIO.read(new FileInputStream(imageFilePath));
-				Document document = builder.createDocument(img, imageFilePath);
-				iw.addDocument(document);
-			} catch (Exception e) {
-				System.err.println("Error reading image or indexing it.");
-				e.printStackTrace();
-			}
+			updateIndexCEDDfromPath(imageFilePath, imageFilePath);
 		}
-		// closing the IndexWriter
-		iw.close();
-		logger.log(Level.FINE, "Index created in "+ (System.currentTimeMillis() - startTime) + " ms");
-	}	
-
-	public String updateIndexCEDDfromUrl(String URL) throws MalformedURLException, IOException 
-	{
-		InputStream is = (new java.net.URL(URL)).openStream();
-		return updateIndexCEDD(is);
+		logger.log(Level.INFO, "Folder indexed in "+ (System.currentTimeMillis() - startTime) + " ms");
 	}
 
-	public String updateIndexCEDDfromPath(String imagePath) throws IOException
-	{
-		FileInputStream fis = new FileInputStream(imagePath);
-		return updateIndexCEDD(fis);
-	}
-
-	public String updateIndexCEDD(InputStream is) throws IOException
+	public String updateIndexCEDD(InputStream is, String imageIdentifier) throws IOException
 	{
 		long startTime = System.currentTimeMillis();
 		String hash = Long.toString(startTime);
 		// Creating an Lucene IndexWriter
 		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+		conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), conf);
 
 		// Creating a CEDD document builder and indexing al files.
@@ -104,7 +136,7 @@ public class Indexing {
 
 		try {
 			BufferedImage img = ImageIO.read(is);
-			Document document = builder.createDocument(img, hash);
+			Document document = builder.createDocument(img, imageIdentifier);
 			iw.addDocument(document);
 		} catch (Exception e) {
 			System.err.println("Error reading image or indexing it.");
@@ -113,10 +145,11 @@ public class Indexing {
 
 		// closing the IndexWriter
 		iw.close();
-		logger.log(Level.FINE, "Index updated in "+ (System.currentTimeMillis() - startTime) + " ms");
+		logger.log(Level.INFO, "Index updated in "+ (System.currentTimeMillis() - startTime) + " ms");
 		return hash;
 	}
 
+	// TODO: check IndexWriterConfig.OpenMode, should be set to CREATE_OR_APPEND for consistency
 	public void createIndexSIFT(String imageFolderPath) throws IOException 
 	{
 		// create the initial local features:

@@ -10,7 +10,7 @@ public class PropertyHandler {
 	
 	private PropertyHandler() {
 		try {
-			this.fis = new FileInputStream("stamat.properties");
+			this.fis = new FileInputStream("stamat.main.properties");
 			this.properties = new Properties();
 			this.properties.load(fis);
 		} catch(Throwable t) {

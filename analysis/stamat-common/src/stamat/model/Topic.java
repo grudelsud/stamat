@@ -6,7 +6,6 @@ package stamat.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
 
 /**
  * @author bertini

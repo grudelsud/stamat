@@ -5,11 +5,9 @@ package it.unifi.micc.homer.model;
 
 import java.util.List;
 
+import stamat.controller.language.LanguageDetector;
 import stamat.model.SemanticKeyword;
-
-import it.unifi.micc.homer.controller.language.LanguageDetector;
-import it.unifi.micc.homer.controller.language.LanguageIdentifier.Language;
-import it.unifi.micc.homer.util.HomerException;
+import stamat.util.StamatException;
 
 /**
  * @author bertini
@@ -43,7 +41,7 @@ public class TextDocument {
 		this.language = null;
 	}
 	
-	public boolean autoSetLanguage(String langModelsPath, String langStopwordPath) throws HomerException {
+	public boolean autoSetLanguage(String langModelsPath, String langStopwordPath) throws StamatException {
 		boolean result = false;
 		LanguageDetector langIdent = LanguageDetector.getInstance(langModelsPath, langStopwordPath);
 		this.language = langIdent.identifyLanguageOf(content);

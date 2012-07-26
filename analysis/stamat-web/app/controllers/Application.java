@@ -26,7 +26,7 @@ public class Application extends Controller {
 
 	public static Result index()
 	{
-		return ok( index.render("STAMAT - API Backend"));
+		return ok(index.render("STAMAT - API Backend"));
 	}
 
 	public static Result entitiesExtract()
@@ -40,11 +40,29 @@ public class Application extends Controller {
 		return ok(Utils.returnSuccess(result));
 	}
 	
-	public static Result visualSimilarity()
+	public static class visual
 	{
-		return TODO;
+		public static Result index()
+		{
+			return TODO;
+		}		
+
+		public static Result newIndex()
+		{
+			return TODO;
+		}		
+
+		public static Result indexImages()
+		{
+			return TODO;
+		}
+
+		public static Result similarity()
+		{
+			return TODO;
+		}		
 	}
-	
+
 	public static Result asyncTest()
 	{
 		Promise<String> promiseOfInteger = Akka.future(

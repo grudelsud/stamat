@@ -6,16 +6,16 @@ package it.unifi.micc.homer;
 import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.model.TagCloud;
 import it.unifi.micc.homer.util.HomerConstants;
-import it.unifi.micc.homer.util.HomerException;
 import it.unifi.micc.homer.util.WordCounter;
 
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.Vector;
 
 import stamat.model.SemanticKeyword;
+import stamat.util.StamatException;
 
 /**
  * @author bertini
@@ -23,7 +23,7 @@ import stamat.model.SemanticKeyword;
  */
 public class TagCloudAnalyser {
 
-	public static Vector<SemanticKeyword> process(String text, int numTopWords, String langStopwordPath, String langModelsPath) throws HomerException {
+	public static Vector<SemanticKeyword> process(String text, int numTopWords, String langStopwordPath, String langModelsPath) throws StamatException {
 
 		AsciiTextDocument textDocument = new AsciiTextDocument(text);
 		
