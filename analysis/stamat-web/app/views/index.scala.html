@@ -36,9 +36,9 @@
 								<form action="/entitiesExtract" class="form-horizontal" method="post">
 									<fieldset>
 										<div class="control-group">
-											<label class="control-label" for="text">Text</label>
+											<label class="control-label" for="extract-text">Text</label>
 											<div class="controls">
-												<textarea class="input-xlarge" id="text" name="text" rows="3"></textarea>
+												<textarea class="span4" id="extract-text" name="text" rows="6"></textarea>
 											</div>
 										</div>
 										<div class="form-actions">
@@ -52,11 +52,47 @@
 					</div>
 					<div class="accordion-group">
 						<div class="accordion-heading">
-							<a href="#form-somethingelse" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Something else</a>
+							<a href="#form-newindex" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Create Index</a>
 						</div>
-						<div class="accordion-body collapse" id="form-somethingelse">
+						<div class="accordion-body collapse" id="form-newindex">
 							<div class="accordion-inner">
-								bla bla bla
+								<form action="/visualIndex" class="form-horizontal" method="post">
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="newindex-name">Name</label>
+											<div class="controls">
+												<input type="text" class="span4" id="newindex-name" name="name">
+											</div>
+										</div>
+										<div class="form-actions">
+											<button type="submit" class="btn btn-primary">Create</button>
+											<button class="btn">Cancel</button>
+										</div>
+									</fieldset>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a href="#form-indeximages" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Index Images</a>
+						</div>
+						<div class="accordion-body collapse" id="form-indeximages">
+							<div class="accordion-inner">
+								<form action="/visualIndexImages" class="form-horizontal" method="post">
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="">Image list<br>(JSON Format)</label>
+											<div class="controls">
+												<textarea class="span4" id="imagelist-body" name="body" rows="6"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button type="submit" class="btn btn-primary">Send</button>
+											<button class="btn">Cancel</button>
+										</div>
+									</fieldset>
+								</form>
 							</div>
 						</div>
 					</div>

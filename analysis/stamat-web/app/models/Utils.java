@@ -26,7 +26,14 @@ public class Utils {
 		}
 		return result;
 	}
-	
+
+	public static ObjectNode returnSuccess(String message)
+	{
+		ObjectNode result = Json.newObject();
+		result.put("success", message);
+		return result;
+	}
+
 	public static ObjectNode returnSuccess(JsonNode data)
 	{
 		ObjectNode result = Json.newObject();

@@ -2,6 +2,8 @@ package controllers;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import models.Constants;
 import models.Utils;
@@ -9,6 +11,7 @@ import models.requests.EntitiesExtract;
 
 import org.codehaus.jackson.JsonNode;
 
+import play.Logger;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Akka;
@@ -30,6 +33,10 @@ public class Application extends Controller {
 	public static Result entitiesExtract()
 	{
 		Form<EntitiesExtract> form = form(EntitiesExtract.class).bindFromRequest();
+		
+		if( form.hasErrors() ) {
+			return badRequest(Utils.returnError("invalid request"));
+		}
 		EntitiesExtract entityExtractRequest = form.get();
 
 		String classifierPath = Constants.getThreeClassifierPath();
@@ -38,28 +45,43 @@ public class Application extends Controller {
 		return ok(Utils.returnSuccess(result));
 	}
 	
-	public static class visual
+	public static Result visualIndex()
 	{
-		public static Result index()
-		{
-			return TODO;
-		}		
+		return TODO;
+	}		
 
-		public static Result newIndex()
-		{
-			DynamicForm form = form().bindFromRequest();
-			return TODO;
-		}		
-
-		public static Result indexImages()
-		{
-			return TODO;
+	public static Result visualNewIndex()
+	{
+		DynamicForm form = form().bindFromRequest();
+		String name = form.get("name");
+		Pattern p = Pattern.compile("^\\w{1,50}$");
+		Matcher m = p.matcher(name);
+		if( !m.matches() ) {
+			return badRequest(Utils.returnError("invalid request, name must be between 1 and 50 alphanumerical characters"));				
 		}
+		StringBuilder returnMsg = new StringBuilder();
+		String indexPath = Constants.getIndicesFolderPath() + "/" + name;
+		int returnCode = Analyser.visual.createEmptyIndex(indexPath, returnMsg);
+		if( returnCode == Analyser.constants.SUCCESS ) {
+			return ok(Utils.returnSuccess(returnMsg.toString()));			
+		} else {
+			return badRequest(Utils.returnError(returnMsg.toString()));
+		}
+	}		
 
-		public static Result similarity()
-		{
-			return TODO;
-		}		
+	public static Result visualIndexImages()
+	{
+		JsonNode json = request().body().asJson();
+		Logger.info("visualIndexImages request - " + request().body().toString());
+		if(json == null) {
+			return badRequest(Utils.returnError("expecting JSON request"));
+		}
+		return ok(Utils.returnSuccess("all good"));
+	}
+
+	public static Result visualSimilarity()
+	{
+		return TODO;
 	}
 
 	public static Result asyncTest()

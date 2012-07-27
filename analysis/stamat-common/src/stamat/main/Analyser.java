@@ -40,6 +40,11 @@ import stamat.util.StamatException;
 public class Analyser {
 	private static Logger logger = Logger.getLogger(Analyser.class.getName());
 
+	public static class constants {
+		public static final int SUCCESS = 0;
+		public static final int ERROR = 1;
+	}
+
 	public static class ned {
 		
 		/**
@@ -325,18 +330,26 @@ public class Analyser {
 		/**
 		 * @param indexPath
 		 */
-		public static void createEmptyIndex(String indexPath)
+		public static int createEmptyIndex(String indexPath, StringBuilder message)
 		{
+			message = message == null ? new StringBuilder() : message;
 			Indexing indexing = new Indexing(indexPath);
 			try {
 				indexing.createEmptyIndex();
+				message.append("index created: " + indexPath);
+				logger.log(Level.INFO, "index created: " + indexPath);
+				return constants.SUCCESS;
 			} catch (CorruptIndexException e) {
 				logger.log(Level.SEVERE, e.getMessage());
+				message.append(e.getMessage());
 			} catch (LockObtainFailedException e) {
 				logger.log(Level.SEVERE, e.getMessage());
+				message.append(e.getMessage());
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
+				message.append(e.getMessage());
 			}
+			return constants.ERROR;
 		}
 
 		/**

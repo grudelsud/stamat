@@ -7,10 +7,10 @@ GET     /                           controllers.Application.index()
 
 POST    /entitiesExtract            controllers.Application.entitiesExtract()
 
-GET     /visualIndex                controllers.Application.visual.index()
-POST    /visualIndex                controllers.Application.visual.newIndex()
-POST    /visualIndexImages          controllers.Application.visual.indexImages()
-POST    /visualSimilarity           controllers.Application.visual.similarity()
+GET     /visualIndex                controllers.Application.visualIndex()
+POST    /visualIndex                controllers.Application.visualNewIndex()
+POST    /visualIndexImages          controllers.Application.visualIndexImages()
+POST    /visualSimilarity           controllers.Application.visualSimilarity()
 
 GET     /asyncTest                  controllers.Application.asyncTest()
 

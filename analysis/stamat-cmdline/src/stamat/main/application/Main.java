@@ -275,7 +275,7 @@ public class Main {
 				} else if( imageFolderPath != null ) {
 					Analyser.visual.updateIndexCEDDfromFolder(indexPath, imageFolderPath);
 				} else {
-					Analyser.visual.createEmptyIndex(indexPath);
+					Analyser.visual.createEmptyIndex(indexPath, null);
 				}
 			}
 			return;
