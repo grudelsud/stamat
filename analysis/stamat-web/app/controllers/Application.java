@@ -74,7 +74,7 @@ public class Application extends Controller {
 		JsonNode json = request().body().asJson();
 		Logger.info("visualIndexImages request - " + request().body().toString());
 		if(json == null) {
-			return badRequest(Utils.returnError("expecting JSON request"));
+			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
 		}
 		return ok(Utils.returnSuccess("all good"));
 	}
