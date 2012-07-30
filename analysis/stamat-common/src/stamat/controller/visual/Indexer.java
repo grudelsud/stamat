@@ -34,9 +34,9 @@ import org.apache.lucene.util.Version;
 
 
 
-public class Indexing {
+public class Indexer {
 	private String indexPath;
-	private static Logger logger = Logger.getLogger(Indexing.class.getName());
+	private static Logger logger = Logger.getLogger(Indexer.class.getName());
 
 	/**
 	 * Creates an instance of indexing, which basically is a dummy object where all the create / update index methods must be run explicitly.
@@ -45,7 +45,7 @@ public class Indexing {
 	 * 
 	 * @param indexPath
 	 */
-	public Indexing(String indexPath) 
+	public Indexer(String indexPath) 
 	{
 		this.indexPath = indexPath;
 	}

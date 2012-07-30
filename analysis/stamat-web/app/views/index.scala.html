@@ -26,6 +26,15 @@
 		</div>
 		<div class="row head-margin">
 			<div class="span6">
+				<form action="" class="well form-horizontal">
+					<div class="control-group">
+						<label for="" class="control-label">Send data as: </label>
+						<div class="controls">
+							<label class="radio"><input type="radio" name="data-format" id="radio-format-text" value="text" checked> Serialized text (default)</label>
+							<label class="radio"><input type="radio" name="data-format" id="radio-format-json" value="json"> JSON (only 1st input in the form will be sent)</label>
+						</div>
+					</div>
+				</form>
 				<div class="accordion" id="form-group">
 					<div class="accordion-group">
 						<div class="accordion-heading">
@@ -82,7 +91,7 @@
 								<form action="/visualIndexImages" class="form-horizontal" method="post">
 									<fieldset>
 										<div class="control-group">
-											<label class="control-label" for="">Image list<br>(JSON Format)</label>
+											<label class="control-label" for="">Image list<br>(Endpoint expects JSON Format)</label>
 											<div class="controls">
 												<textarea class="span4" id="imagelist-body" name="body" rows="6"></textarea>
 											</div>

@@ -46,7 +46,7 @@ public class RankFusion {
 		List<SearchResult> rankedResults = new ArrayList<SearchResult>();
 		int i=0;
 		for(Entry<String, Integer> entry : rankFusionMap.entrySet()){
-			rankedResults.add(new SearchResult("", entry.getKey(), i++, entry.getValue()));
+			rankedResults.add(new SearchResult(entry.getKey(), i++, entry.getValue()));
 		}
 		Collections.sort(rankedResults);
 		return rankedResults.subList(0, resultsSCD.size());
@@ -83,7 +83,7 @@ public class RankFusion {
 		List<SearchResult> rankedResults = new ArrayList<SearchResult>();
 		int i=0;
 		for(Entry<String, Integer> entry : rankFusionMap.entrySet()){
-			rankedResults.add(new SearchResult("", entry.getKey(), i++, Math.pow(entry.getValue(), Math.pow(supportMap.get(entry.getKey()),-1))));
+			rankedResults.add(new SearchResult(entry.getKey(), i++, Math.pow(entry.getValue(), Math.pow(supportMap.get(entry.getKey()),-1))));
 		}
 		Collections.sort(rankedResults, new Comparator<SearchResult>() {
 			@Override
@@ -125,7 +125,7 @@ public class RankFusion {
 		List<SearchResult> rankedResults = new ArrayList<SearchResult>();
 		int i=0;
 		for(Entry<String, Double> entry : rankFusionMap.entrySet()){
-			rankedResults.add(new SearchResult("", entry.getKey(), i++, Math.pow(entry.getValue(),-1)));
+			rankedResults.add(new SearchResult(entry.getKey(), i++, Math.pow(entry.getValue(),-1)));
 		}
 		Collections.sort(rankedResults, new Comparator<SearchResult>() {
 			@Override

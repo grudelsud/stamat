@@ -256,7 +256,7 @@ public class Main {
 			if(imagePath == null | indexPath == null | numOutputs == 0) {
 				System.out.println("With -Vq use options: -iI -iP -n");
 			} else {
-				List<SearchResult> results = Analyser.visual.query(imagePath, indexPath, numOutputs);
+				List<SearchResult> results = Analyser.visual.queryFromPath(imagePath, indexPath, numOutputs);
 				for( SearchResult res : results ) {
 					System.out.println(res.getPosition() + " - " +  res.getResult() + " [" + res.getSimilarity() + "]");
 				}				

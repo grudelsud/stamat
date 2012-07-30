@@ -22,8 +22,8 @@ import org.json.JSONObject;
 
 import stamat.controller.ned.StanfordNERecognizer;
 import stamat.controller.topic.TopicDetector;
-import stamat.controller.visual.Indexing;
-import stamat.controller.visual.Search;
+import stamat.controller.visual.Indexer;
+import stamat.controller.visual.Searcher;
 import stamat.controller.visual.SearchResult;
 import stamat.model.KeywordType;
 import stamat.model.NamedEntity;
@@ -333,7 +333,7 @@ public class Analyser {
 		public static int createEmptyIndex(String indexPath, StringBuilder message)
 		{
 			message = message == null ? new StringBuilder() : message;
-			Indexing indexing = new Indexing(indexPath);
+			Indexer indexing = new Indexer(indexPath);
 			try {
 				indexing.createEmptyIndex();
 				message.append("index created: " + indexPath);
@@ -358,7 +358,7 @@ public class Analyser {
 		 */
 		public static void updateIndexCEDDfromURL(String indexPath, String URL, String imageIdentifier)
 		{
-			Indexing indexing = new Indexing(indexPath);
+			Indexer indexing = new Indexer(indexPath);
 			try {
 				indexing.updateIndexCEDDfromUrl(URL, imageIdentifier);
 			} catch (MalformedURLException e) {
@@ -372,8 +372,9 @@ public class Analyser {
 		 * @param indexPath
 		 * @param imagePath
 		 */
-		public static void updateIndexCEDDfromPath(String indexPath, String imagePath, String imageIdentifier) {
-			Indexing indexing = new Indexing(indexPath);
+		public static void updateIndexCEDDfromPath(String indexPath, String imagePath, String imageIdentifier) 
+		{
+			Indexer indexing = new Indexer(indexPath);
 			try {
 				indexing.updateIndexCEDDfromPath(imagePath, imageIdentifier);
 			} catch (IOException e) {
@@ -388,13 +389,48 @@ public class Analyser {
 		 * @throws LockObtainFailedException
 		 * @throws IOException
 		 */
-		public static void updateIndexCEDDfromFolder(String indexPath, String imageFolderPath) {
-			Indexing indexing = new Indexing(indexPath);
+		public static void updateIndexCEDDfromFolder(String indexPath, String imageFolderPath) 
+		{
+			Indexer indexing = new Indexer(indexPath);
 			try {
 				indexing.updateIndexCEDDfromFolder(imageFolderPath);
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}
+		}
+
+		/**
+		 * @param URL
+		 * @param indexPath
+		 * @param weightSCD
+		 * @param weightCLD
+		 * @param weightEHD
+		 * @param numberOfResults
+		 * @return
+		 */
+		public static List<SearchResult> queryFromUrl(String URL, String indexPath, float weightSCD, float weightCLD, float weightEHD, int numberOfResults) 
+		{
+			Searcher search = new Searcher(indexPath, numberOfResults+1);
+			List<SearchResult> currentResult = null;
+			try {
+				currentResult = search.searcherCEDDfromUrl(URL);
+			} catch (CorruptIndexException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			}
+			return currentResult;			
+		}
+
+		/**
+		 * @param URL
+		 * @param indexPath
+		 * @param numberOfResults
+		 * @return
+		 */
+		public static List<SearchResult> queryFromUrl(String URL, String indexPath, int numberOfResults) 
+		{
+			return Analyser.visual.queryFromUrl(URL, indexPath, 1f, 1f, 1f, numberOfResults);
 		}
 
 		/**
@@ -404,11 +440,12 @@ public class Analyser {
 		 * @throws CorruptIndexException
 		 * @throws IOException
 		 */
-		public static List<SearchResult> query(File queryImage,String indexPath, float weightSCD, float weightCLD, float weightEHD, int numberOfResults) {
-			Search search = new Search(indexPath, numberOfResults+1);
+		public static List<SearchResult> queryFromPath(String imagePath, String indexPath, float weightSCD, float weightCLD, float weightEHD, int numberOfResults) 
+		{
+			Searcher search = new Searcher(indexPath, numberOfResults+1);
 			List<SearchResult> currentResult = null;
 			try {
-				currentResult = search.searcherCEDD(queryImage);
+				currentResult = search.searcherCEDDfromPath(imagePath);
 			} catch (CorruptIndexException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			} catch (IOException e) {
@@ -424,8 +461,9 @@ public class Analyser {
 		 * @throws CorruptIndexException
 		 * @throws IOException
 		 */
-		public static List<SearchResult> query(String imagePath, String indexPath, int numberOfResults) {
-			return Analyser.visual.query(new File(imagePath), indexPath, 1f, 1f, 1f, numberOfResults);
+		public static List<SearchResult> queryFromPath(String imagePath, String indexPath, int numberOfResults) 
+		{
+			return Analyser.visual.queryFromPath(imagePath, indexPath, 1f, 1f, 1f, numberOfResults);
 		}
 	
 		/**
@@ -435,9 +473,10 @@ public class Analyser {
 		 * @throws CorruptIndexException
 		 * @throws IOException
 		 */
-		public static JSONObject query2JSON(String imagePath, String indexPath, int numberOfResults) {
+		public static JSONObject queryFromPath2JSON(String imagePath, String indexPath, int numberOfResults) 
+		{
 			try {
-				return Analyser.searchResult2JSON(Analyser.visual.query(imagePath, indexPath, numberOfResults));
+				return Analyser.searchResult2JSON(Analyser.visual.queryFromPath(imagePath, indexPath, numberOfResults));
 			} catch (JSONException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}
