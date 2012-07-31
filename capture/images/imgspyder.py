@@ -30,7 +30,7 @@ class Spider:
 
 	def db_fetch_urls(self):
 		cur = self.db_con.cursor(MySQLdb.cursors.DictCursor)
-		cur.execute("SELECT id, url FROM feeditemmedia WHERE type='image' AND flags=0 ORDER BY created DESC LIMIT 1000")
+		cur.execute("SELECT id, url FROM feeditemmedia WHERE type='image' AND flags=0 ORDER BY created DESC LIMIT 3")
 		return cur.fetchall()
 
 	def db_update_flag_fetched(self, data):
@@ -45,10 +45,10 @@ class Spider:
 		urllib.urlretrieve(url, hash)
 		return hash
 
-	def store_s3(self, filename):
+	def store_s3(self, filename, filepath):
 		k = Key(self.s3_bucket)
 		k.key = filename
-		k.set_contents_from_filename(filename)
+		k.set_contents_from_filename(filepath)
 		k.set_acl('public-read')
 
 class Main:
@@ -67,22 +67,32 @@ class Main:
 		s.init_db(self.database)
 		s.init_aws(self.aws)
 
+		dir_temp = 'tmp'
+		dir_ioerror = 'ioerrors'
+		if not os.path.exists(dir_temp):
+			os.makedirs(dir_temp)
+		if not os.path.exists(dir_ioerror):
+			os.makedirs(dir_ioerror)
+
 		rows = s.db_fetch_urls()
 		for row in rows:
 			hash = s.get_content_from_web(row['url'])
+			file_raw = dir_temp + '/' + hash
+			file_png = file_raw + '.png'
+			shutil.move(hash, file_raw)
 
 			try:
-				img = Image.open(hash)
+				img = Image.open(file_raw)
 				if img.format is not None:
 					row['hash'] = hash + '.png'
 					row['width'] = img.size[0]
 					row['height'] = img.size[1]
 					row['flags'] = constants.DOWNLOADED
 					row['abs_path'] = 'https://s3.amazonaws.com/'+self.aws['bucket']+'/'
-					img.save(row['hash'])
-					s.store_s3(row['hash'])
-					os.remove(hash)
-					os.remove(row['hash'])
+					img.save(file_png)
+					s.store_s3(row['hash'], file_png)
+					os.remove(file_raw)
+					os.remove(file_png)
 
 			except IOError:
 				row['hash'] = 'nope'
@@ -90,10 +100,7 @@ class Main:
 				row['height'] = 0
 				row['flags'] = constants.INVALID
 				row['abs_path'] = 'IOError'
-				ioerror_dir = 'ioerrors'
-				if not os.path.exists(ioerror_dir):
-					os.makedirs(ioerror_dir)
-				shutil.move(hash, ioerror_dir + '/' + str(row['id']))
+				shutil.move(file_raw, dir_ioerror + '/' + str(row['id']))
 				logging.error("ioerror reading file: %s" % (hash))
 
 			s.db_update_flag_fetched(row)

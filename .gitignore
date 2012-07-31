@@ -4,3 +4,4 @@ log-*.php
 *.pyc
 *DS_Store
 ioerrors
+tmp
