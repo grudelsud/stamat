@@ -14,7 +14,7 @@ public abstract class HomerConstants {
 	/**
 	 * Property file located in the webapp absolute path
 	 * 
-	 * @see it.unifi.micc.orione.controller.Search
+	 * @see it.unifi.micc.Searcher.controller.Search
 	 * @see it.unifi.micc.orione.util.OrioneProperties
 	 */
 	public static final String PROPFILE_NAME    = "homer.properties";

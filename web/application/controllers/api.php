@@ -288,7 +288,57 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty field id');
 		}
 	}
-	
+
+	/**
+	 * Media related, pure REST!
+	 */
+	function media()
+	{
+		$this->_user_check('API - media');
+		$this->load->model('media_model');
+		$params = $this->uri->uri_to_assoc();
+
+		switch( $params['action'] ) {
+			case 'browse':
+				$type = empty($params['type']) ? null : $params['type'];
+				$primary = empty($params['primary']) ? null : $params['primary'];
+				switch ($params['flags']) {
+					case 'invalid':
+						$flags = MEDIA_INVALID;
+						break;
+					case 'indexed':
+						$flags = MEDIA_INDEXED;
+						break;
+					default:
+						$flags = MEDIA_DOWNLOADED;
+				}
+				$min_width = empty($params['min_width']) ? null : $params['min_width'];
+				$min_height = empty($params['min_height']) ? null : $params['min_height'];
+				$page = empty($params['page']) ? null : $params['page'];
+				$pagesize = empty($params['pagesize']) ? null : $params['pagesize'];
+
+				$result = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
+				foreach ($result as $row) {
+					$row->url_cdn = $row->abs_path . $row->hash;
+				}
+				$this->_return_json_success($result);
+				break;
+			case 'read':
+				$result = $this->media_model->get_media($params['read']);
+				foreach ($result as $row) {
+					$row->url_cdn = $row->abs_path . $row->hash;
+				}
+				$this->_return_json_success( $result );
+				break;
+			case 'index':
+				$result = $this->media_model->update_flags($params['index'], MEDIA_INDEXED);
+				$this->_return_json_success( $result );
+				break;
+			default:
+				$this->_return_json_error('select one of: browse, read, index');
+		}
+	}
+
 	/**
 	 * Feed/tag related CRUD functions (no update)
 	 * 
@@ -310,7 +360,7 @@ class Api extends CI_Controller
 			$this->_return_json_error('both feed and tags must be selected');
 		}
 	}
-	
+
 	function get_feed_tags()
 	{
 		$this->_user_check();
@@ -320,7 +370,7 @@ class Api extends CI_Controller
 			$this->_return_json_success( $this->feed_model->get_tags($feed_id) );
 		}
 	}
-	
+
 	function delete_feed_tags()
 	{
 		$this->_user_check('API - delete_feed_tags');
@@ -334,7 +384,7 @@ class Api extends CI_Controller
 			$this->_return_json_error('select tags 1st');
 		}		
 	}
-	
+
 	/**
 	 * Vocabulary/tag related CRUD functions (no update)
 	 * 
@@ -385,6 +435,9 @@ class Api extends CI_Controller
 		}
 	}
 
+	/**
+	 * user & output related stuff
+	 */
 	private function _user_check($message = '')
 	{
 		if( $this->user_model->api_check() ) {
@@ -394,17 +447,23 @@ class Api extends CI_Controller
 		}
 	}
 	
-	// returns success message in json
+	/**
+	 * returns success message in json
+	 */
 	private function _return_json_success($success) {
 		$this->_return_json('success', $success);
 	}
 	
-	// returns error message in json
+	/**
+	 * returns error message in json
+	 */
 	private function _return_json_error($error) {
 		$this->_return_json('error', $error);
 	}
 	
-	// returns a json array
+	/**
+	 * returns a json array
+	 */
 	private function _return_json($response, $message) {
 		$data = array(
 			'json' => array(

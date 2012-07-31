@@ -66,6 +66,10 @@ define('ANNOTATED_MICC', 1);
 define('ANNOTATED_SANR', 2);
 define('ANNOTATED_TAGS', 4);
 
+define('MEDIA_DOWNLOADED', 1);
+define('MEDIA_INVALID', 2);
+define('MEDIA_INDEXED', 4);
+
 define('STRUCT_OBJ_FEEDITEM', 'feed-item');
 define('STRUCT_OBJ_KEYWORD', 'keyword');
 define('STRUCT_OBJ_TOPIC', 'topic');

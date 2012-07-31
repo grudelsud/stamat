@@ -1,6 +1,8 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +12,7 @@ import models.Utils;
 import models.requests.EntitiesExtract;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 
 import play.Logger;
 import play.data.DynamicForm;
@@ -74,14 +77,36 @@ public class Application extends Controller {
 		JsonNode json = request().body().asJson();
 		Logger.info("visualIndexImages request - " + request().body().toString());
 		if(json == null) {
-			return badRequest(Utils.returnError("expecting JSON request"));
+			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
+		} else {
+			String indexPath = Constants.getIndicesFolderPath() + "/test";
+			JsonNode imageListJson = json.findValue("success");
+			if( imageListJson != null ) {
+				Iterator<JsonNode> imageListJsonIterator = imageListJson.getElements();
+				String message = "plenty of images added to " + indexPath + ": ";
+				while(imageListJsonIterator.hasNext()) {
+					JsonNode imageJson = imageListJsonIterator.next();
+					String url = imageJson.get("url_cdn").asText();
+					String imageIdentifier = imageJson.get("id").asText();
+					message += "("+ imageIdentifier + ", "+ url +")";
+					Analyser.visual.updateIndexCEDDfromURL(indexPath, url, imageIdentifier);
+				}
+				return ok(Utils.returnSuccess(message));				
+			} else {
+				return badRequest(Utils.returnError("expecting json format: {success: [{}, {}, ...]}"));
+			}
 		}
-		return ok(Utils.returnSuccess("all good"));
 	}
 
 	public static Result visualSimilarity()
 	{
-		return TODO;
+		JsonNode json = request().body().asJson();
+		Logger.info("visualSimilarity request - " + request().body().toString());
+		if(json == null) {
+			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
+		} else {
+			return ok(Utils.returnSuccess("all good"));							
+		}
 	}
 
 	public static Result asyncTest()
