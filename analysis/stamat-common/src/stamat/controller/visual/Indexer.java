@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,7 @@ import net.semanticmetadata.lire.utils.LuceneUtils;
 
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -31,6 +33,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
+
+import stamat.util.StamatException;
 
 
 
@@ -66,22 +70,87 @@ public class Indexer {
 	}
 
 	/**
+	 * @param URL
+	 * @param indexedFields
+	 * @throws StamatException
+	 * @throws IOException
+	 */
+	public void updateIndexFromURL(String URL, Map<String, String> indexedFields) throws StamatException, IOException
+	{
+		InputStream is = (new java.net.URL(URL)).openStream();
+		updateIndex(is, indexedFields);
+	}
+
+	/**
+	 * @param imagePath
+	 * @param indexedFields
+	 * @throws StamatException
+	 * @throws IOException
+	 */
+	public void updateIndexFromPath(String imagePath, Map<String, String> indexedFields) throws StamatException, IOException
+	{
+		FileInputStream fis = new FileInputStream(imagePath);
+		updateIndex(fis, indexedFields);
+	}
+
+	/**
+	 * @param is
+	 * @param indexedFields
+	 * @throws StamatException
+	 * @throws IOException
+	 */
+	public void updateIndex(InputStream is, Map<String, String> indexedFields) throws StamatException, IOException
+	{
+		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+		conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), conf);
+		
+		ChainedDocumentBuilder docBuilder = new ChainedDocumentBuilder();
+
+		docBuilder.addBuilder(DocumentBuilderFactory.getAutoColorCorrelogramDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getScalableColorBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getCEDDDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getColorHistogramDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getColorLayoutBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getTamuraDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getEdgeHistogramBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getFCTHDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getGaborDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getJCDDocumentBuilder());
+		docBuilder.addBuilder(DocumentBuilderFactory.getJpegCoefficientHistogramDocumentBuilder());
+
+		docBuilder.addBuilder(new SiftDocumentBuilder());
+
+		String identifier = indexedFields.remove("identifier");
+		if( identifier == null ) {
+			throw new StamatException("parameter indexedFields must contain at least one key with name 'identifier'");
+		} else {
+			BufferedImage img = ImageIO.read(is);
+			Document doc = docBuilder.createDocument(img, identifier);
+			for(String key : indexedFields.keySet()) {
+				doc.add(new Field(key, indexedFields.get(key), Field.Store.YES, Field.Index.ANALYZED));
+			}
+		}
+		iw.close();
+	}
+
+	/**
 	 * Adds image from URL to this index instance. 
 	 * Image Identifier is used to store a reference to this image on the index, URL will be used if set to null.
 	 * 
 	 * @param URL
 	 * @param imageIdentifier
-	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public String updateIndexCEDDfromUrl(String URL, String imageIdentifier) throws MalformedURLException, IOException 
+	@Deprecated
+	public void updateIndexCEDDfromUrl(String URL, String imageIdentifier) throws MalformedURLException, IOException 
 	{
 		if( imageIdentifier == null ) {
 			imageIdentifier = URL;
 		}
 		InputStream is = (new java.net.URL(URL)).openStream();
-		return updateIndexCEDD(is, imageIdentifier);
+		updateIndexCEDD(is, imageIdentifier);
 	}
 
 	/**
@@ -90,16 +159,16 @@ public class Indexer {
 	 * 
 	 * @param imagePath
 	 * @param imageIdentifier
-	 * @return
 	 * @throws IOException
 	 */
-	public String updateIndexCEDDfromPath(String imagePath, String imageIdentifier) throws IOException
+	@Deprecated
+	public void updateIndexCEDDfromPath(String imagePath, String imageIdentifier) throws IOException
 	{
 		if( imageIdentifier == null ) {
 			imageIdentifier = imagePath;
 		}
 		FileInputStream fis = new FileInputStream(imagePath);
-		return updateIndexCEDD(fis, imageIdentifier);
+		updateIndexCEDD(fis, imageIdentifier);
 	}
 
 	/**
@@ -108,6 +177,7 @@ public class Indexer {
 	 * @param imageFolderPath
 	 * @throws IOException
 	 */
+	@Deprecated
 	public void updateIndexCEDDfromFolder(String imageFolderPath) throws IOException
 	{
 		long startTime = System.currentTimeMillis();
@@ -122,10 +192,10 @@ public class Indexer {
 		logger.log(Level.INFO, "Folder indexed in "+ (System.currentTimeMillis() - startTime) + " ms");
 	}
 
-	public String updateIndexCEDD(InputStream is, String imageIdentifier) throws IOException
+	@Deprecated
+	public void updateIndexCEDD(InputStream is, String imageIdentifier) throws IOException
 	{
 		long startTime = System.currentTimeMillis();
-		String hash = Long.toString(startTime);
 		// Creating an Lucene IndexWriter
 		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
 		conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -146,15 +216,15 @@ public class Indexer {
 		// closing the IndexWriter
 		iw.close();
 		logger.log(Level.INFO, "Index updated in "+ (System.currentTimeMillis() - startTime) + " ms");
-		return hash;
 	}
 
-	// TODO: check IndexWriterConfig.OpenMode, should be set to CREATE_OR_APPEND for consistency
+	@Deprecated
 	public void createIndexSIFT(String imageFolderPath) throws IOException 
 	{
 		// create the initial local features:
 		ChainedDocumentBuilder builder = new ChainedDocumentBuilder();
 		builder.addBuilder(new SiftDocumentBuilder());
+		// TODO: check IndexWriterConfig.OpenMode, should be set to CREATE_OR_APPEND for consistency
 		IndexWriter iw = LuceneUtils.createIndexWriter(indexPath, true);
 		ArrayList<String> images = FileUtils.getAllImages(new File(imageFolderPath), true);
 		for (String identifier : images) {

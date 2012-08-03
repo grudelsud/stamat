@@ -13,9 +13,11 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import net.semanticmetadata.lire.DocumentBuilder;
+import net.semanticmetadata.lire.DocumentBuilderFactory;
 import net.semanticmetadata.lire.ImageSearchHits;
 import net.semanticmetadata.lire.ImageSearcher;
 import net.semanticmetadata.lire.ImageSearcherFactory;
+import net.semanticmetadata.lire.impl.SiftDocumentBuilder;
 import net.semanticmetadata.lire.impl.VisualWordsImageSearcher;
 
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -46,11 +48,59 @@ public class Searcher {
 	}
 
 	/**
+	 * @see stamat.controller.visual.Indexer.updateIndex for complete list, reported below
+	 * 
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getAutoColorCorrelogramDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getScalableColorBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getCEDDDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getColorHistogramDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getColorLayoutBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getTamuraDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getEdgeHistogramBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getFCTHDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getGaborDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getJCDDocumentBuilder());
+	 * docBuilder.addBuilder(DocumentBuilderFactory.getJpegCoefficientHistogramDocumentBuilder());
+	 * docBuilder.addBuilder(new SiftDocumentBuilder());
+	 *
+	 * @param is
+	 * @param field
+	 * @return
+	 */
+	public List<SearchResult> search(InputStream is, String field)
+	{
+		// TODO: implement
+		if( field == DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM) {
+			
+		} else if( field == DocumentBuilder.FIELD_NAME_SCALABLECOLOR ) {
+			
+		} else if( field == DocumentBuilder.FIELD_NAME_CEDD ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_COLORHISTOGRAM ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_COLORLAYOUT ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_TAMURA ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_FCTH ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_GABOR ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_JCD ) {
+
+		} else if( field == DocumentBuilder.FIELD_NAME_JPEGCOEFFS ) {
+		}
+		return null;
+	}
+	/**
 	 * @param imagePath
 	 * @return
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public List<SearchResult> searcherCEDDfromPath(String imagePath) throws CorruptIndexException, IOException {
 		FileInputStream fis = new FileInputStream(imagePath);
 		return searcherCEDD(fis);
@@ -62,6 +112,7 @@ public class Searcher {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public List<SearchResult> searcherCEDDfromUrl(String URL) throws CorruptIndexException, IOException {
 		InputStream is = (new java.net.URL(URL)).openStream();
 		return searcherCEDD(is);
@@ -73,6 +124,7 @@ public class Searcher {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public List<SearchResult> searcherCEDD(InputStream isImageQuery) throws CorruptIndexException, IOException {
 		BufferedImage img = ImageIO.read(isImageQuery);
 		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
@@ -95,6 +147,7 @@ public class Searcher {
 	 * @throws CorruptIndexException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public List<SearchResult> searcherSift(File queryFile) throws CorruptIndexException, IOException{
 
 		List<SearchResult> results = new ArrayList<SearchResult>();

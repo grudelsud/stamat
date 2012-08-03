@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -352,10 +353,25 @@ public class Analyser {
 			return constants.ERROR;
 		}
 
+		public static void updateIndexfromURL(String indexPath, String URL)
+		{
+			Indexer indexer = new Indexer(indexPath);
+			HashMap<String, String> fields = new HashMap<String, String>();
+			fields.put("identifier", "URL");
+			try {
+				indexer.updateIndexFromURL(URL, fields);
+			} catch (StamatException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			}
+		}
+
 		/**
 		 * @param indexPath
 		 * @param URL
 		 */
+		@Deprecated
 		public static void updateIndexCEDDfromURL(String indexPath, String URL, String imageIdentifier)
 		{
 			Indexer indexing = new Indexer(indexPath);
@@ -372,6 +388,7 @@ public class Analyser {
 		 * @param indexPath
 		 * @param imagePath
 		 */
+		@Deprecated
 		public static void updateIndexCEDDfromPath(String indexPath, String imagePath, String imageIdentifier) 
 		{
 			Indexer indexing = new Indexer(indexPath);
@@ -389,6 +406,7 @@ public class Analyser {
 		 * @throws LockObtainFailedException
 		 * @throws IOException
 		 */
+		@Deprecated
 		public static void updateIndexCEDDfromFolder(String indexPath, String imageFolderPath) 
 		{
 			Indexer indexing = new Indexer(indexPath);
