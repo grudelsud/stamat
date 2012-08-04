@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/stamat-common"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="/stamat-common/lib/json.jar"/>
+	<classpathentry kind="lib" path="/stamat-common/lib/lire.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

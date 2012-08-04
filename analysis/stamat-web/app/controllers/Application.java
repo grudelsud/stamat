@@ -1,8 +1,8 @@
 package controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
 import models.Constants;
 import models.Utils;
 import models.requests.EntitiesExtract;
+import net.semanticmetadata.lire.DocumentBuilder;
 
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ArrayNode;
 
 import play.Logger;
 import play.data.DynamicForm;
@@ -24,6 +24,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import stamat.main.Analyser;
 import stamat.model.NamedEntity;
+import stamat.util.StamatException;
 import views.html.index;
 
 public class Application extends Controller {
@@ -75,7 +76,7 @@ public class Application extends Controller {
 	public static Result visualIndexImages()
 	{
 		JsonNode json = request().body().asJson();
-		Logger.info("visualIndexImages request - " + request().body().toString());
+//		Logger.info("visualIndexImages request - " + request().body().toString());
 		if(json == null) {
 			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
 		} else {
@@ -83,13 +84,21 @@ public class Application extends Controller {
 			JsonNode imageListJson = json.findValue("success");
 			if( imageListJson != null ) {
 				Iterator<JsonNode> imageListJsonIterator = imageListJson.getElements();
-				String message = "plenty of images added to " + indexPath + ": ";
+				String message = "indices added to " + indexPath + ": ";
 				while(imageListJsonIterator.hasNext()) {
 					JsonNode imageJson = imageListJsonIterator.next();
 					String url = imageJson.get("url_cdn").asText();
-					String imageIdentifier = imageJson.get("id").asText();
-					message += "("+ imageIdentifier + ", "+ url +")";
-					Analyser.visual.updateIndexCEDDfromURL(indexPath, url, imageIdentifier);
+					String id = imageJson.get("id").asText();
+					HashMap<String, String> indexedFields = new HashMap<String, String>();
+					indexedFields.put("url", url);
+					indexedFields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, id);
+					message += indexedFields.toString() + " ";
+					Logger.info("indexing " + indexedFields.toString());
+					try {
+						Analyser.visual.updateIndexfromURL(indexPath, url, indexedFields);
+					} catch (StamatException e) {
+						Logger.error("error while indexing {id="+id+", url="+url+"} message: " + e.getMessage());
+					}
 				}
 				return ok(Utils.returnSuccess(message));				
 			} else {

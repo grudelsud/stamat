@@ -9,7 +9,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import net.semanticmetadata.lire.DocumentBuilder;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -23,6 +26,7 @@ import org.json.JSONObject;
 
 import stamat.controller.visual.SearchResult;
 import stamat.main.Analyser;
+import stamat.util.StamatException;
 
 
 /**
@@ -74,7 +78,7 @@ public class Main {
 		// visual index create
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("create visual index, requires options -iI (-iP | -iF | -iU). Use -iI alone to create an empty index")
+				.withDescription("create visual index, requires options -iI (-iP | -iF | -iU) -iId. Use -iI alone to create an empty index")
 				.withLongOpt("visual-create-index")
 				.create("Vc"));
 		// visual similarity query
@@ -96,7 +100,15 @@ public class Main {
 				.withDescription("full path of folder containing image index")
 				.withLongOpt("image-index-path")
 				.create("iI"));
-		
+
+		// image identifier
+		options.addOption( OptionBuilder
+				.hasArg()
+				.withArgName("imageIdentifier")
+				.withDescription("image identifier, used for indexing purposes")
+				.withLongOpt("image-identifier")
+				.create("iId"));
+
 		// image URL
 		options.addOption( OptionBuilder
 				.hasArg()
@@ -209,6 +221,7 @@ public class Main {
 		String imagePath = line.getOptionValue("iP");
 		String imageFolderPath = line.getOptionValue("iF");
 		String imageURL = line.getOptionValue("iU");
+		String imageIdentifier = line.getOptionValue("iId");
 
 		int numOutputs = 0;
 		int numKeywords = 0;
@@ -266,10 +279,17 @@ public class Main {
 		// visual index create
 		} else if( line.hasOption("Vc")) {
 			if( indexPath == null) {
-				System.out.println("create visual index, requires options -iI (-iP | -iF | -iU). Use -iI alone to create an empty index.");
+				System.out.println("create visual index, requires options -iI (-iP | -iF | -iU) -iId. Use -iI alone to create an empty index.");
 			} else {
 				if( imageURL != null ) {
-					Analyser.visual.updateIndexCEDDfromURL(indexPath, imageURL, imageURL);
+					HashMap<String, String> fields = new HashMap<String, String>();
+					fields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, imageIdentifier == null ? imageURL : imageIdentifier);
+					try {
+						Analyser.visual.updateIndexfromURL(indexPath, imageURL, fields);
+					} catch (StamatException e) {
+						e.printStackTrace();
+					}
+//					Analyser.visual.updateIndexCEDDfromURL(indexPath, imageURL, imageURL);
 				} else if( imagePath != null ) {
 					Analyser.visual.updateIndexCEDDfromPath(indexPath, imagePath, imagePath);
 				} else if( imageFolderPath != null ) {

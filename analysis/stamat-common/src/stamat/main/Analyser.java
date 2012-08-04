@@ -5,15 +5,17 @@ import it.unifi.micc.homer.controller.namedentity.NamedEntityDetector;
 import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.util.WordCounter;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.semanticmetadata.lire.DocumentBuilder;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -24,8 +26,8 @@ import org.json.JSONObject;
 import stamat.controller.ned.StanfordNERecognizer;
 import stamat.controller.topic.TopicDetector;
 import stamat.controller.visual.Indexer;
-import stamat.controller.visual.Searcher;
 import stamat.controller.visual.SearchResult;
+import stamat.controller.visual.Searcher;
 import stamat.model.KeywordType;
 import stamat.model.NamedEntity;
 import stamat.model.SemanticKeyword;
@@ -95,9 +97,11 @@ public class Analyser {
 		 * @param gateHome
 		 * @return
 		 */
-		public static ArrayList<NamedEntity> exractAnnie(String text, ArrayList<KeywordType> keywordTypes, String gateHome)
+		public static ArrayList<NamedEntity> exractAnnie(String text, String gateHome)
 		{
 			NamedEntityDetector ned = AnnieNEDDetector.getInstance(gateHome);
+			ArrayList<KeywordType> keywordTypes = new ArrayList<KeywordType>();
+			keywordTypes.add(KeywordType.ALLENTS);
 			ArrayList<NamedEntity> entityList = ned.extractEntity(text, keywordTypes);	//returns entities without repetitions		
 			return evalTFs(text, entityList);
 		}
@@ -108,11 +112,11 @@ public class Analyser {
 		 * @param gateHome
 		 * @return
 		 */
-		public static JSONObject exractAnnie2JSON(String text, ArrayList<KeywordType> keywordTypes, String gateHome)
+		public static JSONObject exractAnnie2JSON(String text, String gateHome)
 		{
 			JSONObject result = new JSONObject();
 			try {
-				JSONArray entities = Analyser.semanticKeywordList2JSON(Analyser.ned.exractAnnie(text, keywordTypes, gateHome));
+				JSONArray entities = Analyser.semanticKeywordList2JSON(Analyser.ned.exractAnnie(text, gateHome));
 				result.put("success", entities);
 			} catch (JSONException e) {
 				logger.log(Level.WARNING, e.getMessage());
@@ -353,15 +357,39 @@ public class Analyser {
 			return constants.ERROR;
 		}
 
-		public static void updateIndexfromURL(String indexPath, String URL)
+		/**
+		 * @param indexPath
+		 * @param URL
+		 * @param indexedFields
+		 * @throws StamatException 
+		 */
+		public static void updateIndexfromURL(String indexPath, String URL, Map<String, String> indexedFields) throws StamatException
 		{
 			Indexer indexer = new Indexer(indexPath);
 			HashMap<String, String> fields = new HashMap<String, String>();
-			fields.put("identifier", "URL");
+			fields.putAll(indexedFields);
 			try {
+				java.net.URL url = new java.net.URL(URL);
+				if( !fields.containsKey(DocumentBuilder.FIELD_NAME_IDENTIFIER) ) {
+					fields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, url.getFile().length() > 0 ? url.getFile() : URL);
+				}
+				if( !fields.containsKey("url") ) {
+					fields.put("url", URL);
+				}
 				indexer.updateIndexFromURL(URL, fields);
-			} catch (StamatException e) {
+			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
+			}
+		}
+
+		/**
+		 * @param indexPath
+		 */
+		public static void createSIFTHistograms(String indexPath)
+		{
+			Indexer indexer = new Indexer(indexPath);
+			try {
+				indexer.createSIFTHistogram();
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}
@@ -426,6 +454,7 @@ public class Analyser {
 		 * @param numberOfResults
 		 * @return
 		 */
+		@Deprecated
 		public static List<SearchResult> queryFromUrl(String URL, String indexPath, float weightSCD, float weightCLD, float weightEHD, int numberOfResults) 
 		{
 			Searcher search = new Searcher(indexPath, numberOfResults+1);
@@ -446,6 +475,7 @@ public class Analyser {
 		 * @param numberOfResults
 		 * @return
 		 */
+		@Deprecated
 		public static List<SearchResult> queryFromUrl(String URL, String indexPath, int numberOfResults) 
 		{
 			return Analyser.visual.queryFromUrl(URL, indexPath, 1f, 1f, 1f, numberOfResults);
@@ -458,6 +488,7 @@ public class Analyser {
 		 * @throws CorruptIndexException
 		 * @throws IOException
 		 */
+		@Deprecated
 		public static List<SearchResult> queryFromPath(String imagePath, String indexPath, float weightSCD, float weightCLD, float weightEHD, int numberOfResults) 
 		{
 			Searcher search = new Searcher(indexPath, numberOfResults+1);
@@ -479,6 +510,7 @@ public class Analyser {
 		 * @throws CorruptIndexException
 		 * @throws IOException
 		 */
+		@Deprecated
 		public static List<SearchResult> queryFromPath(String imagePath, String indexPath, int numberOfResults) 
 		{
 			return Analyser.visual.queryFromPath(imagePath, indexPath, 1f, 1f, 1f, numberOfResults);
@@ -491,6 +523,7 @@ public class Analyser {
 		 * @throws CorruptIndexException
 		 * @throws IOException
 		 */
+		@Deprecated
 		public static JSONObject queryFromPath2JSON(String imagePath, String indexPath, int numberOfResults) 
 		{
 			try {
