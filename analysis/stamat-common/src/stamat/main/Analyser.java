@@ -46,6 +46,9 @@ public class Analyser {
 	public static class constants {
 		public static final int SUCCESS = 0;
 		public static final int ERROR = 1;
+		
+		public static final String SEARCH_URL = Indexer.constants.INDEX_URL;
+		public static final String SEARCH_INDEX = "index";
 	}
 
 	public static class ned {
@@ -92,16 +95,36 @@ public class Analyser {
 		}
 
 		/**
+		 * -Dgate.plugins.home=GATE_HOME must be defined on command line
+		 * 
 		 * @param text
 		 * @param keywordTypes
 		 * @param gateHome
 		 * @return
 		 */
-		public static ArrayList<NamedEntity> exractAnnie(String text, String gateHome)
+		public static ArrayList<NamedEntity> exractAnnie(String text)
 		{
-			NamedEntityDetector ned = AnnieNEDDetector.getInstance(gateHome);
+			NamedEntityDetector ned = AnnieNEDDetector.getInstance();
 			ArrayList<KeywordType> keywordTypes = new ArrayList<KeywordType>();
-			keywordTypes.add(KeywordType.ALLENTS);
+			keywordTypes.add(KeywordType.LOCATION);
+			keywordTypes.add(KeywordType.PERSON);
+			keywordTypes.add(KeywordType.ORGANIZATION);
+			ArrayList<NamedEntity> entityList = ned.extractEntity(text, keywordTypes);	//returns entities without repetitions		
+			return evalTFs(text, entityList);
+		}
+
+		/**
+		 * @param text
+		 * @param gateHomePath
+		 * @return
+		 */
+		public static ArrayList<NamedEntity> exractAnnie(String text, String gateHomePath)
+		{
+			NamedEntityDetector ned = AnnieNEDDetector.getInstance(gateHomePath);
+			ArrayList<KeywordType> keywordTypes = new ArrayList<KeywordType>();
+			keywordTypes.add(KeywordType.LOCATION);
+			keywordTypes.add(KeywordType.PERSON);
+			keywordTypes.add(KeywordType.ORGANIZATION);
 			ArrayList<NamedEntity> entityList = ned.extractEntity(text, keywordTypes);	//returns entities without repetitions		
 			return evalTFs(text, entityList);
 		}
@@ -112,11 +135,11 @@ public class Analyser {
 		 * @param gateHome
 		 * @return
 		 */
-		public static JSONObject exractAnnie2JSON(String text, String gateHome)
+		public static JSONObject exractAnnie2JSON(String text)
 		{
 			JSONObject result = new JSONObject();
 			try {
-				JSONArray entities = Analyser.semanticKeywordList2JSON(Analyser.ned.exractAnnie(text, gateHome));
+				JSONArray entities = Analyser.semanticKeywordList2JSON(Analyser.ned.exractAnnie(text));
 				result.put("success", entities);
 			} catch (JSONException e) {
 				logger.log(Level.WARNING, e.getMessage());
@@ -324,6 +347,8 @@ public class Analyser {
 	 * List<SearchResult> currentResultCLD = searchCLD.search(new File("ucid.v2-png/" + query));
 	 * List<SearchResult> currentResultEHD = searchEHD.search(new File("ucid.v2-png/" + query));
 	 * 
+	 * SEARCHRESULT NOW HAS AN ADDITIONAL FIELD! PLEASE CHECK DEPRECATED CONSTRUCTOR!
+	 * 
 	 * RankFusion rankFusion = new RankFusion(currentResultSCD, currentResultCLD, currentResultEHD);
 	 * List<SearchResult> mergedWithBorda = rankFusion.mergeWithBORDACount();
 	 * List<SearchResult> mergedWithRankProduct = rankFusion.mergeWithRankProduct();
@@ -360,6 +385,46 @@ public class Analyser {
 		/**
 		 * @param indexPath
 		 * @param URL
+		 * @param feature one of DocumentBuilder.FIELD_NAME
+		 * @param numberOfResults
+		 * @return
+		 */
+		public static List<SearchResult> searchFromUrl(String indexPath, String URL, String feature, int numberOfResults)
+		{
+			Searcher searcher = new Searcher(indexPath, numberOfResults);
+			try {
+				return searcher.searchFromUrl(URL, feature, numberOfResults);
+			} catch (StamatException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			}
+			return null;
+		}
+
+		/**
+		 * @param indexPath
+		 * @param fileIdentifier
+		 * @param feature
+		 * @param numberOfResults
+		 * @return
+		 */
+		public static List<SearchResult> searchFromIndex(String indexPath, String fileIdentifier, String feature, int numberOfResults)
+		{
+			Searcher searcher = new Searcher(indexPath, numberOfResults);
+			try {
+				return searcher.searchFromIndex(fileIdentifier, feature, numberOfResults);
+			} catch (StamatException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			}
+			return null;
+		}
+		
+		/**
+		 * @param indexPath
+		 * @param URL
 		 * @param indexedFields
 		 * @throws StamatException 
 		 */
@@ -373,8 +438,8 @@ public class Analyser {
 				if( !fields.containsKey(DocumentBuilder.FIELD_NAME_IDENTIFIER) ) {
 					fields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, url.getFile().length() > 0 ? url.getFile() : URL);
 				}
-				if( !fields.containsKey("url") ) {
-					fields.put("url", URL);
+				if( !fields.containsKey(Analyser.constants.SEARCH_URL) ) {
+					fields.put(Analyser.constants.SEARCH_URL, URL);
 				}
 				indexer.updateIndexFromURL(URL, fields);
 			} catch (IOException e) {
@@ -390,6 +455,19 @@ public class Analyser {
 			Indexer indexer = new Indexer(indexPath);
 			try {
 				indexer.createSIFTHistogram();
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, e.getMessage());
+			}
+		}
+
+		/**
+		 * @param indexPath
+		 */
+		public static void createSURFHistograms(String indexPath)
+		{
+			Indexer indexer = new Indexer(indexPath);
+			try {
+				indexer.createSURFHistogrm();
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}

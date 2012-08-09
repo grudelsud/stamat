@@ -44,6 +44,9 @@ public class Indexer {
 	private String indexPath;
 	private static Logger logger = Logger.getLogger(Indexer.class.getName());
 
+	public static class constants {
+		public static final String INDEX_URL = "url";
+	}
 	/**
 	 * Creates an instance of indexing, which basically is a dummy object where all the create / update index methods must be run explicitly.
 	 * With the only exception of method createEmptyIndex, all the other create / update methods will try to open an existing indexPath,
@@ -109,6 +112,11 @@ public class Indexer {
 			try {
 				BufferedImage img = ImageIO.read(is);
 				Document doc = docBuilder.createDocument(img, identifier);
+				
+				// make sure we always have a URL field in the index
+				if( !indexedFields.containsKey(Indexer.constants.INDEX_URL)) {
+					indexedFields.put(Indexer.constants.INDEX_URL, identifier);
+				}
 				for(String key : indexedFields.keySet()) {
 					doc.add(new Field(key, indexedFields.get(key), Field.Store.YES, Field.Index.ANALYZED));
 				}

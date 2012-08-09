@@ -54,7 +54,7 @@ public class Main {
 		// entity extract
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
-				.withDescription("entity extraction, requires options (-t | -tp) -ep")
+				.withDescription("entity extraction, requires options (-t | -tp) (-ecs -ep | -ecg). When using -ecg, Gate requires to be installed and home specified with parameter -Dgate.plugins.home=GATE_HOME")
 				.withLongOpt("entity-extract")
 				.create("E"));
 		// topic model train
@@ -141,11 +141,27 @@ public class Main {
 				.withLongOpt("model-path")
 				.create("m"));
 
+		// stanford entity classifier
+		options.addOption( OptionBuilder
+				.hasArg(false)
+				.withArgName("entityClassifierStanford")
+				.withDescription("use Stanford NER")
+				.withLongOpt("entity-class-stanford")
+				.create("ecs"));
+
+		// stanford entity classifier
+		options.addOption( OptionBuilder
+				.hasArg(false)
+				.withArgName("entityClassifierGate")
+				.withDescription("use Stanford GATE Annie")
+				.withLongOpt("entity-class-gate")
+				.create("ecg"));
+
 		// entity classifier path
 		options.addOption( OptionBuilder
 				.hasArg()
 				.withArgName("entityClassPath")
-				.withDescription("entity classifier path")
+				.withDescription("entity classifier path (either stanford classifier or gate home would use the same parameter)")
 				.withLongOpt("entity-class-path")
 				.create("ep"));
 
@@ -204,7 +220,7 @@ public class Main {
 	private static void cmdRunner(CommandLine line, Options options) {
 		if( line.hasOption("h") ) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp(new PrintWriter(System.out, true), 80, "java -jar stamat.main-cmdline.jar", "options:", options, 2, 4, "", true);
+			formatter.printHelp(new PrintWriter(System.out, true), 120, "java -Djava.util.logging.config.file=stamat-logging.properties -jar stamat.main-cmdline.jar", "options:", options, 2, 4, "", true);
 			return;
 		}
 
@@ -333,10 +349,16 @@ public class Main {
 
 		// entity extract
 		} else if( line.hasOption("E")) {
-			if( texts.size() < 1 | entityClassifierPath == null ) {
-				System.out.println("With -E use options: (-t | -tp) -ep");
+			boolean stanfordParCheck = line.hasOption("ecs") ? line.hasOption("ecs") && (entityClassifierPath != null) : true;
+			if( texts.size() < 1 || !stanfordParCheck ) {
+				System.out.println("With -E use options: (-t | -tp) (-ecs -ep | -ecg) -ep. When using -ecg, Gate requires to be installed and home specified with parameter -Dgate.plugins.home=GATE_HOME");
 			} else {
-				JSONObject result = Analyser.ned.extractStanford2JSON(texts.toString(), entityClassifierPath);
+				JSONObject result = new JSONObject();
+				if(line.hasOption("ecs")) {
+					result = Analyser.ned.extractStanford2JSON(texts.toString(), entityClassifierPath);					
+				} else if(line.hasOption("ecg")) {
+					result = Analyser.ned.exractAnnie2JSON(texts.toString());
+				}
 				System.out.println(result.toString());
 			}
 			return;

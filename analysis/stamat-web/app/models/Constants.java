@@ -1,7 +1,5 @@
 package models;
 
-import java.io.File;
-
 public class Constants {
 
 	private static final String threeClassClassifier = "/public/classifiers/english.all.3class.distsim.crf.ser.gz";
@@ -9,7 +7,9 @@ public class Constants {
 	
 	public static String getIndicesFolderPath()
 	{
-		return play.Play.application().getFile("/public/indices").getAbsolutePath();
+		// maybe the solution is easier than initially thought if paths are relative to main folder...
+		return "indices";
+//		return play.Play.application().getFile("/public/indices").getAbsolutePath();
 	}
 
 	public static String getPublicFolderPath()
@@ -19,12 +19,10 @@ public class Constants {
 
 	public static String getThreeClassifierPath()
 	{
-		File classifierPath = play.Play.application().getFile( Constants.threeClassClassifier );
-		return classifierPath.getAbsolutePath();
+		return play.Play.application().getFile( Constants.threeClassClassifier ).getAbsolutePath();
 	}
 	public static String getSevenClassifierPath()
 	{
-		File classifierPath = play.Play.application().getFile( Constants.sevenClassClassifier );
-		return classifierPath.getAbsolutePath();
+		return play.Play.application().getFile( Constants.sevenClassClassifier ).getAbsolutePath();
 	}
 }

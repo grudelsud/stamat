@@ -5,7 +5,8 @@
 # Home page
 GET     /                           controllers.Application.index()
 
-POST    /entitiesExtract            controllers.Application.entitiesExtract()
+POST    /entitiesExtractSNER        controllers.Application.entitiesExtractSNER()
+POST    /entitiesExtractGATE        controllers.Application.entitiesExtractGATE()
 
 GET     /visualIndex                controllers.Application.visualIndex()
 POST    /visualIndex                controllers.Application.visualNewIndex()

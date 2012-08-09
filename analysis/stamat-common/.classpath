@@ -16,5 +16,46 @@
 	<classpathentry kind="lib" path="lib/stanford-ner.jar"/>
 	<classpathentry kind="lib" path="lib/JOpenSurf.jar"/>
 	<classpathentry kind="lib" path="lib/lire.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/ant-contrib.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/ant.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/aopalliance.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/apache-mime4j-core.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/apache-mime4j-dom.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/bcmail-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/bcprov-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/commons-codec.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/commons-compress.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/commons-io.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/dom4j.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/fontbox.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/gate-asm.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/gate-compiler-jdt.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/ivy.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/java-getopt.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/java2html.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/javacc.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/jaxen.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/jempbox.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/junit.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/metadata-extractor.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/nekohtml.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/pdfbox.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/poi-ooxml-schemas.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/poi-ooxml.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/poi-scratchpad.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/poi.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/tika-core.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/tika-parsers.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/wstx-lgpl.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/xmlbeans.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/xmlunit.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/xpp3.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/xstream.jar"/>
+	<classpathentry kind="lib" path="lib/gate-deps/commons-lang.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,4 +1,18 @@
 $(function() {
+
+	// pretty code in <pre></pre> wrappers
+	prettyPrint();
+
+	// selects stanford or gate for entity extraction changing the action to the form
+	$('#form-extract-ent-classifier').change(function(e) {
+		var entity_classifier = $('input:radio[name=entity-classifier]:checked').val();
+		var $form = $('#form-extract-ent-content');
+		$form.attr('action', entity_classifier);
+	});
+
+	// sends data upon form submission. 
+	// if radio button "data-format" is set to text it simply serielizes data and send
+	// if radio button "data-format" is set to json, content type is set accordingly, first input in the form is read and sent
 	$('form').submit(function(e) {
 		e.preventDefault();
 		var $form = $(e.target);

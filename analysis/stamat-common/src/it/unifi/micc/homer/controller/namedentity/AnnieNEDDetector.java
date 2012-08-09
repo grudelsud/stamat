@@ -19,11 +19,15 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import stamat.model.KeywordType;
 import stamat.model.NamedEntity;
 
 public class AnnieNEDDetector implements NamedEntityDetector {
+
+	Logger logger = Logger.getLogger(AnnieNEDDetector.class.getName());
 
 	/** Contains Annie for NED */
 	private static AnnieNEDDetector instance = null;
@@ -33,14 +37,19 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 	private ArrayList<NamedEntity> entities;
 	int minNEDLength = 2; // entities must be > than minNEDLength
 
-	File gateHome = null;
-
-	private AnnieNEDDetector() throws Exception {
-		throw new Exception("AnnieNEDDetector says: naughty boy, you shouldn't call this constructor without arguments!");
+	private AnnieNEDDetector() {
+		init();
 	}
 
-	private AnnieNEDDetector(String gateHomePath) { // singleton
+	private AnnieNEDDetector(String gateHomePath) {
 		init(gateHomePath);
+	}
+
+	public static AnnieNEDDetector getInstance() {
+		if (instance == null) {
+			instance = new AnnieNEDDetector();
+		}
+		return instance;
 	}
 
 	public static AnnieNEDDetector getInstance(String gateHomePath) {
@@ -50,8 +59,16 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 		return instance;
 	}
 
+	private void init(String gateHomePath)
+	{
+		System.setProperty("gate.plugins.home", gateHomePath);
+		this.init();
+	}
+
 	/** Init Gate e call the method for to initialize Annie */
-	private void init(String gateHomePath) {
+	private void init()
+	{
+		String gateHomePath = System.getProperty("gate.plugins.home");
 		try {
 			// Initialize the GATE library
 			Gate.init();
@@ -59,13 +76,15 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 			File gateHome = new File(gateHomePath);
 			File pluginsHome = new File(gateHome, "plugins");
 			Gate.getCreoleRegister().registerDirectories(new File(pluginsHome, "ANNIE").toURI().toURL());
-			// Initialize ANNIE (this may take several minutes)
+			// Initialize ANNIE (this may take several hundreds of years...)
 			if (annie == null) {
 				AnnieNEDDetector.annie = new AnnieNEDAnalyser();
 				annie.initAnnie();
 			}
 		} catch (GateException ge) {
+			logger.log(Level.WARNING, "exception caught: " + ge.getMessage());
 		} catch (IOException io) {
+			logger.log(Level.WARNING, "exception caught: " + io.getMessage());
 		}
 	}
 

@@ -7,9 +7,28 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 import play.libs.Json;
+import stamat.controller.visual.SearchResult;
 import stamat.model.SemanticKeyword;
 
 public class Utils {
+
+	public static JsonNode searchResultList2JSON(List<SearchResult> searchResultList)
+	{
+		ObjectNode dummyObject = Json.newObject();
+		ArrayNode result = dummyObject.putArray("dummyKey");
+		try {
+			for(SearchResult searchResult : searchResultList) {
+				ObjectNode searchResultNode = result.addObject();
+				
+				searchResultNode.put("result", searchResult.getResult());
+				searchResultNode.put("url", searchResult.getURL());
+				searchResultNode.put("position", searchResult.getPosition());
+				searchResultNode.put("similarity", searchResult.getSimilarity());
+			}			
+		} catch (NullPointerException e) {
+		}
+		return result;
+	}
 
 	public static JsonNode semanticKeywordList2JSON(List<? extends SemanticKeyword> semanticKeywordList)
 	{

@@ -319,14 +319,16 @@ class Api extends CI_Controller
 
 				$result = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
 				foreach ($result as $row) {
-					$row->url_cdn = $row->abs_path . $row->hash;
+					$row->url_src = $row->url;
+					$row->url = $row->abs_path . $row->hash;
 				}
 				$this->_return_json_success($result);
 				break;
 			case 'read':
 				$result = $this->media_model->get_media($params['read']);
 				foreach ($result as $row) {
-					$row->url_cdn = $row->abs_path . $row->hash;
+					$row->url_src = $row->url;
+					$row->url = $row->abs_path . $row->hash;
 				}
 				$this->_return_json_success( $result );
 				break;

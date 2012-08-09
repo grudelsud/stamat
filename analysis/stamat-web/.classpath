@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" output="target/scala-2.9.1/classes" path="app"/>
 	<classpathentry kind="src" output="target/scala-2.9.1/test-classes" path="test"/>
+	<classpathentry kind="lib" path="lib/stamat-common.jar" sourcepath="/Users/alisi/Documents/Projects/Flux of MEME/STAMAT/dev/analysis/stamat-common/src"/>
 	<classpathentry kind="lib" path="/Users/alisi/Programming/lib/play-2.0/framework/sbt/boot/scala-2.9.1/lib/scala-library.jar"/>
 	<classpathentry kind="lib" path="/Users/alisi/Programming/lib/play-2.0/repository/local/play/play_2.9.1/2.0/jars/play_2.9.1.jar"/>
 	<classpathentry kind="lib" path="/Users/alisi/Programming/lib/play-2.0/repository/local/play/templates_2.9.1/2.0/jars/templates_2.9.1.jar"/>
@@ -89,6 +90,5 @@
 	<classpathentry kind="lib" path="/Users/alisi/Programming/lib/play-2.0/repository/local/org.easytesting/fest-util/1.1.6/jars/fest-util.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/alisi/Documents/Projects/Flux of MEME/STAMAT/dev/analysis/stamat-web/target/scala-2.9.1/classes_managed"/>
-	<classpathentry kind="lib" path="lib/stamat-common.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

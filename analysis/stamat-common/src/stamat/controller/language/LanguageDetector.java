@@ -55,7 +55,7 @@ public class LanguageDetector implements LanguageIdentifier {
 	public TextDocument cleanTextDocumentStopwords(String text)
 	{
 		String lang = this.identifyLanguageOf(text);
-		lang = lang == "unknown" ? "en" : lang;
+		lang = lang.equals("unknown") ? "en" : lang;
 		return new TextDocument(StringOperations.removeStopwords(text, lang, LanguageDetector.langStopwordPath), lang);
 	}
 
@@ -66,7 +66,7 @@ public class LanguageDetector implements LanguageIdentifier {
 		String source = text.getContent();
 		
 		lang = lang == null ? this.identifyLanguageOf(source) : lang;
-		lang = lang == "unknown" ? "en" : lang;
+		lang = lang.equals("unknown") ? "en" : lang;
 
 		return new TextDocument(StringOperations.removeStopwords(source, lang, LanguageDetector.langStopwordPath), lang);
 	}
