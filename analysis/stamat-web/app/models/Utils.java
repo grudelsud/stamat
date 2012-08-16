@@ -2,6 +2,8 @@ package models;
 
 import java.util.List;
 
+import models.dbo.Feeditemmedia;
+
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -11,6 +13,26 @@ import stamat.controller.visual.SearchResult;
 import stamat.model.SemanticKeyword;
 
 public class Utils {
+
+	public static JsonNode feeditemmediaList2JSON(List<Feeditemmedia> feeditemmediaList)
+	{
+		ObjectNode dummyObject = Json.newObject();
+		ArrayNode result = dummyObject.putArray("dummyKey");
+		try {
+			for(Feeditemmedia item : feeditemmediaList) {
+				ObjectNode searchResultNode = result.addObject();
+				
+				searchResultNode.put("id", item.id);
+				searchResultNode.put("url", item.abs_path + item.hash);
+				searchResultNode.put("width", item.width);
+				searchResultNode.put("height", item.height);
+				searchResultNode.put("url_src", item.url);
+				searchResultNode.put("flags", item.flags);
+			}			
+		} catch (NullPointerException e) {
+		}
+		return result;
+	}
 
 	public static JsonNode searchResultList2JSON(List<SearchResult> searchResultList)
 	{

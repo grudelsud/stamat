@@ -5,14 +5,26 @@
 # Home page
 GET     /                           controllers.Application.index()
 
+#########################################################################
+## ENTITIES
+##
 POST    /entitiesExtractSNER        controllers.Application.entitiesExtractSNER()
 POST    /entitiesExtractGATE        controllers.Application.entitiesExtractGATE()
 
+#########################################################################
+## VISUAL SIMILARITY
+##
 GET     /visualIndex                controllers.Application.visualIndex()
 POST    /visualIndex                controllers.Application.visualNewIndex()
-POST    /visualIndexImages          controllers.Application.visualIndexImages()
+
+POST    /visualIndexImagesFromDB    controllers.Application.visualIndexImagesFromDB()
+POST    /visualIndexImagesFromJSON  controllers.Application.visualIndexImagesFromJSON()
+
 POST    /visualSimilarity           controllers.Application.visualSimilarity()
 
+#########################################################################
+## OTHER STUFF
+##
 GET     /asyncTest                  controllers.Application.asyncTest()
 
 # Map static resources from the /public folder to the /assets URL path

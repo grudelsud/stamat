@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import models.Constants;
 import models.Utils;
+import models.dbo.Feeditemmedia;
 import models.requests.EntitiesExtract;
 import net.semanticmetadata.lire.DocumentBuilder;
 
@@ -31,20 +32,6 @@ import stamat.util.StamatException;
 import views.html.index;
 
 public class Application extends Controller {
-
-	public static class json_fields {
-	
-		public static final String INDEX_FIELD_INDEX = "index";
-		public static final String INDEX_FIELD_IMAGES = "images";
-		public static final String INDEX_FIELD_IMAGE_ID = "id";
-		public static final String INDEX_FIELD_IMAGE_URL = "url";
-
-		public static final String QUERY_FIELD_SOURCE = "source";
-		public static final String QUERY_FIELD_FILEID = "fileidentifier";
-		public static final String QUERY_FIELD_FEATURE = "feature";
-		public static final String QUERY_FIELD_NUMOFRESULT = "numberofresults";
-
-	}
 
 	public static Result index()
 	{
@@ -105,20 +92,97 @@ public class Application extends Controller {
 		}
 	}		
 
-	public static Result visualIndexImages()
+	public static Result visualIndexImagesFromDB()
+	{
+		// read json post params
+		JsonNode json = request().body().asJson();
+		final String indexPath;
+		final int num;
+		if(json == null) {
+			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
+		} else {
+			try {
+				num = json.get(Constants.json_fields.QUERY_FIELD_NUMOFRESULT).getIntValue();
+				indexPath = Constants.getIndicesFolderPath() + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
+			} catch(NullPointerException e) {
+				return badRequest(Utils.returnError("Missing field '"+Constants.json_fields.QUERY_FIELD_NUMOFRESULT+"' or '"+Constants.json_fields.INDEX_FIELD_INDEX+"'"));						
+			}			
+		}
+
+		// create the promise
+		Promise<List<Feeditemmedia>> promiseOfFeeditemmediaList = Akka.future(
+			new Callable<List<Feeditemmedia>>() 
+			{
+				public List<Feeditemmedia> call() 
+				{
+					// fetch 10 downloaded items (not already queued for indexing)
+					List<Feeditemmedia> list = Feeditemmedia.find
+							.where().eq("flags", Constants.db_fields.MEDIA_DOWNLOADED)
+							.order().desc("id")
+							.setMaxRows(num)
+							.findList();
+
+					// mark them as queued
+					for(Feeditemmedia item : list) {
+						item.flags = Constants.db_fields.MEDIA_DOWNLOADED | Constants.db_fields.MEDIA_QUEUEDFORINDEXING;
+						item.update();
+					}
+
+					Logger.info("indexing " + num + " images");
+					// start the indexing process
+					for(Feeditemmedia item : list) {
+						String id = Long.toString(item.id);
+						String url = item.abs_path + item.hash;
+
+						HashMap<String, String> indexedFields = new HashMap<String, String>();
+						indexedFields.put(Analyser.constants.SEARCH_URL, url);
+						indexedFields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, id);
+
+						try {
+							// if everything all right, mark them as indexed
+							Analyser.visual.updateIndexfromURL(indexPath, url, indexedFields);
+							item.flags = Constants.db_fields.MEDIA_INDEXED;
+							Logger.info("document "+id+" added to index " + indexPath);
+						} catch (StamatException e) {
+							// if exception caught, mark them as unresolved
+							item.flags = item.flags | Constants.db_fields.MEDIA_INDEXINGEXCEPTION;
+							Logger.error("error while indexing {id="+id+", url="+url+"} message: " + e.getMessage());
+						}
+						// save db item
+						item.update();
+					}
+					return list;
+				}
+			}
+		);
+		
+		// asynchronously return results
+		return async(
+			promiseOfFeeditemmediaList.map(
+				new Function<List<Feeditemmedia>, Result>() 
+				{
+					public Result apply(List<Feeditemmedia> list) 
+					{
+						return ok(Utils.returnSuccess(Utils.feeditemmediaList2JSON(list)));
+					}
+				}
+			)
+		);
+	}
+
+	public static Result visualIndexImagesFromJSON()
 	{
 		JsonNode json = request().body().asJson();
-//		Logger.info("visualIndexImages request - " + request().body().toString());
 		if(json == null) {
 			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
 		} else {
 			String indexPath = "";
 			try {
-				indexPath = Constants.getIndicesFolderPath() + "/" + json.get(Application.json_fields.INDEX_FIELD_INDEX).getTextValue();				
+				indexPath = Constants.getIndicesFolderPath() + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();				
 			} catch(NullPointerException e) {
-				return badRequest(Utils.returnError("Missing field '"+Application.json_fields.INDEX_FIELD_INDEX+"'"));
+				return badRequest(Utils.returnError("Missing field '"+Constants.json_fields.INDEX_FIELD_INDEX+"'"));
 			}
-			JsonNode imageListJson = json.findValue(Application.json_fields.INDEX_FIELD_IMAGES);
+			JsonNode imageListJson = json.findValue(Constants.json_fields.INDEX_FIELD_IMAGES);
 			if( imageListJson != null ) {
 				Iterator<JsonNode> imageListJsonIterator = imageListJson.getElements();
 				String message = "indices added to " + indexPath + ": ";
@@ -127,11 +191,11 @@ public class Application extends Controller {
 
 					String id = "", url = "";
 					try {
-					// field id might be an integer, using "asText" to stay on a safe side
-						id = imageJson.get(Application.json_fields.INDEX_FIELD_IMAGE_ID).asText();
-						url = imageJson.get(Application.json_fields.INDEX_FIELD_IMAGE_URL).getTextValue();
+						// field id might be an integer, using "asText" to stay on a safe side
+						id = imageJson.get(Constants.json_fields.INDEX_FIELD_IMAGE_ID).asText();
+						url = imageJson.get(Constants.json_fields.INDEX_FIELD_IMAGE_URL).getTextValue();
 					} catch(NullPointerException e) {
-						return badRequest(Utils.returnError("Missing field '"+Application.json_fields.INDEX_FIELD_IMAGE_ID+"' or '"+Application.json_fields.INDEX_FIELD_IMAGE_URL+"'"));						
+						return badRequest(Utils.returnError("Missing field '"+Constants.json_fields.INDEX_FIELD_IMAGE_ID+"' or '"+Constants.json_fields.INDEX_FIELD_IMAGE_URL+"'"));						
 					}
 					HashMap<String, String> indexedFields = new HashMap<String, String>();
 					indexedFields.put(Analyser.constants.SEARCH_URL, url);
@@ -162,18 +226,18 @@ public class Application extends Controller {
 			String index = "", source = "", fileIdentifier = "", feature = "";
 			int numberOfResults = 0;
 			try {
-				index = Constants.getIndicesFolderPath() + "/" + json.get(Application.json_fields.INDEX_FIELD_INDEX).getTextValue();
-				source = json.get(Application.json_fields.QUERY_FIELD_SOURCE).getTextValue();
-				fileIdentifier = json.get(Application.json_fields.QUERY_FIELD_FILEID).getTextValue();
-				feature = json.get(Application.json_fields.QUERY_FIELD_FEATURE).getTextValue();
-				numberOfResults = json.get(Application.json_fields.QUERY_FIELD_NUMOFRESULT).getIntValue();
+				index = Constants.getIndicesFolderPath() + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
+				source = json.get(Constants.json_fields.QUERY_FIELD_SOURCE).getTextValue();
+				fileIdentifier = json.get(Constants.json_fields.QUERY_FIELD_FILEID).getTextValue();
+				feature = json.get(Constants.json_fields.QUERY_FIELD_FEATURE).getTextValue();
+				numberOfResults = json.get(Constants.json_fields.QUERY_FIELD_NUMOFRESULT).getIntValue();
 			} catch( NullPointerException e) {
 				String message = "Request, missing one of the fields: " +
-					Application.json_fields.INDEX_FIELD_INDEX + " " +
-					Application.json_fields.QUERY_FIELD_SOURCE + " " +
-					Application.json_fields.QUERY_FIELD_FILEID + " " +
-					Application.json_fields.QUERY_FIELD_FEATURE + " " +
-					Application.json_fields.QUERY_FIELD_NUMOFRESULT	+ " ";
+					Constants.json_fields.INDEX_FIELD_INDEX + " " +
+					Constants.json_fields.QUERY_FIELD_SOURCE + " " +
+					Constants.json_fields.QUERY_FIELD_FILEID + " " +
+					Constants.json_fields.QUERY_FIELD_FEATURE + " " +
+					Constants.json_fields.QUERY_FIELD_NUMOFRESULT	+ " ";
 				return badRequest(Utils.returnError(message));
 			}
 

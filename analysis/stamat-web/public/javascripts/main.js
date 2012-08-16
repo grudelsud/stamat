@@ -10,6 +10,13 @@ $(function() {
 		$form.attr('action', entity_classifier);
 	});
 
+	// selects json or db as source for image indexing
+	$('#form-indeximages-selectfrom').change(function(e) {
+		var index_from = $('input:radio[name=index-selectfrom]:checked').val();
+		var $form = $('#form-indeximages-content');
+		$form.attr('action', index_from);
+	});
+
 	// sends data upon form submission. 
 	// if radio button "data-format" is set to text it simply serielizes data and send
 	// if radio button "data-format" is set to json, content type is set accordingly, first input in the form is read and sent

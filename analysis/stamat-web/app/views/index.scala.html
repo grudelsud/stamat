@@ -111,10 +111,22 @@
 						</div>
 						<div class="accordion-body collapse" id="form-indeximages">
 							<div class="accordion-inner">
-								<form action="/visualIndexImages" class="form-horizontal" method="post">
+
+								<!-- content indexing function selection -->
+								<form action="" class="form-horizontal" id="form-indeximages-selectfrom">
+									<div class="control-group">
+										<label for="" class="control-label">Read images to be indexed from: </label>
+										<div class="controls">
+											<label class="radio"><input type="radio" name="index-selectfrom" id="radio-selectfrom-json" value="/visualIndexImagesFromJSON" checked> JSON</label>
+											<label class="radio"><input type="radio" name="index-selectfrom" id="radio-selectfrom-db" value="/visualIndexImagesFromDB"> Database</label>
+										</div>
+									</div>
+								</form>
+
+								<form action="/visualIndexImagesFromJSON" class="form-horizontal" method="post" id="form-indeximages-content">
 									<fieldset>
 										<div class="control-group">
-											<label class="control-label" for="">Image list<br>(Endpoint expects JSON Format)</label>
+											<label class="control-label" for="">Parameters<br>(Endpoint expects JSON Format)</label>
 											<div class="controls">
 												<textarea class="span4" id="imagelist-body" name="body" rows="6"></textarea>
 											</div>
@@ -125,12 +137,18 @@
 										</div>
 									</fieldset>
 								</form>
-								<p>below a working example: <span class="label label-info">index</span> selects the lucene folder where these <span class="label label-info">images</span> need to be added</p>
-								<pre class="prettyprint">{
+								<p>below a working example:</p>
+								<pre class="prettyprint">/* FROM JSON */
+{
 "index":"fashion", 
 "images":[
 {"id":"76402","url":"https:\/\/s3.amazonaws.com\/stamat.scrape.images\/1343816402.829657.png"},
 {"id":"76229","url":"https:\/\/s3.amazonaws.com\/stamat.scrape.images\/1343805602.090142.png"}]
+}
+/* FROM DB */
+{
+"index":"fashion", 
+"numberofresults":50
 }
 								</pre>
 							</div>
