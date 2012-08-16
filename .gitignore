@@ -3,5 +3,6 @@ log-*.php
 *.class
 *.pyc
 *DS_Store
+indices
 ioerrors
 tmp
