@@ -177,28 +177,15 @@
 									</fieldset>
 								</form>
 								<p>below a working example</p>
-								<pre class="prettyprint">/* From URL */
-{
-"index":"all",
+								<pre class="prettyprint">{
+"index":"fashion",
 "source":"url",
 "fileidentifier":"http:\/\/cdn.hypebeast.com\/image\/2012\/07\/bandit9-nero-motorcycle-1.jpg",
 "feature":"featureCEDD",
 "numberofresults":10
 }
-/* From Index */
-{
-"index":"all",
-"source":"index",
-"fileidentifier":"84845",
-"feature":"featureCEDD",
-"numberofresults":10
-}
 								</pre>
-								<p><span class="label label-info">index</span> must be the name of an existing index</p>
-								<p><span class="label label-warning">source</span> must be either <span class="label">index</span> or <span class="label">url</span></p>
-								<p><span class="label label-success">fileidentifier</span> can be a URL or file descriptor as saved in the index, according to what selected for <span class="label label-warning">source</span></p>
-								<p><span class="label label-important">feature</span> must be one of: </p>
-								<code>featureAutoColorCorrelogram, descriptorScalableColor, featureCEDD, featureColorHistogram, descriptorColorLayout, featureTAMURA, descriptorEdgeHistogram, featureFCTH, featureGabor, featureJCD, featureJpegCoeffs, featureSift, featureSurf</code>
+								<p>feature must be one of: [featureAutoColorCorrelogram, descriptorScalableColor, featureCEDD, featureColorHistogram, descriptorColorLayout, featureTAMURA, descriptorEdgeHistogram, featureFCTH, featureGabor, featureJCD, featureJpegCoeffs, featureSift, featureSurf]</p>
 							</div>
 						</div>
 					</div>

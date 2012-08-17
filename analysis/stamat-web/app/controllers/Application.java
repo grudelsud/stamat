@@ -62,7 +62,7 @@ public class Application extends Controller {
 		}
 		EntitiesExtract entityExtractRequest = form.get();
 
-		String classifierPath = Constants.getThreeClassifierPath();
+		String classifierPath = Constants.FOLDER_3CLASS;
 		ArrayList<NamedEntity> namedEntityList = Analyser.ned.extractStanford(entityExtractRequest.text, classifierPath);
 		JsonNode result = Utils.semanticKeywordList2JSON(namedEntityList);
 		return ok(Utils.returnSuccess(result));
@@ -83,7 +83,7 @@ public class Application extends Controller {
 			return badRequest(Utils.returnError("invalid request, name must be between 1 and 50 alphanumerical characters"));				
 		}
 		StringBuilder returnMsg = new StringBuilder();
-		String indexPath = Constants.getIndicesFolderPath() + "/" + name;
+		String indexPath = Constants.FOLDER_INDICES + "/" + name;
 		int returnCode = Analyser.visual.createEmptyIndex(indexPath, returnMsg);
 		if( returnCode == Analyser.constants.SUCCESS ) {
 			return ok(Utils.returnSuccess(returnMsg.toString()));			
@@ -103,7 +103,7 @@ public class Application extends Controller {
 		} else {
 			try {
 				num = json.get(Constants.json_fields.QUERY_FIELD_NUMOFRESULT).getIntValue();
-				indexPath = Constants.getIndicesFolderPath() + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
+				indexPath = Constants.FOLDER_INDICES + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
 			} catch(NullPointerException e) {
 				return badRequest(Utils.returnError("Missing field '"+Constants.json_fields.QUERY_FIELD_NUMOFRESULT+"' or '"+Constants.json_fields.INDEX_FIELD_INDEX+"'"));						
 			}			
@@ -141,7 +141,7 @@ public class Application extends Controller {
 						try {
 							// if everything all right, mark them as indexed
 							Analyser.visual.updateIndexfromURL(indexPath, url, indexedFields);
-							item.flags = Constants.db_fields.MEDIA_INDEXED;
+							item.flags = item.flags | Constants.db_fields.MEDIA_INDEXED;
 							Logger.info("document "+id+" added to index " + indexPath);
 						} catch (StamatException e) {
 							// if exception caught, mark them as unresolved
@@ -178,7 +178,7 @@ public class Application extends Controller {
 		} else {
 			String indexPath = "";
 			try {
-				indexPath = Constants.getIndicesFolderPath() + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();				
+				indexPath = Constants.FOLDER_INDICES + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();				
 			} catch(NullPointerException e) {
 				return badRequest(Utils.returnError("Missing field '"+Constants.json_fields.INDEX_FIELD_INDEX+"'"));
 			}
@@ -226,7 +226,7 @@ public class Application extends Controller {
 			String index = "", source = "", fileIdentifier = "", feature = "";
 			int numberOfResults = 0;
 			try {
-				index = Constants.getIndicesFolderPath() + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
+				index = Constants.FOLDER_INDICES + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
 				source = json.get(Constants.json_fields.QUERY_FIELD_SOURCE).getTextValue();
 				fileIdentifier = json.get(Constants.json_fields.QUERY_FIELD_FILEID).getTextValue();
 				feature = json.get(Constants.json_fields.QUERY_FIELD_FEATURE).getTextValue();
@@ -266,6 +266,8 @@ public class Application extends Controller {
 				result = Analyser.visual.searchFromUrl(index, fileIdentifier, feature, numberOfResults);
 			} else if( source.equals(Analyser.constants.SEARCH_INDEX) ) {
 				result = Analyser.visual.searchFromIndex(index, fileIdentifier, feature, numberOfResults);
+			} else {
+				return badRequest("source must be either '"+Analyser.constants.SEARCH_URL+"' or '"+Analyser.constants.SEARCH_INDEX+"'");
 			}
 
 			return ok(Utils.returnSuccess(Utils.searchResultList2JSON(result)));							
@@ -277,8 +279,7 @@ public class Application extends Controller {
 		Promise<String> promiseOfInteger = Akka.future(
 			new Callable<String>() {
 				public String call() {
-					String classifierPath = Constants.getThreeClassifierPath();
-					return "cheshire cat hides under deep folds of cumbersome code <"+ classifierPath +">";
+					return "cheshire cat hides under deep folds of cumbersome code";
 				}
 			}
 		);

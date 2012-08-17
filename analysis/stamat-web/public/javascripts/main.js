@@ -40,6 +40,9 @@ $(function() {
 			data: form_data,
 			success: function(result) {
 				$('#response-inner').empty().append(JSON.stringify(result));
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				$('#response').before('<div class="alert alert-error"><button class="close" data-dismiss="alert">×</button>'+ textStatus +' '+ jqXHR.status +' - '+ errorThrown +'</div>');
 			}
 		});
 	});
