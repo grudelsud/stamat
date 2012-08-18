@@ -66,22 +66,16 @@ class Scraper_model extends CI_Model
 		return json_decode($response_e);
 	}
 
-	function scrape_stamat_ner( $feeditem_id )
+	function scrape_stamat_ner( $content )
 	{
-		$this->db->where('feeditem_id', $feeditem_id);
-		$query = $this->db->get('feeditemcontents');
-		if($query->num_rows() == 0) {
-			return FALSE;
-		} else {
-			$row = $query->row();
-			$rest_call = 'http://hack4europe.net:9000/extractEntities';
-			$request_type = 'post';
-			$auth_type = '';
-			$auth_params = '';
-			$post_params['content'] = strip_tags($row->content);
-			$response_e = $this->_execute_curl($rest_call, $request_type, $auth_type, $auth_params, $post_params);
-			return json_decode($response_e);
-		}
+		$rest_call = 'http://fom.londondroids.com:9000/entitiesExtractGATE';
+		$request_type = 'post';
+		$auth_type = '';
+		$auth_params = '';
+		$post_params['text'] = strip_tags($content);
+		$response_e = $this->_execute_curl($rest_call, $request_type, $auth_type, $auth_params, $post_params);
+		$response_d = json_decode($response_e);
+		return $response_d->success;
 	}
 
 	function scrape_micc_lda( $feeditem_id )

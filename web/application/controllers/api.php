@@ -122,6 +122,56 @@ class Api extends CI_Controller
 		}		
 	}
 	
+	function fetch_stamat_entities()
+	{
+		$this->load->model('scraper_model');
+		$this->load->model('annotation_model');
+
+		$params = $this->uri->uri_to_assoc();
+		$limit = preg_match('/[0-9]{2}/', $params['limit']) ? $params['limit'] : 99;
+
+		$this->db->where('flags', 0);
+		$this->db->order_by('id', 'desc');
+		$this->db->limit($limit);
+		$query = $this->db->get('feeditemcontents');
+
+		$output = array();
+		foreach ($query->result() as $row) {
+			$result = $this->scraper_model->scrape_stamat_ner($row->content);
+
+			$entities[STRUCT_OBJ_PERSON] = array();
+			$entities[STRUCT_OBJ_ORGANIZATION] = array();
+			$entities[STRUCT_OBJ_LOCATION] = array();
+
+			foreach ($result as $entity) {
+				$type = strtolower($entity->type);
+				$entities[$type][] = $entity->keyword;
+			}
+
+			if (count($entities[STRUCT_OBJ_PERSON])) {
+				$this->annotation_model->annotate_stamat_people($row->feeditem_id, $entities[STRUCT_OBJ_PERSON]);				
+			}
+			if (count($entities[STRUCT_OBJ_ORGANIZATION])) {
+				$this->annotation_model->annotate_stamat_organizations($row->feeditem_id, $entities[STRUCT_OBJ_ORGANIZATION]);
+			}
+			if (count($entities[STRUCT_OBJ_LOCATION])) {
+				$this->annotation_model->annotate_stamat_locations($row->feeditem_id, $entities[STRUCT_OBJ_LOCATION]);
+			}
+
+			$this->db->where('id', $row->id);
+			$data = array('flags' => 1);
+			$this->db->update('feeditemcontents', $data);
+
+			// just for output sake
+			$item = new stdClass;
+			$item->id = $row->id;
+			$item->feeditem_id = $row->feeditem_id;
+			$item->entities = $entities;
+			$output[] = $item;
+		}
+		$this->_return_json_success($output);
+	}
+
 	function count_feed_items()
 	{
 		$this->_user_check();
@@ -337,7 +387,7 @@ class Api extends CI_Controller
 				$this->_return_json_success( $result );
 				break;
 			default:
-				$this->_return_json_error('select one of: browse, read, index');
+				$this->_return_json_error('select /action/* among: browse, read, index');
 		}
 	}
 

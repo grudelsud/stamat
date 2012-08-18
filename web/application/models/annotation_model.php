@@ -60,6 +60,21 @@ class Annotation_model extends CI_Model
 		return $tag_triples;
 	}
 
+	function annotate_stamat_people($feeditem_id, $person_array)
+	{
+		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_PEOPLE, STRUCT_OBJ_FEEDITEM, $feeditem_id, STRUCT_ENG_STAMAT, STRUCT_OBJ_PERSON, $person_array);
+	}
+
+	function annotate_stamat_locations($feeditem_id, $location_array)
+	{
+		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_LOCATIONS, STRUCT_OBJ_FEEDITEM, $feeditem_id, STRUCT_ENG_STAMAT, STRUCT_OBJ_LOCATION, $location_array);
+	}
+
+	function annotate_stamat_organizations($feeditem_id, $organization_array)
+	{
+		return $this->annotate_subject_engine_objects( VOCABULARY_EXTRACTED_ORGANIZATIONS, STRUCT_OBJ_FEEDITEM, $feeditem_id, STRUCT_ENG_STAMAT, STRUCT_OBJ_ORGANIZATION, $organization_array);
+	}
+
 	function annotate_feeditem_engine_entities($feeditem_id, $engine, $entities, $vocabulary = VOCABULARY_EXTRACTED_ENTITIES)
 	{
 		return $this->annotate_subject_engine_objects( $vocabulary, STRUCT_OBJ_FEEDITEM, $feeditem_id, $engine, STRUCT_OBJ_ENTITY, $entities);
