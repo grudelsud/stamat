@@ -75,7 +75,12 @@ class Scraper_model extends CI_Model
 		$post_params['text'] = strip_tags($content);
 		$response_e = $this->_execute_curl($rest_call, $request_type, $auth_type, $auth_params, $post_params);
 		$response_d = json_decode($response_e);
-		return $response_d->success;
+		// using is_null because $response_d->success could be an empty array
+		if (is_null($response_d)) {
+			return NULL;
+		} else {
+			return $response_d->success;			
+		}
 	}
 
 	function scrape_micc_lda( $feeditem_id )

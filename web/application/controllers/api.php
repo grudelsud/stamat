@@ -159,7 +159,8 @@ class Api extends CI_Controller
 		foreach ($query->result() as $row) {
 			$result = $this->scraper_model->scrape_stamat_ner($row->content);
 
-			if($result == NULL) {
+			// scrape_stamat_ner returns null either if ner is down or returned an error for some reason. this is why we use 3 equals here
+			if($result === NULL) {
 				$this->_return_json_error('stamat ner returned null, it might be a little bit tired. pls check that stamat-web framework is running.');
 			}
 
