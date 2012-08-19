@@ -121,6 +121,24 @@ class Api extends CI_Controller
 			$this->_return_json_error('empty feeditemcontents_id');
 		}		
 	}
+
+	function fetch_check_stamat_ner()
+	{
+		$this->load->model('scraper_model');
+
+		$this->db->where('flags', 0);
+		$this->db->order_by('id', 'desc');
+		$this->db->limit(1);
+		$query = $this->db->get('feeditemcontents');
+
+		if($query->num_rows() > 0) {
+			$row = $query->row();
+			$result = $this->scraper_model->scrape_stamat_ner($row->content);
+			$this->_return_json_success($result);
+		} else {
+			$this->_return_json_error("empty table");
+		}
+	}
 	
 	function fetch_stamat_entities()
 	{
@@ -148,26 +166,34 @@ class Api extends CI_Controller
 				$entities[$type][] = $entity->keyword;
 			}
 
+			$annotated = FALSE;
+
 			if (count($entities[STRUCT_OBJ_PERSON])) {
 				$this->annotation_model->annotate_stamat_people($row->feeditem_id, $entities[STRUCT_OBJ_PERSON]);				
+				$annotated = TRUE;
 			}
 			if (count($entities[STRUCT_OBJ_ORGANIZATION])) {
 				$this->annotation_model->annotate_stamat_organizations($row->feeditem_id, $entities[STRUCT_OBJ_ORGANIZATION]);
+				$annotated = TRUE;
 			}
 			if (count($entities[STRUCT_OBJ_LOCATION])) {
 				$this->annotation_model->annotate_stamat_locations($row->feeditem_id, $entities[STRUCT_OBJ_LOCATION]);
+				$annotated = TRUE;
 			}
 
-			$this->db->where('id', $row->id);
-			$data = array('flags' => 1);
-			$this->db->update('feeditemcontents', $data);
+			if ($annotated) {
+				$this->db->where('id', $row->id);
+				$data = array('flags' => 1);
+				$this->db->update('feeditemcontents', $data);				
 
-			// just for output sake
-			$item = new stdClass;
-			$item->id = $row->id;
-			$item->feeditem_id = $row->feeditem_id;
-			$item->entities = $entities;
-			$output[] = $item;
+				// just for output sake
+				$item = new stdClass;
+				$item->id = $row->id;
+				$item->feeditem_id = $row->feeditem_id;
+				$item->entities = $entities;
+				$output[] = $item;
+			}
+
 		}
 		$this->_return_json_success($output);
 	}
