@@ -133,7 +133,9 @@ class Api extends CI_Controller
 
 		if($query->num_rows() > 0) {
 			$row = $query->row();
-			$result = $this->scraper_model->scrape_stamat_ner($row->content);
+			$result = new stdClass;
+			$result->response = $this->scraper_model->scrape_stamat_ner($row->content);
+			$result->request = $row;
 			$this->_return_json_success($result);
 		} else {
 			$this->_return_json_error('empty table');
