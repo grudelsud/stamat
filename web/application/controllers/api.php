@@ -136,7 +136,7 @@ class Api extends CI_Controller
 			$result = $this->scraper_model->scrape_stamat_ner($row->content);
 			$this->_return_json_success($result);
 		} else {
-			$this->_return_json_error("empty table");
+			$this->_return_json_error('empty table');
 		}
 	}
 	
@@ -156,6 +156,10 @@ class Api extends CI_Controller
 		$output = array();
 		foreach ($query->result() as $row) {
 			$result = $this->scraper_model->scrape_stamat_ner($row->content);
+
+			if($resul == NULL) {
+				$this->_return_json_error('stamat ner returned null, it might be a little bit tired. pls check that stamat-web framework is running.');
+			}
 
 			$entities[STRUCT_OBJ_PERSON] = array();
 			$entities[STRUCT_OBJ_ORGANIZATION] = array();
