@@ -40,17 +40,42 @@ public class Application extends Controller {
 
 	public static Result entitiesExtractGATE()
 	{
-		String gateHomePath = play.Play.application().configuration().getString("stamat.gatehome");
 		Form<EntitiesExtract> form = form(EntitiesExtract.class).bindFromRequest();
-		
 		if( form.hasErrors() ) {
 			return badRequest(Utils.returnError("invalid request"));
 		}
 		EntitiesExtract entityExtractRequest = form.get();
 
-		ArrayList<NamedEntity> namedEntityList = Analyser.ned.exractAnnie(entityExtractRequest.text, gateHomePath);
-		JsonNode result = Utils.semanticKeywordList2JSON(namedEntityList);
-		return ok(Utils.returnSuccess(result));
+		final String text = entityExtractRequest.text;
+		final String gateHomePath = play.Play.application().configuration().getString("stamat.gatehome");
+
+		// right the slow code asynchronously
+		Promise<ArrayList<NamedEntity>> promiseOfNamedentitylist = Akka.future(
+			new Callable<ArrayList<NamedEntity>>() {
+				public ArrayList<NamedEntity> call() {
+					ArrayList<NamedEntity> list = Analyser.ned.exractAnnie(text, gateHomePath);
+
+					// tracing memory right before returning the result
+					long tot = Runtime.getRuntime().totalMemory() / 1000000;
+					long free = Runtime.getRuntime().freeMemory() / 1000000;
+					long used = tot - free;
+					String runtime = "entitiesExtractGATE ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M]";
+					Logger.info(runtime);
+					return list;
+				}
+			}
+		);
+
+		return async(
+			promiseOfNamedentitylist.map(
+				new Function<ArrayList<NamedEntity>, Result>() {
+					public Result apply(ArrayList<NamedEntity> result) {
+						JsonNode resultJson = Utils.semanticKeywordList2JSON(result);
+						return ok(Utils.returnSuccess(resultJson));
+					}
+				}
+			)
+		);		
 	}
 
 	public static Result entitiesExtractSNER()
@@ -142,7 +167,13 @@ public class Application extends Controller {
 							// if everything all right, mark them as indexed
 							Analyser.visual.updateIndexfromURL(indexPath, url, indexedFields);
 							item.flags = item.flags | Constants.db_fields.MEDIA_INDEXED;
-							Logger.info("document "+id+" added to index " + indexPath);
+
+							// tracing memory right before the next cycle
+							long tot = Runtime.getRuntime().totalMemory() / 1000000;
+							long free = Runtime.getRuntime().freeMemory() / 1000000;
+							long used = tot - free;
+							String runtime = "visualIndexImagesFromDB ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] "+id+" -> " + indexPath;
+							Logger.info(runtime);
 						} catch (StamatException e) {
 							// if exception caught, mark them as unresolved
 							item.flags = item.flags | Constants.db_fields.MEDIA_INDEXINGEXCEPTION;
@@ -219,64 +250,95 @@ public class Application extends Controller {
 	public static Result visualSimilarity()
 	{
 		JsonNode json = request().body().asJson();
-//		Logger.info("visualSimilarity request - " + request().body().toString());
 		if(json == null) {
 			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to 'application/json' and request body is properly encoded (e.g. JSON.stringify(data))"));
-		} else {
-			String index = "", source = "", fileIdentifier = "", feature = "";
-			int numberOfResults = 0;
-			try {
-				index = Constants.FOLDER_INDICES + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
-				source = json.get(Constants.json_fields.QUERY_FIELD_SOURCE).getTextValue();
-				fileIdentifier = json.get(Constants.json_fields.QUERY_FIELD_FILEID).getTextValue();
-				feature = json.get(Constants.json_fields.QUERY_FIELD_FEATURE).getTextValue();
-				numberOfResults = json.get(Constants.json_fields.QUERY_FIELD_NUMOFRESULT).getIntValue();
-			} catch( NullPointerException e) {
-				String message = "Request, missing one of the fields: " +
-					Constants.json_fields.INDEX_FIELD_INDEX + " " +
-					Constants.json_fields.QUERY_FIELD_SOURCE + " " +
-					Constants.json_fields.QUERY_FIELD_FILEID + " " +
-					Constants.json_fields.QUERY_FIELD_FEATURE + " " +
-					Constants.json_fields.QUERY_FIELD_NUMOFRESULT	+ " ";
-				return badRequest(Utils.returnError(message));
-			}
-
-			String[] featureArray = {
-				DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM,
-				DocumentBuilder.FIELD_NAME_SCALABLECOLOR,
-				DocumentBuilder.FIELD_NAME_CEDD,
-				DocumentBuilder.FIELD_NAME_COLORHISTOGRAM,
-				DocumentBuilder.FIELD_NAME_COLORLAYOUT,
-				DocumentBuilder.FIELD_NAME_TAMURA,
-				DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM,
-				DocumentBuilder.FIELD_NAME_FCTH,
-				DocumentBuilder.FIELD_NAME_GABOR,
-				DocumentBuilder.FIELD_NAME_JCD,
-				DocumentBuilder.FIELD_NAME_JPEGCOEFFS,
-				DocumentBuilder.FIELD_NAME_SIFT,
-				DocumentBuilder.FIELD_NAME_SURF
-			};
-
-			if( !Arrays.asList(featureArray).contains(feature) ) {
-				Logger.info("visualSimilarity - wrong feature descriptor");
-				return badRequest(Utils.returnError("feature must be one of: " + Arrays.asList(featureArray).toString()));
-			}
-			List<SearchResult> result = null;
-			if( source.equals(Analyser.constants.SEARCH_URL) ) {
-				result = Analyser.visual.searchFromUrl(index, fileIdentifier, feature, numberOfResults);
-			} else if( source.equals(Analyser.constants.SEARCH_INDEX) ) {
-				result = Analyser.visual.searchFromIndex(index, fileIdentifier, feature, numberOfResults);
-			} else {
-				return badRequest("source must be either '"+Analyser.constants.SEARCH_URL+"' or '"+Analyser.constants.SEARCH_INDEX+"'");
-			}
-
-			return ok(Utils.returnSuccess(Utils.searchResultList2JSON(result)));							
 		}
+
+		// request sanity checks first
+		final String index, source, fileIdentifier, feature;
+		final int numberOfResults;
+		try {
+			index = Constants.FOLDER_INDICES + "/" + json.get(Constants.json_fields.INDEX_FIELD_INDEX).getTextValue();
+			source = json.get(Constants.json_fields.QUERY_FIELD_SOURCE).getTextValue();
+			fileIdentifier = json.get(Constants.json_fields.QUERY_FIELD_FILEID).getTextValue();
+			feature = json.get(Constants.json_fields.QUERY_FIELD_FEATURE).getTextValue();
+			numberOfResults = json.get(Constants.json_fields.QUERY_FIELD_NUMOFRESULT).getIntValue();
+		} catch( NullPointerException e) {
+			String message = "Request, missing one of the fields: " +
+				Constants.json_fields.INDEX_FIELD_INDEX + " " +
+				Constants.json_fields.QUERY_FIELD_SOURCE + " " +
+				Constants.json_fields.QUERY_FIELD_FILEID + " " +
+				Constants.json_fields.QUERY_FIELD_FEATURE + " " +
+				Constants.json_fields.QUERY_FIELD_NUMOFRESULT	+ " ";
+			return badRequest(Utils.returnError(message));
+		}
+
+		if( !(source.equals(Analyser.constants.SEARCH_URL) || source.equals(Analyser.constants.SEARCH_INDEX)) ) {
+			return badRequest("source must be either '"+Analyser.constants.SEARCH_URL+"' or '"+Analyser.constants.SEARCH_INDEX+"'");
+		}
+
+		String[] featureArray = {
+			DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM,
+			DocumentBuilder.FIELD_NAME_SCALABLECOLOR,
+			DocumentBuilder.FIELD_NAME_CEDD,
+			DocumentBuilder.FIELD_NAME_COLORHISTOGRAM,
+			DocumentBuilder.FIELD_NAME_COLORLAYOUT,
+			DocumentBuilder.FIELD_NAME_TAMURA,
+			DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM,
+			DocumentBuilder.FIELD_NAME_FCTH,
+			DocumentBuilder.FIELD_NAME_GABOR,
+			DocumentBuilder.FIELD_NAME_JCD,
+			DocumentBuilder.FIELD_NAME_JPEGCOEFFS,
+			DocumentBuilder.FIELD_NAME_SIFT,
+			DocumentBuilder.FIELD_NAME_SURF
+		};
+
+		if( !Arrays.asList(featureArray).contains(feature) ) {
+			Logger.info("visualSimilarity - wrong feature descriptor");
+			return badRequest(Utils.returnError("feature must be one of: " + Arrays.asList(featureArray).toString()));
+		}
+
+		// now run the search algorithm asynchronously
+		Promise<List<SearchResult>> promiseOfSearchresultlist = Akka.future(
+			new Callable<List<SearchResult>>() {
+				public List<SearchResult> call() {
+					List<SearchResult> result = null;
+					if( source.equals(Analyser.constants.SEARCH_URL) ) {
+						result = Analyser.visual.searchFromUrl(index, fileIdentifier, feature, numberOfResults);
+					} else if( source.equals(Analyser.constants.SEARCH_INDEX) ) {
+						result = Analyser.visual.searchFromIndex(index, fileIdentifier, feature, numberOfResults);
+					}
+					// tracing memory right before returning the result
+					long tot = Runtime.getRuntime().totalMemory() / 1000000;
+					long free = Runtime.getRuntime().freeMemory() / 1000000;
+					long used = tot - free;
+					String runtime = "visualSimilarity ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M]";
+					Logger.info(runtime);
+					return result;
+				}
+			}
+		);
+		return async(
+			promiseOfSearchresultlist.map(
+				new Function<List<SearchResult>, Result>() {
+					public Result apply(List<SearchResult> result) {
+						return ok(Utils.returnSuccess(Utils.searchResultList2JSON(result)));
+					}
+				}
+			)
+		);
 	}
 
-	public static Result asyncTest()
+	/**
+	 * useless function, used to copy and paste a template of async processing.
+	 * presently used for entitiesExtractGate, visualIndexImagesFromDB, visualSimilary
+	 * all other functions in this class are run synchronously
+	 * 
+	 * @return
+	 */
+	public static Result asyncCanvas()
 	{
-		Promise<String> promiseOfInteger = Akka.future(
+		Promise<String> promiseOfString = Akka.future(
 			new Callable<String>() {
 				public String call() {
 					return "cheshire cat hides under deep folds of cumbersome code";
@@ -284,7 +346,7 @@ public class Application extends Controller {
 			}
 		);
 		return async(
-			promiseOfInteger.map(
+			promiseOfString.map(
 				new Function<String, Result>() {
 					public Result apply(String s) {
 						return ok("all good, received: " + s);
