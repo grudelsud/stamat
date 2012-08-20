@@ -147,8 +147,8 @@ public class SemanticKeyword {
 			return oJson;
 
 
-		} catch (Throwable t) {
-			throw new HomerException(t);
+		} catch (Exception e) {
+			throw new HomerException(e);
 		}
 	}
 
@@ -198,8 +198,8 @@ public class SemanticKeyword {
 
 			return xmldoc;
 
-		} catch( Throwable t ) {
-			throw new HomerException( t );
+		} catch( Exception e ) {
+			throw new HomerException( e );
 		}
 	}
 

@@ -22,12 +22,12 @@ public class PropertyHandler {
 			this.fis = new FileInputStream(fileName);
 			this.properties = new Properties();
 			this.properties.load(fis);
-		} catch(Throwable t) {
-			logger.log(Level.SEVERE, "whoops! exception caught while reading property file. message: " + t.getMessage());
+		} catch(Exception e) {
+			logger.log(Level.SEVERE, "whoops! exception caught while reading property file. message: " + e.getMessage());
 		} finally {
 			try {
 				this.fis.close();
-			} catch(Throwable t) {
+			} catch(Exception t) {
 				logger.log(Level.SEVERE, "whoops! exception caught while closing property file. message: " + t.getMessage());
 			}
 		}		

@@ -179,8 +179,10 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 			Collections.sort(auxEntities);
 			this.entities = auxEntities;
 			auxCorpus.unloadDocument(doc);
-		} catch (ResourceInstantiationException re) {
-		} catch (GateException ge) {
+		} catch (ResourceInstantiationException e) {
+			logger.log(Level.WARNING, "gate threw a ResourceInstantiationException: " + e.getMessage());
+		} catch (GateException e) {
+			logger.log(Level.WARNING, "gate threw a GateException: " + e.getMessage());
 		}
 		return this.getEntities();
 	}
