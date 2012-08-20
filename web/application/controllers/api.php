@@ -148,7 +148,7 @@ class Api extends CI_Controller
 		$this->load->model('annotation_model');
 
 		$params = $this->uri->uri_to_assoc();
-		$limit = preg_match('/[0-9]{2}/', $params['limit']) ? $params['limit'] : 99;
+		$limit = preg_match('/[0-9]{1,3}/', $params['limit']) ? $params['limit'] : 99;
 
 		$this->db->where('flags', 0);
 		$this->db->order_by('id', 'desc');
@@ -176,7 +176,7 @@ class Api extends CI_Controller
 			$annotated = FALSE;
 
 			if (count($entities[STRUCT_OBJ_PERSON])) {
-				$this->annotation_model->annotate_stamat_people($row->feeditem_id, $entities[STRUCT_OBJ_PERSON]);				
+				$this->annotation_model->annotate_stamat_people($row->feeditem_id, $entities[STRUCT_OBJ_PERSON]);
 				$annotated = TRUE;
 			}
 			if (count($entities[STRUCT_OBJ_ORGANIZATION])) {
@@ -188,10 +188,11 @@ class Api extends CI_Controller
 				$annotated = TRUE;
 			}
 
+			// stamat_ner might return empty annotations, it's a tricky one, so we save it as called and empty
 			if ($annotated) {
 				$this->db->where('id', $row->id);
-				$data = array('flags' => 1);
-				$this->db->update('feeditemcontents', $data);				
+				$data = array('flags' => ANNOTATED_STAMAT);
+				$this->db->update('feeditemcontents', $data);
 
 				// just for output sake
 				$item = new stdClass;
@@ -199,6 +200,10 @@ class Api extends CI_Controller
 				$item->feeditem_id = $row->feeditem_id;
 				$item->entities = $entities;
 				$output[] = $item;
+			} else {
+				$this->db->where('id', $row->id);
+				$data = array('flags' => ANNOTATED_STAMAT_EMPTY);
+				$this->db->update('feeditemcontents', $data);
 			}
 
 		}

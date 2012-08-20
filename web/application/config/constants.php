@@ -62,9 +62,11 @@ define('STRUCT_ENG_TEAMLIFE', 'teamlife-sanr');
 define('STRUCT_ENG_DIFFBOT', 'diffbot');
 define('STRUCT_ENG_STAMAT', 'stamat');
 
-define('ANNOTATED_MICC', 1);
+define('ANNOTATED_MICC', 1); // ANNOTATED_MICC means HOMER
 define('ANNOTATED_SANR', 2);
 define('ANNOTATED_TAGS', 4);
+define('ANNOTATED_STAMAT', 8);
+define('ANNOTATED_STAMAT_EMPTY', 16);
 
 define('MEDIA_DOWNLOADED', 1);
 define('MEDIA_INVALID', 2);
