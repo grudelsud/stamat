@@ -59,7 +59,7 @@ public class Application extends Controller {
 					long tot = Runtime.getRuntime().totalMemory() / 1000000;
 					long free = Runtime.getRuntime().freeMemory() / 1000000;
 					long used = tot - free;
-					String runtime = "entitiesExtractGATE ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M]";
+					String runtime = "ned.GATE ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] " + list.size();
 					Logger.info(runtime);
 					return list;
 				}
@@ -172,12 +172,12 @@ public class Application extends Controller {
 							long tot = Runtime.getRuntime().totalMemory() / 1000000;
 							long free = Runtime.getRuntime().freeMemory() / 1000000;
 							long used = tot - free;
-							String runtime = "visualIndexImagesFromDB ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] "+id+" -> " + indexPath;
+							String runtime = "visual.indexDB ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] "+id+" -> " + indexPath;
 							Logger.info(runtime);
 						} catch (StamatException e) {
 							// if exception caught, mark them as unresolved
 							item.flags = item.flags | Constants.db_fields.MEDIA_INDEXINGEXCEPTION;
-							Logger.error("error while indexing {id="+id+", url="+url+"} message: " + e.getMessage());
+							Logger.error("visualIndexImagesFromDB - error while indexing {id="+id+", url="+url+"} message: " + e.getMessage());
 						}
 						// save db item
 						item.update();
@@ -312,7 +312,7 @@ public class Application extends Controller {
 					long tot = Runtime.getRuntime().totalMemory() / 1000000;
 					long free = Runtime.getRuntime().freeMemory() / 1000000;
 					long used = tot - free;
-					String runtime = "visualSimilarity ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M]";
+					String runtime = "visual.Sim ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] " + fileIdentifier + " " + feature;
 					Logger.info(runtime);
 					return result;
 				}
