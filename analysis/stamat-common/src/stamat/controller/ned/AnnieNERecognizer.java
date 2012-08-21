@@ -194,6 +194,8 @@ public class AnnieNERecognizer {
 					}
 				}
 			}
+			// clean up, hope to solve memory leaks...
+			Factory.deleteResource(doc);
 			Collections.sort(entities);
 		} catch (ResourceInstantiationException e) {
 			logger.log(Level.WARNING, "gate threw a ResourceInstantiationException: " + e.getMessage());
