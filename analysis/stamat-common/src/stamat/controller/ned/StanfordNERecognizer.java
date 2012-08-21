@@ -3,8 +3,6 @@
  */
 package stamat.controller.ned;
 
-import it.unifi.micc.homer.controller.namedentity.NamedEntityDetector;
-
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -23,12 +21,10 @@ import edu.stanford.nlp.ling.CoreLabel;
  * @author alisi
  *
  */
-public class StanfordNERecognizer implements NamedEntityDetector {
+public class StanfordNERecognizer {
 
 	private static String serializedClassifier;
 	private static StanfordNERecognizer instance = null;
-	
-	private ArrayList<NamedEntity> entities = null;
 	
 	private StanfordNERecognizer() {
 	}
@@ -44,20 +40,17 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 
 	public String extractEntity2XML(String text, ArrayList<KeywordType> type)
 	{
-		entities = new ArrayList<NamedEntity>();
+		ArrayList<NamedEntity> entities = new ArrayList<NamedEntity>();
 		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(StanfordNERecognizer.serializedClassifier);
 		String out = "<xml>" + classifier.classifyWithInlineXML(text).replaceAll("(\\[|\\])", "") + "</xml>";
 		return out;
 	}
 	
-	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
-	 */
-	@Override
 	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) 
 	{
 		String out = this.extractEntity2XML(text, type);
 		Document doc = Jsoup.parse(out, "", Parser.xmlParser());
+		ArrayList<NamedEntity> entities = new ArrayList<NamedEntity>();
 
 		Elements people = doc.getElementsByTag("person");
 		for(Element element : people) {
@@ -73,13 +66,4 @@ public class StanfordNERecognizer implements NamedEntityDetector {
 		}
 		return entities;
 	}
-
-	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#getEntities()
-	 */
-	@Override
-	public ArrayList<NamedEntity> getEntities() {
-		return this.entities;
-	}
-
 }

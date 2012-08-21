@@ -1,4 +1,4 @@
-package it.unifi.micc.homer.controller.namedentity;
+package stamat.controller.ned;
 
 import gate.Annotation;
 import gate.AnnotationSet;
@@ -6,9 +6,13 @@ import gate.Corpus;
 import gate.Document;
 import gate.DocumentContent;
 import gate.Factory;
+import gate.FeatureMap;
 import gate.Gate;
+import gate.ProcessingResource;
 import gate.corpora.DocumentContentImpl;
+import gate.creole.ANNIEConstants;
 import gate.creole.ResourceInstantiationException;
+import gate.creole.SerialAnalyserController;
 import gate.util.GateException;
 import it.unifi.micc.homer.util.StringOperations;
 
@@ -25,36 +29,38 @@ import java.util.logging.Logger;
 import stamat.model.KeywordType;
 import stamat.model.NamedEntity;
 
-public class AnnieNEDDetector implements NamedEntityDetector {
+public class AnnieNERecognizer {
 
-	Logger logger = Logger.getLogger(AnnieNEDDetector.class.getName());
+	Logger logger = Logger.getLogger(AnnieNERecognizer.class.getName());
 
 	/** Contains Annie for NED */
-	private static AnnieNEDDetector instance = null;
-	private static AnnieNEDAnalyser annie = null;
+	private static AnnieNERecognizer instance = null;
 
-	/** Contains Entity detected */
-	private ArrayList<NamedEntity> entities;
+	/** The Corpus Pipeline application to contain ANNIE */
+	private static SerialAnalyserController annieController = null;
+
+	//	private static AnnieNEDAnalyser annie = null;
+
 	int minNEDLength = 2; // entities must be > than minNEDLength
 
-	private AnnieNEDDetector() {
+	private AnnieNERecognizer() {
 		init();
 	}
 
-	private AnnieNEDDetector(String gateHomePath) {
+	private AnnieNERecognizer(String gateHomePath) {
 		init(gateHomePath);
 	}
 
-	public static AnnieNEDDetector getInstance() {
+	public static AnnieNERecognizer getInstance() {
 		if (instance == null) {
-			instance = new AnnieNEDDetector();
+			instance = new AnnieNERecognizer();
 		}
 		return instance;
 	}
 
-	public static AnnieNEDDetector getInstance(String gateHomePath) {
+	public static AnnieNERecognizer getInstance(String gateHomePath) {
 		if (instance == null) {
-			instance = new AnnieNEDDetector(gateHomePath);
+			instance = new AnnieNERecognizer(gateHomePath);
 		}
 		return instance;
 	}
@@ -72,14 +78,28 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 		try {
 			// Initialize the GATE library
 			Gate.init();
+
 			// Load ANNIE plugin
 			File gateHome = new File(gateHomePath);
 			File pluginsHome = new File(gateHome, "plugins");
 			Gate.getCreoleRegister().registerDirectories(new File(pluginsHome, "ANNIE").toURI().toURL());
-			// Initialize ANNIE (this may take several hundreds of years...)
-			if (annie == null) {
-				AnnieNEDDetector.annie = new AnnieNEDAnalyser();
-				annie.initAnnie();
+
+			// Initialize ANNIE (this may take several hundreds of years, but it's loaded only once...)
+			if (annieController == null) {
+				// create a serial analyser controller to run ANNIE with
+				annieController = (SerialAnalyserController) Factory.createResource("gate.creole.SerialAnalyserController", Factory.newFeatureMap(), Factory.newFeatureMap(),"ANNIE_" + Gate.genSym());
+				// load each PR as defined in ANNIEConstants
+				for (int i = 0; i < ANNIEConstants.PR_NAMES.length; i++) {
+					FeatureMap params = Factory.newFeatureMap();
+					// use default parameters
+					ProcessingResource pr = (ProcessingResource) Factory.createResource(ANNIEConstants.PR_NAMES[i], params);
+					// add the PR to the pipeline controller
+					annieController.add(pr);
+				}
+				Corpus corpus = (Corpus) Factory.createResource("gate.corpora.CorpusImpl");
+				// add a Corpus to Annie (we will use only single documents for NER, sill annie wants a non-null corpus
+				annieController.setCorpus(corpus);
+
 			}
 		} catch (GateException ge) {
 			logger.log(Level.WARNING, "exception caught: " + ge.getMessage());
@@ -88,32 +108,31 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#extractEntity(java.lang.String, java.util.ArrayList)
-	 */
-	@Override
 	public ArrayList<NamedEntity> extractEntity(String text, ArrayList<KeywordType> type) {
 
-		entities = new ArrayList<NamedEntity>();
-		ArrayList<NamedEntity> auxEntities = new ArrayList<NamedEntity>();
-		Document doc;
-		DocumentContent content;
-		Corpus auxCorpus;
+		ArrayList<NamedEntity> entities = new ArrayList<NamedEntity>();
 
 		try {
-			doc = (Document) Factory.createResource("gate.corpora.DocumentImpl");
-			auxCorpus = (Corpus) Factory.createResource("gate.corpora.CorpusImpl");
-			// content = (DocumentContent)
-			// Factory.createResource("gate.corpora.DocumentContentImpl");
-			content = new DocumentContentImpl(text);
+			/**
+			 * From Gate Docs - NOTE: if at the time when execute() is invoked, the document is not null, 
+			 * it is assumed that this controller is invoked from another controller and only this document 
+			 * is processed while the corpus (which must still be non-null) is ignored. If the document is 
+			 * null, all documents in the corpus are processed in sequence.
+			 */
+			Document doc = (Document) Factory.createResource("gate.corpora.DocumentImpl");
+			DocumentContent content = new DocumentContentImpl(text);
 			doc.setContent(content);
-			auxCorpus.add(doc);
 
-			// add a Corpus to Annie
-			annie.setCorpus(auxCorpus);
-			// execute Annie
-			annie.runAnnie();
+			// fill Annie with contect and run the entity recognizer
+			annieController.setDocument(doc);
+			annieController.execute();
 
+			/**
+			 *  TODO: this is perfect marco bertini style, immensely cumbersome. why on earth 
+			 *  we should take an arraylist, pour it into an hashset, then convert it to another set
+			 *  of gate annotations?
+			 */
+			
 			// get all annotations of Document
 			AnnotationSet defaultAnnotation = doc.getAnnotations();
 
@@ -138,76 +157,49 @@ public class AnnieNEDDetector implements NamedEntityDetector {
 				Annotation auxAnnotation = it.next();
 				Iterator<NamedEntity> iter;
 				int index = -1;
-				String entity = null;
+				String entity = "";
 				// entities must have more than minNEDLength characters
 				if (auxAnnotation.getEndNode().getOffset().intValue() - auxAnnotation.getStartNode().getOffset().intValue() > minNEDLength) {
 					boolean occurrence = false;
 					boolean substitute = false;
-					entity = "";
-					entity = StringOperations.tokenizeAndCorrect(doc
-							.getContent()
-							.getContent(new Long(auxAnnotation.getStartNode().getOffset().intValue()),
-									new Long(auxAnnotation.getEndNode().getOffset().intValue())).toString());
-					iter = auxEntities.iterator();
+					entity = StringOperations.tokenizeAndCorrect(doc.getContent().getContent(new Long(auxAnnotation.getStartNode().getOffset().intValue()), new Long(auxAnnotation.getEndNode().getOffset().intValue())).toString());
+					iter = entities.iterator();
+					
+					// 1st check whether the entity already exist
 					while (iter.hasNext() && occurrence == false && substitute == false) {
 						NamedEntity ed = iter.next();
-						if (ed.getKeyword().equals(entity) == true || ed.getKeyword().length() > entity.length()
-								&& ed.getKeyword().indexOf(entity) >= 0) {
+						if (ed.getKeyword().equals(entity) == true || ed.getKeyword().length() > entity.length() && ed.getKeyword().indexOf(entity) >= 0) {
 							occurrence = true;
 						} else if (ed.getKeyword().length() < entity.length() && entity.indexOf(ed.getKeyword()) >= 0) {
 							substitute = true;
-							index = auxEntities.indexOf(ed);
+							index = entities.indexOf(ed);
 						}
 					}
+					
+					// then create the entity if doesn't exist or update with new offset values
 					if (occurrence == false && substitute == false) {
 						NamedEntity currEntity = new NamedEntity();
 						currEntity.setStart((auxAnnotation.getStartNode().getOffset().intValue()));
 						currEntity.setEnd((auxAnnotation.getEndNode().getOffset().intValue()));
 						currEntity.setKeyword(entity.trim());
 						currEntity.setType(KeywordType.fromString(auxAnnotation.getType()));
-						auxEntities.add(currEntity);
+						entities.add(currEntity);
 					} else if (substitute == true) {
 						NamedEntity currEntity = new NamedEntity();
 						currEntity.setStart((auxAnnotation.getStartNode().getOffset().intValue()));
 						currEntity.setEnd((auxAnnotation.getEndNode().getOffset().intValue()));
 						currEntity.setKeyword(entity.trim());
 						currEntity.setType(KeywordType.fromString(auxAnnotation.getType()));
-						auxEntities.set(index, currEntity);
+						entities.set(index, currEntity);
 					}
 				}
 			}
-			Collections.sort(auxEntities);
-			this.entities = auxEntities;
-			auxCorpus.unloadDocument(doc);
+			Collections.sort(entities);
 		} catch (ResourceInstantiationException e) {
 			logger.log(Level.WARNING, "gate threw a ResourceInstantiationException: " + e.getMessage());
 		} catch (GateException e) {
 			logger.log(Level.WARNING, "gate threw a GateException: " + e.getMessage());
 		}
-		return this.getEntities();
-	}
-
-	/* (non-Javadoc)
-	 * @see it.unifi.micc.homer.controller.namedentity.NamedEntityDetector#getEntities()
-	 */
-	@Override
-	public ArrayList<NamedEntity> getEntities() {
 		return entities;
 	}
-
-	/**
-	 * @return the minNEDLength
-	 */
-	public int getMinNEDLength() {
-		return minNEDLength;
-	}
-
-	/**
-	 * @param minNEDLength
-	 *            the minNEDLength to set
-	 */
-	public void setMinNEDLength(int minNEDLength) {
-		this.minNEDLength = minNEDLength;
-	}
-
 }

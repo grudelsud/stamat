@@ -1,5 +1,6 @@
 package controllers;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,10 +57,7 @@ public class Application extends Controller {
 					ArrayList<NamedEntity> list = Analyser.ned.exractAnnie(text, gateHomePath);
 
 					// tracing memory right before returning the result
-					long tot = Runtime.getRuntime().totalMemory() / 1000000;
-					long free = Runtime.getRuntime().freeMemory() / 1000000;
-					long used = tot - free;
-					String runtime = "ned.GATE ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] " + list.size();
+					String runtime = Application.memInfo() + "ned.GATE " + list.size();
 					Logger.info(runtime);
 					return list;
 				}
@@ -169,10 +167,7 @@ public class Application extends Controller {
 							item.flags = item.flags | Constants.db_fields.MEDIA_INDEXED;
 
 							// tracing memory right before the next cycle
-							long tot = Runtime.getRuntime().totalMemory() / 1000000;
-							long free = Runtime.getRuntime().freeMemory() / 1000000;
-							long used = tot - free;
-							String runtime = "visual.indexDB ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] "+id+" -> " + indexPath;
+							String runtime = Application.memInfo() + "visual.indexDB "+id+" -> " + indexPath;
 							Logger.info(runtime);
 						} catch (StamatException e) {
 							// if exception caught, mark them as unresolved
@@ -309,10 +304,7 @@ public class Application extends Controller {
 						result = Analyser.visual.searchFromIndex(index, fileIdentifier, feature, numberOfResults);
 					}
 					// tracing memory right before returning the result
-					long tot = Runtime.getRuntime().totalMemory() / 1000000;
-					long free = Runtime.getRuntime().freeMemory() / 1000000;
-					long used = tot - free;
-					String runtime = "visual.Sim ["+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M] " + fileIdentifier + " " + feature;
+					String runtime = Application.memInfo() + "visual.Sim " + fileIdentifier + " " + feature;
 					Logger.info(runtime);
 					return result;
 				}
@@ -354,5 +346,18 @@ public class Application extends Controller {
 				}
 			)
 		);
+	}
+	
+	private static String memInfo() {
+		long tot = Runtime.getRuntime().totalMemory() / 1000000;
+		long free = Runtime.getRuntime().freeMemory() / 1000000;
+		long used = tot - free;
+
+		long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
+		int upSeconds = (int) (uptime / 1000) % 60 ;
+		int upMinutes = (int) ((uptime / (1000*60)) % 60);
+		int upHours   = (int) ((uptime / (1000*60*60)) % 24);
+		
+		return "[up "+upHours+"h:"+upMinutes+"m:"+upSeconds+"s - "+Runtime.getRuntime().availableProcessors() + "CPU - MEM Tot:"+tot+"M Used:"+used+"M Free:"+free+"M]\t";
 	}
 }

@@ -1,7 +1,5 @@
 package stamat.main;
 
-import it.unifi.micc.homer.controller.namedentity.AnnieNEDDetector;
-import it.unifi.micc.homer.controller.namedentity.NamedEntityDetector;
 import it.unifi.micc.homer.model.AsciiTextDocument;
 import it.unifi.micc.homer.util.WordCounter;
 
@@ -23,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import stamat.controller.ned.AnnieNERecognizer;
 import stamat.controller.ned.StanfordNERecognizer;
 import stamat.controller.topic.TopicDetector;
 import stamat.controller.visual.Indexer;
@@ -60,8 +59,8 @@ public class Analyser {
 		 */
 		public static ArrayList<NamedEntity> extractStanford(String text, String classifierPath)
 		{
-			NamedEntityDetector ned = StanfordNERecognizer.getInstance(classifierPath);
-			ArrayList<NamedEntity> entityList = ned.extractEntity(text, null);
+			StanfordNERecognizer ner = StanfordNERecognizer.getInstance(classifierPath);
+			ArrayList<NamedEntity> entityList = ner.extractEntity(text, null);
 			return evalTFs(text, entityList);
 		}
 
@@ -72,8 +71,8 @@ public class Analyser {
 		 */
 		public static String extractStanford2XML(String text, String classifierPath)
 		{
-			StanfordNERecognizer sner = StanfordNERecognizer.getInstance(classifierPath);
-			String result = sner.extractEntity2XML(text, null);
+			StanfordNERecognizer ner = StanfordNERecognizer.getInstance(classifierPath);
+			String result = ner.extractEntity2XML(text, null);
 			return result;
 		}
 
@@ -104,7 +103,7 @@ public class Analyser {
 		 */
 		public static ArrayList<NamedEntity> exractAnnie(String text)
 		{
-			NamedEntityDetector ned = AnnieNEDDetector.getInstance();
+			AnnieNERecognizer ned = AnnieNERecognizer.getInstance();
 			ArrayList<KeywordType> keywordTypes = new ArrayList<KeywordType>();
 			keywordTypes.add(KeywordType.LOCATION);
 			keywordTypes.add(KeywordType.PERSON);
@@ -120,7 +119,7 @@ public class Analyser {
 		 */
 		public static ArrayList<NamedEntity> exractAnnie(String text, String gateHomePath)
 		{
-			NamedEntityDetector ned = AnnieNEDDetector.getInstance(gateHomePath);
+			AnnieNERecognizer ned = AnnieNERecognizer.getInstance(gateHomePath);
 			ArrayList<KeywordType> keywordTypes = new ArrayList<KeywordType>();
 			keywordTypes.add(KeywordType.LOCATION);
 			keywordTypes.add(KeywordType.PERSON);
