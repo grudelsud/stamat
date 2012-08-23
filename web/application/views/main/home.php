@@ -1,6 +1,6 @@
 <div class="tabbable">
 	<div class="row">
-		<div class="span12">
+		<div class="span10">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#tab_feed" data-toggle="tab">Read</a></li>
 				<li><a href="#tab_media" data-toggle="tab">View</a></li>

@@ -378,58 +378,6 @@ class Api extends CI_Controller
 	}
 
 	/**
-	 * Media related, pure REST!
-	 */
-	function media()
-	{
-		$this->_user_check('API - media');
-		$this->load->model('media_model');
-		$params = $this->uri->uri_to_assoc();
-
-		switch( $params['action'] ) {
-			case 'browse':
-				$type = empty($params['type']) ? null : $params['type'];
-				$primary = empty($params['primary']) ? null : $params['primary'];
-				switch ($params['flags']) {
-					case 'invalid':
-						$flags = MEDIA_INVALID;
-						break;
-					case 'indexed':
-						$flags = MEDIA_INDEXED;
-						break;
-					default:
-						$flags = MEDIA_DOWNLOADED;
-				}
-				$min_width = empty($params['min_width']) ? null : $params['min_width'];
-				$min_height = empty($params['min_height']) ? null : $params['min_height'];
-				$page = empty($params['page']) ? null : $params['page'];
-				$pagesize = empty($params['pagesize']) ? null : $params['pagesize'];
-
-				$result = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
-				foreach ($result as $row) {
-					$row->url_src = $row->url;
-					$row->url = $row->abs_path . $row->hash;
-				}
-				$this->_return_json_success($result);
-				break;
-			case 'read':
-				$result = $this->media_model->get_media($params['read']);
-				foreach ($result as $row) {
-					$row->url_src = $row->url;
-					$row->url = $row->abs_path . $row->hash;
-				}
-				$this->_return_json_success( $result );
-				break;
-			case 'index':
-				$result = $this->media_model->update_flags($params['index'], MEDIA_INDEXED);
-				$this->_return_json_success( $result );
-				break;
-			default:
-				$this->_return_json_error('select /action/* among: browse, read, index');
-		}
-	}
-
-	/**
 	 * Feed/tag related CRUD functions (no update)
 	 * 
 	 * add_feed_tag - add feed / tag association to database

@@ -85,8 +85,8 @@
 			var tag_id = $label.attr('data-id');
 			var tag_obj = this.model.get('tags').get(tag_id);
 
-			$label.toggleClass('label-success');
-			if($label.hasClass('label-success')) {
+			$label.toggleClass('label-inverse');
+			if($label.hasClass('label-inverse')) {
 				tag_obj.set({selected: true});
 			} else {
 				tag_obj.set({selected: false});

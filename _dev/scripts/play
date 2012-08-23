@@ -16,5 +16,6 @@ else
 	MESSAGE="$(date) - restarting play!"
 	echo $MESSAGE
 	echo $MESSAGE | mail -s "STAMAT play restart" thomasalisi@gmail.com
+	# other parameters worth investigating in case of failures: -XX:MaxPermSize=128m -XX:ErrorFile=$BASE_DIR/error.log
 	java -Xmx1536m -Xms512m -cp "$PLAY_DIR/lib/*" -Dconfig.file=$PLAY_DIR/staging.conf play.core.server.NettyServer $PLAY_DIR &> $LOG_FILE &
 fi
