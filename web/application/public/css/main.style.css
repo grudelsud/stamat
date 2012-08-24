@@ -62,6 +62,6 @@ article.feed_item_container {
 	overflow: hidden;
 }
 
-#map_container {
+#map_canvas {
 	height: 600px;
 }

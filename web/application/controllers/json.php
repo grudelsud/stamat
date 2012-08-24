@@ -230,38 +230,35 @@ class Json extends CI_Controller
 					case 'invalid':
 						$flags = MEDIA_INVALID;
 						break;
-					case 'indexed':
-						$flags = MEDIA_INDEXED;
-						break;
 					default:
-						$flags = MEDIA_DOWNLOADED;
+						$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;
 				}
 				$min_width = empty($params['min_width']) ? null : $params['min_width'];
 				$min_height = empty($params['min_height']) ? null : $params['min_height'];
 				$page = empty($params['page']) ? null : $params['page'];
 				$pagesize = empty($params['pagesize']) ? null : $params['pagesize'];
 
-				$result = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
-				foreach ($result as $row) {
+				$media = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
+				foreach ($media as $row) {
 					$row->url_src = $row->url;
 					$row->url = $row->abs_path . $row->hash;
 				}
-				$this->_return_json_success($result);
+				$output = new stdClass;
+				$output->media = $media;
+				$this->_return_json_success($output);
 				break;
 			case 'read':
-				$result = $this->media_model->get_media($params['read']);
-				foreach ($result as $row) {
+				$media = $this->media_model->get_media($params['read']);
+				foreach ($media as $row) {
 					$row->url_src = $row->url;
 					$row->url = $row->abs_path . $row->hash;
 				}
-				$this->_return_json_success( $result );
+				$output = new stdClass;
+				$output->media = $media;
+				$this->_return_json_success($output);
 				break;
-			// case 'index':
-			// 	$result = $this->media_model->update_flags($params['index'], MEDIA_INDEXED);
-			// 	$this->_return_json_success( $result );
-			// 	break;
 			default:
-				$this->_return_json_error('select /action/* among: browse, read, index');
+				$this->_return_json_error('select /action/* amongst: browse, read');
 		}
 	}
 
