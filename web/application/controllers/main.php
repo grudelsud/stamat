@@ -98,7 +98,6 @@ class Main extends CI_Controller {
 		$cosumerKey = TWITTER_COSUMERKEY;
 		$cosumerSecret = TWITTER_CONSUMERSECRET;
 
-		$this->load->library('session');
 		$oauth_token = $this->session->userdata('oauth_token');
 		$oauth_token_secret = $this->session->userdata('oauth_token_secret');
 
