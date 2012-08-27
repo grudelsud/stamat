@@ -64,9 +64,6 @@ class Main extends CI_Controller {
         // function to allow users to log in via twitter
 	function login_twitter()
 	{
-            //echo "debug: <pre>".print_r($myvar,true).'</pre>';
-            // temp code
-               
             $config = array(
                 'consumer_key'  => TWITTER_COSUMERKEY, 
                 'consumer_secret' => TWITTER_CONSUMERSECRET,
@@ -76,19 +73,18 @@ class Main extends CI_Controller {
             $this->load->library('Twitteroauth',$config);
             
             // Requesting authentication tokens, the parameter is the URL we will be redirected to
-            $request_token = $this->twitteroauth->getRequestToken('http://stamat.net/index.php/main/oauth_twitter');
-        
+            $request_token = $this->twitteroauth->getRequestToken(BASE_URL . 'index.php/main/oauth_twitter');
             
             // If everything goes well..  
             if($this->twitteroauth->http_code==200){  
             // Let's generate the URL and redirect  
                 $url = $this->twitteroauth->getAuthorizeURL($request_token['oauth_token']); 
+                   
+                $this->load->library('session');
+                $this->session->set_userdata('oauth_token', $request_token['oauth_token']);
+                $this->session->set_userdata('oauth_token_secret', $request_token['oauth_token_secret']);
                 
-                session_start();
-                $_SESSION['oauth_token']=$request_token['oauth_token'];
-                $_SESSION['oauth_token_secret']=$request_token['oauth_token_secret'];
-               
-                header('Location: '. $url);
+                redirect($url, 'refresh');
                 
             } else { 
                 // It's a bad idea to kill the script, but we've got to know when there's an error.  
@@ -101,55 +97,35 @@ class Main extends CI_Controller {
         
         function oauth_twitter()
         {
-            
-             /* 
-                $this->load->library('ion_auth');
-                $login = $this->ion_auth->login($profile['email'], $profile['id']);
-            
-            
-                if( $login ) {
-                    $this->db->where('email', $profile['email']);
-                    $query = $this->db->get('users');
-                    $user = $query->row();
-                }
-             */
-            
-            xdebug_break();
-            
-            $profile = null;
-            $profile['email']='serra@unifi.it';
-            $profile['id'] = '19801218';
                 
             $cosumerKey = TWITTER_COSUMERKEY;
             $cosumerSecret = TWITTER_CONSUMERSECRET;
 
-            session_start();
+            $this->load->library('session');
+            $oauth_token = $this->session->userdata('oauth_token');
+            $oauth_token_secret = $this->session->userdata('oauth_token_secret');
             
 	
-            if(!empty($_GET['oauth_verifier']) && !empty($_SESSION['oauth_token']) && !empty($_SESSION['oauth_token_secret'])){  
+            if(!empty($_GET['oauth_verifier']) && $oauth_token!== false && $oauth_token_secret!== false){  
                 
             
             $config = array(
                 'consumer_key'  => TWITTER_COSUMERKEY, 
                 'consumer_secret' => TWITTER_CONSUMERSECRET,
-                'oauth_token' => $_SESSION['oauth_token'],
-                'oauth_token_secret' => $_SESSION['oauth_token']);
+                'oauth_token' => $oauth_token,
+                'oauth_token_secret' => $oauth_token_secret);
              
             
             $this->load->library('Twitteroauth',$config);
             // Let's request the access token  
             $access_token = $this->twitteroauth->getAccessToken($_GET['oauth_verifier']); 
             // Save it in a session var 
-            $_SESSION['access_token'] = $access_token; 
+            $this->session->set_userdata('access_token', $access_token);
             // Let's get the user's info 
             $user_info = $this->twitteroauth->get('account/verify_credentials'); 
             // Print user's info  
             //print_r($user_info); 
             $profile = null;
-            $profile['email']='serra@unifi.it';
-            $profile['id'] = '19801218';
-                
-            
             $profile['name']=$user_info->screen_name;
             $profile['email']=$user_info->screen_name . '@twitter.com';
             $profile['id'] = $user_info->id;            
@@ -160,9 +136,8 @@ class Main extends CI_Controller {
                 
                 
             $twitter_token = array(
-                'oauth_token' => $_SESSION['oauth_token'],
-                'oauth_token_secret' => $_SESSION['oauth_token_secret'],
-            );
+                'oauth_token' => $oauth_token,
+                'oauth_token_secret' => $oauth_token_secret);
                 
             $login = $this->ion_auth->login($profile['email'], $profile['id']);
 
@@ -171,12 +146,11 @@ class Main extends CI_Controller {
                 $this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
             }
             
-            header('Location: http://stamat.net/index.php/'); 
-            
+            redirect('/', 'refresh');
             
             } else {  
                 // Something's missing, go back to square 1  
-                header('Location: http://stamat.net/index.php/');  
+                redirect('/', 'refresh');  
             }  
         }
         
