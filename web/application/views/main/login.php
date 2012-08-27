@@ -9,7 +9,7 @@
 			<div id="auth_fb_message"></div>
 		</div>
 		<div id="auth_twitter">
-			<p>Login with Twitter</p>
+			<button id="twitter_login" type="button">Login with Twitter</button>
 		</div>
 		<div id="auth_google">
 			<p>Login with Google</p>

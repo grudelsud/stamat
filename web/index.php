@@ -21,12 +21,16 @@
 
 $fb_app_id = '';
 $fb_app_secret = '';
+$twitter_cosumerKey = '';
+$twitter_cosumerSecret = '';
 
 switch ($_SERVER['SERVER_NAME']) {
 case 'stamat.net':
 	$environment = 'development';
 	$fb_app_id = '105746679556989';
 	$fb_app_secret = '29759386d9ead63d70318c41e5219696';
+        $twitter_cosumerKey = 'XW7zty39b9veVxAbN444g';
+        $twitter_cosumerSecret = 'iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c';
 	break;
 case 'hack4europe.net':
 	$environment = 'hack4europe';
@@ -38,6 +42,9 @@ default:
 
 define('FB_APP_ID', $fb_app_id);
 define('FB_APP_SECRET', $fb_app_secret);
+define('TWITTER_COSUMERKEY',$twitter_cosumerKey);
+define('TWITTER_CONSUMERSECRET',$twitter_cosumerSecret);
+
 
 define('ENVIRONMENT', $environment);
 	/*

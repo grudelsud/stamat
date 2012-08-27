@@ -10,5 +10,9 @@ $(function() {
 				$('#auth_fb_message').empty().append('<p>Sorry, you cancelled login or did not fully authorize.</p>');
 			}
 		}, {scope: 'email'});
+	});   
+	$('#twitter_login').click(function() {
+              window.location = 'http://stamat.net/index.php/main/login_twitter';
 	});
+    
 });
