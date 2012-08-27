@@ -19,7 +19,7 @@ class Main extends CI_Controller {
 		$this->data['logged_admin'] = empty($logged_user['groups']) ? false : in_array( $admin_group, $logged_user['groups']);
 		$this->data['template'] = 'home';
 	}
-	
+
 	function index()
 	{
 		if ( !$this->logged_in ) {
@@ -60,100 +60,89 @@ class Main extends CI_Controller {
 		// echo $debug;
 		redirect('/', 'refresh');
 	}
-        
-        // function to allow users to log in via twitter
+
+		// function to allow users to log in via twitter
 	function login_twitter()
 	{
-            $config = array(
-                'consumer_key'  => TWITTER_COSUMERKEY, 
-                'consumer_secret' => TWITTER_CONSUMERSECRET,
-                'oauth_token' => NuLL,
-                'oauth_token_secret' => NULL);
-                
-            $this->load->library('Twitteroauth',$config);
-            
-            // Requesting authentication tokens, the parameter is the URL we will be redirected to
-            $request_token = $this->twitteroauth->getRequestToken(BASE_URL . 'index.php/main/oauth_twitter');
-            
-            // If everything goes well..  
-            if($this->twitteroauth->http_code==200){  
-            // Let's generate the URL and redirect  
-                $url = $this->twitteroauth->getAuthorizeURL($request_token['oauth_token']); 
-                   
-                $this->load->library('session');
-                $this->session->set_userdata('oauth_token', $request_token['oauth_token']);
-                $this->session->set_userdata('oauth_token_secret', $request_token['oauth_token_secret']);
-                
-                redirect($url, 'refresh');
-                
-            } else { 
-                // It's a bad idea to kill the script, but we've got to know when there's an error.  
-                die('Something wrong happened.');  
-            }  
+		$config = array(
+			'consumer_key'  => TWITTER_COSUMERKEY, 
+			'consumer_secret' => TWITTER_CONSUMERSECRET,
+			'oauth_token' => NuLL,
+			'oauth_token_secret' => NULL);
 
-        }
-          
-        
-        
-        function oauth_twitter()
-        {
-                
-            $cosumerKey = TWITTER_COSUMERKEY;
-            $cosumerSecret = TWITTER_CONSUMERSECRET;
+		$this->load->library('Twitteroauth',$config);
 
-            $this->load->library('session');
-            $oauth_token = $this->session->userdata('oauth_token');
-            $oauth_token_secret = $this->session->userdata('oauth_token_secret');
-            
-	
-            if(!empty($_GET['oauth_verifier']) && $oauth_token!== false && $oauth_token_secret!== false){  
-                
-            
-            $config = array(
-                'consumer_key'  => TWITTER_COSUMERKEY, 
-                'consumer_secret' => TWITTER_CONSUMERSECRET,
-                'oauth_token' => $oauth_token,
-                'oauth_token_secret' => $oauth_token_secret);
-             
-            
-            $this->load->library('Twitteroauth',$config);
-            // Let's request the access token  
-            $access_token = $this->twitteroauth->getAccessToken($_GET['oauth_verifier']); 
-            // Save it in a session var 
-            $this->session->set_userdata('access_token', $access_token);
-            // Let's get the user's info 
-            $user_info = $this->twitteroauth->get('account/verify_credentials'); 
-            // Print user's info  
-            //print_r($user_info); 
-            $profile = null;
-            $profile['name']=$user_info->screen_name;
-            $profile['email']=$user_info->screen_name . '@twitter.com';
-            $profile['id'] = $user_info->id;            
-            //$home_timeline = $this->twitteroauth->get('statuses/home_timeline', array('count' => 40)); 
-            //print_r($home_timeline);
-            
-            $this->load->library('ion_auth');
-                
-                
-            $twitter_token = array(
-                'oauth_token' => $oauth_token,
-                'oauth_token_secret' => $oauth_token_secret);
-                
-            $login = $this->ion_auth->login($profile['email'], $profile['id']);
+		// Requesting authentication tokens, the parameter is the URL we will be redirected to
+		$request_token = $this->twitteroauth->getRequestToken(BASE_URL . 'index.php/main/oauth_twitter');
 
-            if( !$login ) {
-                $this->ion_auth->register($profile['name'], $profile['id'], $profile['email'],$twitter_token);
-                $this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
-            }
-            
-            redirect('/', 'refresh');
-            
-            } else {  
-                // Something's missing, go back to square 1  
-                redirect('/', 'refresh');  
-            }  
-        }
-        
+		// If everything goes well..  
+		if($this->twitteroauth->http_code==200){  
+		// Let's generate the URL and redirect  
+			$url = $this->twitteroauth->getAuthorizeURL($request_token['oauth_token']); 
+			   
+			$this->load->library('session');
+			$this->session->set_userdata('oauth_token', $request_token['oauth_token']);
+			$this->session->set_userdata('oauth_token_secret', $request_token['oauth_token_secret']);
+
+			redirect($url, 'refresh');
+
+		} else { 
+			// It's a bad idea to kill the script, but we've got to know when there's an error.  
+			die('Something wrong happened.');  
+		}  
+
+	}
+
+	function oauth_twitter()
+	{
+		$cosumerKey = TWITTER_COSUMERKEY;
+		$cosumerSecret = TWITTER_CONSUMERSECRET;
+
+		$this->load->library('session');
+		$oauth_token = $this->session->userdata('oauth_token');
+		$oauth_token_secret = $this->session->userdata('oauth_token_secret');
+
+		if(!empty($_GET['oauth_verifier']) && $oauth_token!== false && $oauth_token_secret!== false){
+
+			$config = array(
+				'consumer_key'  => TWITTER_COSUMERKEY, 
+				'consumer_secret' => TWITTER_CONSUMERSECRET,
+				'oauth_token' => $oauth_token,
+				'oauth_token_secret' => $oauth_token_secret);
+
+			// Let's request the access token  
+			$access_token = $this->twitteroauth->getAccessToken($_GET['oauth_verifier']); 
+			// Save it in a session var 
+			$this->session->set_userdata('access_token', $access_token);
+			// Let's get the user's info 
+			$user_info = $this->twitteroauth->get('account/verify_credentials'); 
+			// Print user's info  
+			//print_r($user_info); 
+			$profile = null;
+			$profile['name']=$user_info->screen_name;
+			$profile['email']=$user_info->screen_name . '@twitter.com';
+			$profile['id'] = $user_info->id;            
+			//$home_timeline = $this->twitteroauth->get('statuses/home_timeline', array('count' => 40)); 
+			//print_r($home_timeline);
+
+			$twitter_token = array(
+				'oauth_token' => $oauth_token,
+				'oauth_token_secret' => $oauth_token_secret);
+
+			$login = $this->ion_auth->login($profile['email'], $profile['id']);
+
+			if( !$login ) {
+				$this->ion_auth->register($profile['name'], $profile['id'], $profile['email'],$twitter_token);
+				$this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
+			}
+
+			redirect('/', 'refresh');
+
+		} else {  
+			// Something's missing, go back to square 1  
+			redirect('/', 'refresh');  
+		}  
+	}
 }
 
 /* End of main.php */
