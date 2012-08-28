@@ -38,6 +38,8 @@ case 'hack4europe.net':
 case 'londondroids.com':
 default:
 	$environment = 'production';
+        $twitter_cosumerKey = 'XW7zty39b9veVxAbN444g';
+        $twitter_cosumerSecret = 'iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c';
 }
 
 define('FB_APP_ID', $fb_app_id);
