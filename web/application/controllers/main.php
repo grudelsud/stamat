@@ -122,8 +122,6 @@ class Main extends CI_Controller {
 			$profile['name']=$user_info->screen_name;
 			$profile['email']=$user_info->screen_name . '@twitter.com';
 			$profile['id'] = $user_info->id;            
-			//$home_timeline = $this->twitteroauth->get('statuses/home_timeline', array('count' => 40)); 
-			//print_r($home_timeline);
 
 			$twitter_token = array(
 				'oauth_token' => $oauth_token,
@@ -136,7 +134,16 @@ class Main extends CI_Controller {
 				$this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
 			}
 
-			redirect('/', 'refresh');
+                        $home_timeline = $this->twitteroauth->get('statuses/home_timeline',array('count' => 200)); 
+			//print_r($home_timeline);
+                        $timeline_content = null;
+                        foreach ($home_timeline as &$tweet) {
+                            $timeline_content = $timeline_content . $tweet->text;
+                        }
+                        
+                        $this->load->model('scraper_model');
+                        $entities=$this->scraper_model->scrape_stamat_ner( $timeline_content);
+                        redirect('/', 'refresh');
 
 		} else {  
 			// Something's missing, go back to square 1  
