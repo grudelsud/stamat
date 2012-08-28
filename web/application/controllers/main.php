@@ -61,7 +61,7 @@ class Main extends CI_Controller {
 		redirect('/', 'refresh');
 	}
 
-		// function to allow users to log in via twitter
+        // function to allow users to log in via twitter
 	function login_twitter()
 	{
 		$config = array(
@@ -109,7 +109,8 @@ class Main extends CI_Controller {
 				'oauth_token' => $oauth_token,
 				'oauth_token_secret' => $oauth_token_secret);
 
-			// Let's request the access token  
+			$this->load->library('Twitteroauth',$config);
+                        // Let's request the access token  
 			$access_token = $this->twitteroauth->getAccessToken($_GET['oauth_verifier']); 
 			// Save it in a session var 
 			$this->session->set_userdata('access_token', $access_token);
