@@ -42,7 +42,7 @@
 		},
 		render: function() {
 			var view = this;
-			// Fetch the template, render it to the View element and call done.
+			// If models has a permalink property then fetch the template & render it
 			if(typeof this.model.get('permalink') !== 'undefined') {
 				readreactv.fetchTemplate(this.template, function(tmpl) {
 					view.$el.html(tmpl(view.model.toJSON()));

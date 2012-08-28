@@ -34,7 +34,14 @@
 
 			<!-- #tab_media -->
 			<div class="tab-pane" id="tab_media">
-				<div id="media_directory"></div>
+				<div class="row">
+					<div id="media_container" class="span6">
+						<div id="media_directory"></div>
+					</div>
+					<div id="similarity_container" class="span4 scroll-top">
+						<div id="similarity_directory"></div>
+					</div>
+				</div>
 			</div><!-- #tab_media -->
 
 			<!-- #tab_map -->

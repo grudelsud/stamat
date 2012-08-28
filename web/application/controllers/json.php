@@ -222,21 +222,25 @@ class Json extends CI_Controller
 		$this->load->model('media_model');
 		$params = $this->uri->uri_to_assoc();
 
+		if(empty($params['action'])) {
+			$params['action'] = 'browse';
+		}
+
 		switch( $params['action'] ) {
 			case 'browse':
 				$type = empty($params['type']) ? null : $params['type'];
 				$primary = empty($params['primary']) ? null : $params['primary'];
-				switch ($params['flags']) {
-					case 'invalid':
-						$flags = MEDIA_INVALID;
-						break;
-					default:
-						$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;
+				if(!empty($params['flags']) && $params['flags'] == 'invalid') {
+					$flags = MEDIA_INVALID;
+				} else {
+					$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;					
 				}
-				$min_width = empty($params['min_width']) ? null : $params['min_width'];
+				// $min_width = empty($params['min_width']) ? null : $params['min_width'];
+				$min_width = 300;
 				$min_height = empty($params['min_height']) ? null : $params['min_height'];
 				$page = empty($params['page']) ? null : $params['page'];
-				$pagesize = empty($params['pagesize']) ? null : $params['pagesize'];
+				// $pagesize = empty($params['pagesize']) ? null : $params['pagesize'];
+				$pagesize = 30;
 
 				$media = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
 				foreach ($media as $row) {

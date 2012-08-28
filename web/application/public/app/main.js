@@ -44,6 +44,7 @@ $(function() {
 	var feedModule = readreactv.module('feed');
 	var feedItemModule = readreactv.module('feeditem');
 	var reactionModule = readreactv.module('reaction');
+	var mediafinderModule = readreactv.module('mediafinder');
 
 	// Defining the application router, you can attach sub routers here.
 	var Router = Backbone.Router.extend({
@@ -54,6 +55,7 @@ $(function() {
 			// '*': 'clear'
 		},
 		initialize: function() {
+			// local property status is used to store the state of this visualization
 			this.status = {};
 			this.status.feedParams = '';
 			this.status.reactionId = '';
@@ -65,25 +67,40 @@ $(function() {
 			this.models = {};
 			this.collections = {};
 
+			// initialize models & collections
 			this.collections.feedCollection = new feedModule.Collection();
-			this.views.feedCollectionView = new feedModule.Views.Collection({collection: this.collections.feedCollection});
-
 			this.collections.feedItemCollection = new feedItemModule.Collection();
-			this.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: this.collections.feedItemCollection});
-
 			this.models.reactionModel = new reactionModule.Model();
+			this.models.mediafinderModel = new mediafinderModule.Model();
+
+			// then fire views associated to the instantiated models/collections
+			this.views.feedCollectionView = new feedModule.Views.Collection({collection: this.collections.feedCollection});
+			this.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: this.collections.feedItemCollection});
 			this.views.reactionView = new reactionModule.Views.Main({model: this.models.reactionModel});
+			this.views.mediafinderView = new mediafinderModule.Views.Main({model: this.models.mediafinderModel});
 		},
 		setupPanels: function() {
+
+			// collect feeds, will populate left sidebar
 			if(this.status.fetchFeeds) {
 				this.collections.feedCollection.fetch();
 				this.status.fetchFeeds = false;
 			}
+
+			// collect feed items & media, shown in tabbed navigation, central part of the page
 			if(this.status.fetchFeedItems) {
+				// fetch feed items
 				this.collections.feedItemCollection.setFilter(this.status.feedParams);
 				this.collections.feedItemCollection.fetch();
+
+				// fetch media
+				this.models.mediafinderModel.set({params: this.status.feedParams});
+				this.models.mediafinderModel.fetch();
+
 				this.status.fetchFeedItems = false;
 			}
+
+			// reactions are generally collected on demand
 			if(this.status.fetchFeedReactions) {
 				this.models.reactionModel.set({id: this.status.reactionId});
 				this.models.reactionModel.fetch();

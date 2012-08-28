@@ -1,0 +1,59 @@
+<div id="content_media">
+	<form class="form-inline well">
+		Classifier
+		<select name="" id="" class="input-medium">
+			<option value=""></option>
+		</select>
+		Image size
+		<div class="btn-group" data-toggle="buttons-radio">
+		<button type="button" class="btn">All</button>
+		<button type="button" class="btn active">Medium</button>
+		<button type="button" class="btn">Big</button>
+		</div>
+	</form>
+
+	<div class="row">
+		<!-- Pinterest style: 3 columns without clear space between rows -->
+		<div class="span2 list1">
+		<ul class="thumbnails">
+		<% var count = 0; %>
+		<% _.each(media.models, function(item) { %>
+			<% count++; %>
+			<% if(count % 3 == 1) { %>
+			<li class="span2">
+				<a href="<%= item.get('url') %>" class="thumbnail item"><img src="<%= item.get('url') %>" data-id="<%= item.get('id') %>"></a>
+			</li>
+			<% } %>
+		<% }); %>
+		</ul>
+		</div>
+
+		<div class="span2 list2">
+		<ul class="thumbnails">
+		<% var count = 0; %>
+		<% _.each(media.models, function(item) { %>
+			<% count++; %>
+			<% if(count % 3 == 2) { %>
+			<li class="span2">
+				<a href="<%= item.get('url') %>" class="thumbnail item"><img src="<%= item.get('url') %>" data-id="<%= item.get('id') %>"></a>
+			</li>
+			<% } %>
+		<% }); %>
+		</ul>
+		</div>
+
+		<div class="span2 list3">
+		<ul class="thumbnails">
+		<% var count = 0; %>
+		<% _.each(media.models, function(item) { %>
+			<% count++; %>
+			<% if(count % 3 == 0) { %>
+			<li class="span2">
+				<a href="<%= item.get('url') %>" class="thumbnail item"><img src="<%= item.get('url') %>" data-id="<%= item.get('id') %>"></a>
+			</li>
+			<% } %>
+		<% }); %>
+		</ul>
+		</div>
+	</div>
+</div>
