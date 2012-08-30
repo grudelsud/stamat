@@ -512,9 +512,9 @@ public class Analyser {
 			try {
 				return searcher.searchFromUrl(URL, feature, numberOfResults);
 			} catch (StamatException e) {
-				logger.log(Level.SEVERE, e.getMessage());
+				logger.log(Level.SEVERE, "searchFromIndex se: " + e.getMessage());
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage());
+				logger.log(Level.SEVERE, "searchFromIndex ioe: " + e.getMessage());
 			}
 			return null;
 		}
@@ -532,9 +532,7 @@ public class Analyser {
 			try {
 				return searcher.searchFromIndex(fileIdentifier, feature, numberOfResults);
 			} catch (StamatException e) {
-				logger.log(Level.SEVERE, e.getMessage());
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage());
+				logger.log(Level.SEVERE, "searchFromIndex se: " + e.getMessage());
 			}
 			return null;
 		}
@@ -560,7 +558,7 @@ public class Analyser {
 				}
 				indexer.updateSplitIndexFromURL(URL, fields);
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, e.getMessage());
+				logger.log(Level.SEVERE, "updateIndexfromURL ioe:" + e.getMessage());
 			}
 		}
 

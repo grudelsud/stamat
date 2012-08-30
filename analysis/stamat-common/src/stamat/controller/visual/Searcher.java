@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -40,6 +41,8 @@ import stamat.util.StamatException;
 
 public class Searcher {
 
+	private static Logger logger = Logger.getLogger(Searcher.class.getName());
+
 	private String indexPath;
 	private int numberOfResults;
 
@@ -52,22 +55,38 @@ public class Searcher {
 		this.numberOfResults = numberOfResults;
 	}
 
-	public List<SearchResult> searchFromIndex(String fileIdentifier, String fieldName, int numberOfResults) throws StamatException, IOException
+	public List<SearchResult> searchFromIndex(String fileIdentifier, String fieldName, int numberOfResults) throws StamatException
 	{
 		if(!constants.checkAllowedIndexFeature(fieldName)) {
 			throw new StamatException("feature must be one of: " + Arrays.asList(stamat.main.Analyser.constants.featureArray).toString());
 		}
-		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath, fieldName)));
+		logger.info("searching index " + fieldName + " under " + indexPath);
+		IndexReader ir;
+		try {
+			ir = IndexReader.open(FSDirectory.open(new File(indexPath, fieldName)));
+		} catch (IOException e) {
+			throw new StamatException("search from index ioe while opening index: " + e.getMessage());
+		}
 		
 		// first search doc named after fileIdentifier
 		IndexSearcher luceneSearcher = new IndexSearcher(ir);
 		Query query = new TermQuery(new Term(DocumentBuilder.FIELD_NAME_IDENTIFIER, fileIdentifier));
-		TopDocs rs = luceneSearcher.search(query, 1);
-		Document doc = luceneSearcher.doc(rs.scoreDocs[0].doc);
-	
+		TopDocs rs;
+		Document doc;
+		try {
+			rs = luceneSearcher.search(query, 1);
+			doc = luceneSearcher.doc(rs.scoreDocs[0].doc);
+		} catch (IOException e) {
+			throw new StamatException("search from index ioe while finding doc: " + e.getMessage() + ". weird...");
+		}
 		// then find all similar documents according to fieldName descriptor
 		ImageSearcher lireSearcher = constants.getSearcherFromFieldName(fieldName, numberOfResults);
-		ImageSearchHits hits = lireSearcher.search(doc, ir);
+		ImageSearchHits hits;
+		try {
+			hits = lireSearcher.search(doc, ir);
+		} catch (IOException e) {
+			throw new StamatException("search from index ioe while executing lire");
+		}
 		return getSearchResultListFromHits(hits);
 	}
 
@@ -99,6 +118,7 @@ public class Searcher {
 	 */
 	public List<SearchResult> searchFromUrl(String URL, String fieldName, int numberOfResults) throws StamatException, IOException
 	{
+		logger.info("searching " + fieldName + " under " + indexPath + " from url " + URL);
 		InputStream is = (new java.net.URL(URL)).openStream();
 		return search(is, fieldName, numberOfResults);		
 	}
@@ -113,6 +133,7 @@ public class Searcher {
 	 */
 	public List<SearchResult> searchFromPath(String imagePath, String fieldName, int numberOfResults) throws StamatException, IOException
 	{
+		logger.info("searching " + fieldName + " under " + indexPath + " from path " + imagePath);
 		FileInputStream fis = new FileInputStream(imagePath);
 		return search(fis, fieldName, numberOfResults);
 	}
