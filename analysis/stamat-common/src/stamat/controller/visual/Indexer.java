@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,6 +29,7 @@ import net.semanticmetadata.lire.utils.LuceneUtils;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -36,6 +38,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
 
+import stamat.main.Analyser.constants;
 import stamat.util.StamatException;
 
 
@@ -44,9 +47,6 @@ public class Indexer {
 	private String indexPath;
 	private static Logger logger = Logger.getLogger(Indexer.class.getName());
 
-	public static class constants {
-		public static final String INDEX_URL = "url";
-	}
 	/**
 	 * Creates an instance of indexing, which basically is a dummy object where all the create / update index methods must be run explicitly.
 	 * With the only exception of method createEmptyIndex, all the other create / update methods will try to open an existing indexPath,
@@ -60,12 +60,13 @@ public class Indexer {
 	}
 
 	/**
-	 * Creates an empty index
+	 * Creates an empty index, we really don't need this
 	 * 
 	 * @throws CorruptIndexException
 	 * @throws LockObtainFailedException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public void createEmptyIndex() throws IOException
 	{
 		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
@@ -75,12 +76,138 @@ public class Indexer {
 	}
 
 	/**
+	 * reads the old style indices where all features are stored in a single doc and creates a new index for each feature
+	 * 
+	 * @throws IOException
+	 */
+	public void splitFeatures() throws IOException
+	{
+		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
+
+		for(int i = 0; i < constants.featureArray.length; i++) {
+			String featureName = constants.featureArray[i];
+			// creating feature indices as subfolders
+			IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+			conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+			IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath + "_new", featureName)), conf);
+
+			for(int j = 0; j < ir.numDocs(); j++) {
+				logger.info("feature "+featureName+" ["+i+"/"+constants.featureArray.length+"] cloning doc ["+j+"/"+ir.numDocs()+"]");
+				Document doc = ir.document(j);
+				Document docClone = new Document();
+				// oh yes, surf and sift BEFORE creating histograms have multiple fields associated to the same name
+				if(featureName.equals(DocumentBuilder.FIELD_NAME_SIFT) || featureName.equals(DocumentBuilder.FIELD_NAME_SURF)) {
+					Fieldable[] fieldableArray = doc.getFieldables(featureName);
+					for(int k = 0; k < fieldableArray.length; k++) {
+						docClone.add(fieldableArray[k]);
+					}
+				} else {
+					docClone.add(doc.getFieldable(featureName));
+				}
+				docClone.add(doc.getFieldable(DocumentBuilder.FIELD_NAME_IDENTIFIER));
+				docClone.add(doc.getFieldable(constants.INDEX_URL));
+				iw.addDocument(docClone);
+			}
+			iw.close();
+		}
+	}
+	
+	/**
+	 * creates separate indices for each feature
+	 * 
+	 * @param is
+	 * @param indexedFields
+	 * @throws StamatException
+	 */
+	public void updateSplitIndex(InputStream is, Map<String, String> indexedFields) throws StamatException
+	{
+		long startTime = System.currentTimeMillis();
+	
+		String identifier = indexedFields.remove(DocumentBuilder.FIELD_NAME_IDENTIFIER);
+		if( identifier == null ) {
+			throw new StamatException("parameter indexedFields must contain at least one key with name " + DocumentBuilder.FIELD_NAME_IDENTIFIER);
+		} else {
+			BufferedImage img;
+			try {
+				img = ImageIO.read(is);
+			} catch (IOException e) {
+				throw new StamatException("ioexception while reading image file: " + e.getMessage());
+			}
+			for(int i = 0; i < constants.featureArray.length; i++) {
+				String featureName = constants.featureArray[i];
+				DocumentBuilder docBuilder = constants.getDocBuilderFromFieldName(featureName);
+
+				// creating feature indices as subfolders
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+				IndexWriter iw;
+				Document doc;
+				try {
+					iw = new IndexWriter(FSDirectory.open(new File(indexPath, featureName)), conf);
+					doc = docBuilder.createDocument(img, identifier);
+				} catch (IOException e1) {
+					throw new StamatException("ioexception while creating indexwriter and document");
+				}
+
+				try {					
+					// make sure we always have a URL field in the index
+					if( !indexedFields.containsKey(stamat.main.Analyser.constants.INDEX_URL)) {
+						indexedFields.put(stamat.main.Analyser.constants.INDEX_URL, identifier);
+					}
+					for(String key : indexedFields.keySet()) {
+						doc.add(new Field(key, indexedFields.get(key), Field.Store.YES, Field.Index.ANALYZED));
+					}
+					iw.addDocument(doc);				
+				} catch(IOException e) {
+					String msg = "ioexception while writing "+featureName+" for id:" + identifier;
+					logger.log(Level.SEVERE, msg);
+					throw new StamatException(msg);
+				} finally {
+					try {
+						iw.close();
+						logger.log(Level.INFO, "Index updated in "+ (System.currentTimeMillis() - startTime) + " ms");
+					} catch (IOException e) {
+						throw new StamatException("ioexception while closing index, weird...");
+					}					
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param URL
+	 * @param indexedFields
+	 * @throws StamatException
+	 * @throws IOException
+	 */
+	public void updateSplitIndexFromURL(String URL, Map<String, String> indexedFields) throws StamatException, IOException
+	{
+		InputStream is = (new java.net.URL(URL)).openStream();
+		updateSplitIndex(is, indexedFields);
+	}
+
+	/**
+	 * @param imagePath
+	 * @param indexedFields
+	 * @throws StamatException
+	 * @throws IOException
+	 */
+	public void updateSplitIndexFromPath(String imagePath, Map<String, String> indexedFields) throws StamatException, IOException
+	{
+		FileInputStream fis = new FileInputStream(imagePath);
+		updateSplitIndex(fis, indexedFields);
+	}
+	
+	/**
+	 * leading to poor performances. use updateSplitIndex
+	 * 
 	 * @param is
 	 * @param indexedFields
 	 * @throws StamatException
 	 * @throws  
 	 * @throws IOException
 	 */
+	@Deprecated
 	public void updateIndex(InputStream is, Map<String, String> indexedFields) throws StamatException, IOException
 	{
 		long startTime = System.currentTimeMillis();
@@ -114,8 +241,8 @@ public class Indexer {
 				Document doc = docBuilder.createDocument(img, identifier);
 				
 				// make sure we always have a URL field in the index
-				if( !indexedFields.containsKey(Indexer.constants.INDEX_URL)) {
-					indexedFields.put(Indexer.constants.INDEX_URL, identifier);
+				if( !indexedFields.containsKey(stamat.main.Analyser.constants.INDEX_URL)) {
+					indexedFields.put(stamat.main.Analyser.constants.INDEX_URL, identifier);
 				}
 				for(String key : indexedFields.keySet()) {
 					doc.add(new Field(key, indexedFields.get(key), Field.Store.YES, Field.Index.ANALYZED));
@@ -138,6 +265,7 @@ public class Indexer {
 	 * @throws StamatException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public void updateIndexFromURL(String URL, Map<String, String> indexedFields) throws StamatException, IOException
 	{
 		InputStream is = (new java.net.URL(URL)).openStream();
@@ -150,6 +278,7 @@ public class Indexer {
 	 * @throws StamatException
 	 * @throws IOException
 	 */
+	@Deprecated
 	public void updateIndexFromPath(String imagePath, Map<String, String> indexedFields) throws StamatException, IOException
 	{
 		FileInputStream fis = new FileInputStream(imagePath);
@@ -159,7 +288,7 @@ public class Indexer {
 	public void createSIFTHistogram() throws IOException
 	{
 		// create the visual words.
-		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
+		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath, DocumentBuilder.FIELD_NAME_SIFT)));
 		// create a BoVW indexer
 		int numDocsForVocabulary = 1500; // gives the number of documents for building the vocabulary (clusters).
 		int numClusters = 8000;
@@ -170,7 +299,7 @@ public class Indexer {
 	public void createSURFHistogrm() throws IOException
 	{
 		// create the visual words.
-		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
+		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath, DocumentBuilder.FIELD_NAME_SURF)));
 		// create a BoVW indexer
 		int numDocsForVocabulary = 1500; // gives the number of documents for building the vocabulary (clusters).
 		int numClusters = 8000;

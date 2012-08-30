@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -34,6 +35,7 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+import stamat.main.Analyser.constants;
 import stamat.util.StamatException;
 
 public class Searcher {
@@ -50,6 +52,25 @@ public class Searcher {
 		this.numberOfResults = numberOfResults;
 	}
 
+	public List<SearchResult> searchFromIndex(String fileIdentifier, String fieldName, int numberOfResults) throws StamatException, IOException
+	{
+		if(!constants.checkAllowedIndexFeature(fieldName)) {
+			throw new StamatException("feature must be one of: " + Arrays.asList(stamat.main.Analyser.constants.featureArray).toString());
+		}
+		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath, fieldName)));
+		
+		// first search doc named after fileIdentifier
+		IndexSearcher luceneSearcher = new IndexSearcher(ir);
+		Query query = new TermQuery(new Term(DocumentBuilder.FIELD_NAME_IDENTIFIER, fileIdentifier));
+		TopDocs rs = luceneSearcher.search(query, 1);
+		Document doc = luceneSearcher.doc(rs.scoreDocs[0].doc);
+	
+		// then find all similar documents according to fieldName descriptor
+		ImageSearcher lireSearcher = constants.getSearcherFromFieldName(fieldName, numberOfResults);
+		ImageSearchHits hits = lireSearcher.search(doc, ir);
+		return getSearchResultListFromHits(hits);
+	}
+
 	/**
 	 * @see stamat.controller.visual.Indexer.updateIndex for complete list of documentbuilders
 	 * 
@@ -61,34 +82,10 @@ public class Searcher {
 	public List<SearchResult> search(InputStream is, String fieldName, int numberOfResults) throws IOException, StamatException
 	{
 		BufferedImage img = ImageIO.read(is);
-		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
+		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath, fieldName)));
 	
-		ImageSearcher searcher = Searcher.getSearcherFromFieldName(fieldName, numberOfResults);
+		ImageSearcher searcher = constants.getSearcherFromFieldName(fieldName, numberOfResults);
 		ImageSearchHits hits = searcher.search(img, ir);
-		return getSearchResultListFromHits(hits);
-	}
-
-	/**
-	 * @param fileIdentifier
-	 * @param fieldName
-	 * @param numberOfResults
-	 * @return
-	 * @throws StamatException
-	 * @throws IOException
-	 */
-	public List<SearchResult> searchFromIndex(String fileIdentifier, String fieldName, int numberOfResults) throws StamatException, IOException
-	{
-		IndexReader ir = IndexReader.open(FSDirectory.open(new File(indexPath)));
-		
-		// first search doc named after fileIdentifier
-		IndexSearcher luceneSearcher = new IndexSearcher(ir);
-		Query query = new TermQuery(new Term(DocumentBuilder.FIELD_NAME_IDENTIFIER, fileIdentifier));
-		TopDocs rs = luceneSearcher.search(query, 1);
-		Document doc = luceneSearcher.doc(rs.scoreDocs[0].doc);
-	
-		// then find all similar documents according to fieldName descriptor
-		ImageSearcher lireSearcher = Searcher.getSearcherFromFieldName(fieldName, numberOfResults);
-		ImageSearchHits hits = lireSearcher.search(doc, ir);
 		return getSearchResultListFromHits(hits);
 	}
 
@@ -121,47 +118,6 @@ public class Searcher {
 	}
 
 	/**
-	 * @param fieldName
-	 * @param numberOfResults
-	 * @return
-	 * @throws StamatException
-	 */
-	private static ImageSearcher getSearcherFromFieldName(String fieldName, int numberOfResults) throws StamatException
-	{
-		ImageSearcher searcher;
-		if( fieldName.equals(DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM)) {
-			searcher = ImageSearcherFactory.createAutoColorCorrelogramImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SCALABLECOLOR) ) {
-			searcher = ImageSearcherFactory.createScalableColorImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_CEDD) ) {
-			searcher = ImageSearcherFactory.createCEDDImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_COLORHISTOGRAM) ) {
-			searcher = ImageSearcherFactory.createColorHistogramImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_COLORLAYOUT) ) {
-			searcher = ImageSearcherFactory.createColorLayoutImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_TAMURA) ) {
-			searcher = ImageSearcherFactory.createTamuraImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM) ) {
-			searcher = ImageSearcherFactory.createEdgeHistogramImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_FCTH) ) {
-			searcher = ImageSearcherFactory.createFCTHImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_GABOR) ) {
-			searcher = ImageSearcherFactory.createGaborImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_JCD) ) {
-			searcher = ImageSearcherFactory.createJCDImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_JPEGCOEFFS) ) {
-			searcher = ImageSearcherFactory.createJpegCoefficientHistogramImageSearcher(numberOfResults);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SIFT) ) {
-			searcher = new VisualWordsImageSearcher(numberOfResults, DocumentBuilder.FIELD_NAME_SIFT_LOCAL_FEATURE_HISTOGRAM_VISUAL_WORDS);
-		} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SURF) ) {
-			searcher = new VisualWordsImageSearcher(numberOfResults, DocumentBuilder.FIELD_NAME_SURF_LOCAL_FEATURE_HISTOGRAM_VISUAL_WORDS);
-		} else {
-			throw new StamatException("wrong query field");
-		}
-		return searcher;
-	}
-
-	/**
 	 * @param hits
 	 * @return
 	 */
@@ -172,7 +128,7 @@ public class Searcher {
 		for (int i = 0; i < limit; i++) {
 			Document doc = hits.doc(i);
 			String fileName = doc.getFieldable(DocumentBuilder.FIELD_NAME_IDENTIFIER).stringValue();
-			String url = doc.getFieldable(Indexer.constants.INDEX_URL).stringValue();
+			String url = doc.getFieldable(constants.INDEX_URL).stringValue();
 			results.add(new SearchResult(fileName,url, i,hits.score(i)));
 		}
 		return results;
@@ -195,7 +151,7 @@ public class Searcher {
 		for (int i = 0; i < numberOfResults; i++) {
 			Document doc = hits.doc(i);
 			String fileName = doc.getFieldable(DocumentBuilder.FIELD_NAME_IDENTIFIER).stringValue();
-			String url = doc.getFieldable(Indexer.constants.INDEX_URL).stringValue();
+			String url = doc.getFieldable(constants.INDEX_URL).stringValue();
 			results.add(new SearchResult(fileName,url, i,hits.score(i)));
 		}
 		return results;
@@ -258,7 +214,7 @@ public class Searcher {
 			for (int i = 0; i < numberOfResults; i++) {
 				Document doc = hits.doc(i);
 				String fileName = doc.getFieldable(DocumentBuilder.FIELD_NAME_IDENTIFIER).stringValue();
-				String url = doc.getFieldable(Indexer.constants.INDEX_URL).stringValue();
+				String url = doc.getFieldable(constants.INDEX_URL).stringValue();
 				results.add(new SearchResult(fileName,url, i,hits.score(i)));
 			}
 

@@ -6,6 +6,7 @@ import it.unifi.micc.homer.util.WordCounter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.semanticmetadata.lire.DocumentBuilder;
+import net.semanticmetadata.lire.DocumentBuilderFactory;
+import net.semanticmetadata.lire.ImageSearcher;
+import net.semanticmetadata.lire.ImageSearcherFactory;
+import net.semanticmetadata.lire.impl.SiftDocumentBuilder;
+import net.semanticmetadata.lire.impl.SurfDocumentBuilder;
+import net.semanticmetadata.lire.impl.VisualWordsImageSearcher;
 
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -46,8 +53,110 @@ public class Analyser {
 		public static final int SUCCESS = 0;
 		public static final int ERROR = 1;
 		
-		public static final String SEARCH_URL = Indexer.constants.INDEX_URL;
+		public static final String SEARCH_URL = constants.INDEX_URL;
 		public static final String SEARCH_INDEX = "index";
+		
+		public static final String INDEX_URL = "url";
+
+		public static final String[] featureArray = {
+			DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM,
+			DocumentBuilder.FIELD_NAME_SCALABLECOLOR,
+			DocumentBuilder.FIELD_NAME_CEDD,
+			DocumentBuilder.FIELD_NAME_COLORHISTOGRAM,
+			DocumentBuilder.FIELD_NAME_COLORLAYOUT,
+			DocumentBuilder.FIELD_NAME_TAMURA,
+			DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM,
+			DocumentBuilder.FIELD_NAME_FCTH,
+			DocumentBuilder.FIELD_NAME_GABOR,
+			DocumentBuilder.FIELD_NAME_JCD,
+			DocumentBuilder.FIELD_NAME_JPEGCOEFFS,
+			DocumentBuilder.FIELD_NAME_SIFT,
+			DocumentBuilder.FIELD_NAME_SURF
+		};
+
+		public static boolean checkAllowedIndexFeature(String feature)
+		{
+			if( Arrays.asList(featureArray).contains(feature) ) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public static DocumentBuilder getDocBuilderFromFieldName(String fieldName) throws StamatException
+		{
+			DocumentBuilder docBuilder;
+			if( fieldName.equals(DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM)) {
+				docBuilder = DocumentBuilderFactory.getAutoColorCorrelogramDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SCALABLECOLOR) ) {
+				docBuilder = DocumentBuilderFactory.getScalableColorBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_CEDD) ) {
+				docBuilder = DocumentBuilderFactory.getCEDDDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_COLORHISTOGRAM) ) {
+				docBuilder = DocumentBuilderFactory.getColorHistogramDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_COLORLAYOUT) ) {
+				docBuilder = DocumentBuilderFactory.getColorLayoutBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_TAMURA) ) {
+				docBuilder = DocumentBuilderFactory.getTamuraDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM) ) {
+				docBuilder = DocumentBuilderFactory.getEdgeHistogramBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_FCTH) ) {
+				docBuilder = DocumentBuilderFactory.getFCTHDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_GABOR) ) {
+				docBuilder = DocumentBuilderFactory.getGaborDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_JCD) ) {
+				docBuilder = DocumentBuilderFactory.getJCDDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_JPEGCOEFFS) ) {
+				docBuilder = DocumentBuilderFactory.getJpegCoefficientHistogramDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SIFT) ) {
+				docBuilder = new SiftDocumentBuilder();
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SURF) ) {
+				docBuilder = new SurfDocumentBuilder();
+			} else {
+				throw new StamatException("wrong index field");
+			}
+			return docBuilder;
+		}
+		/**
+		 * @param fieldName
+		 * @param numberOfResults
+		 * @return
+		 * @throws StamatException
+		 */
+		public static ImageSearcher getSearcherFromFieldName(String fieldName, int numberOfResults) throws StamatException
+		{
+			ImageSearcher searcher;
+			if( fieldName.equals(DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM)) {
+				searcher = ImageSearcherFactory.createAutoColorCorrelogramImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SCALABLECOLOR) ) {
+				searcher = ImageSearcherFactory.createScalableColorImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_CEDD) ) {
+				searcher = ImageSearcherFactory.createCEDDImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_COLORHISTOGRAM) ) {
+				searcher = ImageSearcherFactory.createColorHistogramImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_COLORLAYOUT) ) {
+				searcher = ImageSearcherFactory.createColorLayoutImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_TAMURA) ) {
+				searcher = ImageSearcherFactory.createTamuraImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM) ) {
+				searcher = ImageSearcherFactory.createEdgeHistogramImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_FCTH) ) {
+				searcher = ImageSearcherFactory.createFCTHImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_GABOR) ) {
+				searcher = ImageSearcherFactory.createGaborImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_JCD) ) {
+				searcher = ImageSearcherFactory.createJCDImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_JPEGCOEFFS) ) {
+				searcher = ImageSearcherFactory.createJpegCoefficientHistogramImageSearcher(numberOfResults);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SIFT) ) {
+				searcher = new VisualWordsImageSearcher(numberOfResults, DocumentBuilder.FIELD_NAME_SIFT_LOCAL_FEATURE_HISTOGRAM_VISUAL_WORDS);
+			} else if( fieldName.equals(DocumentBuilder.FIELD_NAME_SURF) ) {
+				searcher = new VisualWordsImageSearcher(numberOfResults, DocumentBuilder.FIELD_NAME_SURF_LOCAL_FEATURE_HISTOGRAM_VISUAL_WORDS);
+			} else {
+				throw new StamatException("wrong index field");
+			}
+			return searcher;
+		}
 	}
 
 	public static class ned {
@@ -356,9 +465,18 @@ public class Analyser {
 	 */
 	public static class visual {
 
+		public static void splitIndex(String indexPath) throws IOException
+		{
+			Indexer indexing = new Indexer(indexPath);
+			indexing.splitFeatures();
+		}
+
 		/**
+		 * really useless. split indices should be used now.
+		 * 
 		 * @param indexPath
 		 */
+		@Deprecated
 		public static int createEmptyIndex(String indexPath, StringBuilder message)
 		{
 			message = message == null ? new StringBuilder() : message;
@@ -440,7 +558,7 @@ public class Analyser {
 				if( !fields.containsKey(Analyser.constants.SEARCH_URL) ) {
 					fields.put(Analyser.constants.SEARCH_URL, URL);
 				}
-				indexer.updateIndexFromURL(URL, fields);
+				indexer.updateSplitIndexFromURL(URL, fields);
 			} catch (IOException e) {
 				logger.log(Level.SEVERE, e.getMessage());
 			}

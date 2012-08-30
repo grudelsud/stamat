@@ -96,6 +96,7 @@ public class Application extends Controller {
 		return TODO;
 	}		
 
+	@Deprecated
 	public static Result visualNewIndex()
 	{
 		DynamicForm form = form().bindFromRequest();
@@ -272,25 +273,9 @@ public class Application extends Controller {
 			return badRequest("source must be either '"+Analyser.constants.SEARCH_URL+"' or '"+Analyser.constants.SEARCH_INDEX+"'");
 		}
 
-		String[] featureArray = {
-			DocumentBuilder.FIELD_NAME_AUTOCOLORCORRELOGRAM,
-			DocumentBuilder.FIELD_NAME_SCALABLECOLOR,
-			DocumentBuilder.FIELD_NAME_CEDD,
-			DocumentBuilder.FIELD_NAME_COLORHISTOGRAM,
-			DocumentBuilder.FIELD_NAME_COLORLAYOUT,
-			DocumentBuilder.FIELD_NAME_TAMURA,
-			DocumentBuilder.FIELD_NAME_EDGEHISTOGRAM,
-			DocumentBuilder.FIELD_NAME_FCTH,
-			DocumentBuilder.FIELD_NAME_GABOR,
-			DocumentBuilder.FIELD_NAME_JCD,
-			DocumentBuilder.FIELD_NAME_JPEGCOEFFS,
-			DocumentBuilder.FIELD_NAME_SIFT,
-			DocumentBuilder.FIELD_NAME_SURF
-		};
-
-		if( !Arrays.asList(featureArray).contains(feature) ) {
-			Logger.info("visualSimilarity - wrong feature descriptor");
-			return badRequest(Utils.returnError("feature must be one of: " + Arrays.asList(featureArray).toString()));
+		if( !Analyser.constants.checkAllowedIndexFeature(feature) ) {
+			Logger.info("visualSimilarity - "+ feature +" wrong feature descriptor");
+			return badRequest(Utils.returnError("feature must be one of: " + Arrays.asList(Analyser.constants.featureArray).toString()));
 		}
 
 		// now run the search algorithm asynchronously

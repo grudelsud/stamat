@@ -7,6 +7,7 @@ import it.unifi.micc.homer.util.HomerException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,6 +82,12 @@ public class Main {
 				.withDescription("create visual index, requires options -iI (-iP | -iF | -iU) -iId. Use -iI alone to create an empty index")
 				.withLongOpt("visual-create-index")
 				.create("Vc"));
+		// visual index split
+		ogMain.addOption( OptionBuilder
+				.hasArg(false)
+				.withDescription("split visual index, requires options -iI")
+				.withLongOpt("visual-split-index")
+				.create("Vs"));
 		// visual similarity query
 		ogMain.addOption( OptionBuilder
 				.hasArg(false)
@@ -291,6 +298,19 @@ public class Main {
 				}				
 			}
 			return;
+
+		// split index
+		} else	if( line.hasOption("Vs")) {
+				if( indexPath == null ) {
+					System.out.println("With -Vs use options: -iI");
+				} else {
+					try {
+						Analyser.visual.splitIndex(indexPath);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				return;
 
 		// visual index create
 		} else if( line.hasOption("Vc")) {
