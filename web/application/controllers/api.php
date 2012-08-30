@@ -456,7 +456,8 @@ class Api extends CI_Controller
 		$this->_user_check();
 		$this->load->model('vocabulary_model');
 		$vocabulary_id = $this->input->post('vocabulary_id') ? $this->input->post('vocabulary_id') : 1;
-		$this->_return_json_success( $this->vocabulary_model->get_tags( $vocabulary_id ) );
+		$limit = $this->input->post('limit') ? $this->input->post('limit') : 100;
+		$this->_return_json_success( $this->vocabulary_model->get_tags( $vocabulary_id, $limit ) );
 	}
 	
 	function delete_tags()
