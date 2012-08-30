@@ -1,4 +1,4 @@
-var show_vocab = ['keywords', 'topics', 'people', 'organizations', 'locations', 'entities', 'teamlife'];
+var show_vocab = ['keywords', 'locations', 'people', 'organizations'];
 var selected_tags = Array();
 
 $(function() {

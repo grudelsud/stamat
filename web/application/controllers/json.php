@@ -235,12 +235,10 @@ class Json extends CI_Controller
 				} else {
 					$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;					
 				}
-				// $min_width = empty($params['min_width']) ? null : $params['min_width'];
-				$min_width = 300;
+				$min_width = empty($params['min_width']) ? 300 : $params['min_width'];
 				$min_height = empty($params['min_height']) ? null : $params['min_height'];
 				$page = empty($params['page']) ? null : $params['page'];
-				// $pagesize = empty($params['pagesize']) ? null : $params['pagesize'];
-				$pagesize = 30;
+				$pagesize = empty($params['pagesize']) ? 50 : $params['pagesize'];
 
 				$media = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
 				foreach ($media as $row) {
@@ -263,6 +261,37 @@ class Json extends CI_Controller
 				break;
 			default:
 				$this->_return_json_error('select /action/* amongst: browse, read');
+		}
+	}
+
+	function vs()
+	{
+		$params = $this->uri->uri_to_assoc();
+
+		if(empty($params['fileidentifier'])) {
+			$this->_return_json_error('missing /fileidentifier/:id');
+		}
+		$req_data = new stdClass;
+		$req_data->index = 'split';
+		$req_data->source = 'index';
+		$req_data->fileidentifier = $params['fileidentifier'];
+		$req_data->feature = empty($params['feature']) ? 'featureCEDD' : $params['feature'];
+		$req_data->numberofresults = 30;
+
+		$contentType = 'application/json';
+		$url = 'http://fom.londondroids.com:9000/visualSimilarity';
+
+		$this->curl->create( $url );
+
+		$this->curl->option(CURLOPT_TIMEOUT, 60);
+		$this->curl->post(json_encode($req_data));
+		$this->curl->http_header('Content-Type', 'application/json');
+		$response = $this->curl->execute();
+		if($response) {
+			$response_obj = json_decode($response);
+			$this->_return_json_success($response_obj->success);
+		} else {
+			$this->_return_json_error('bad news buddy');
 		}
 	}
 

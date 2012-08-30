@@ -133,13 +133,13 @@ class Vocabulary_model extends CI_Model
 		}
 	}
 	
-	function get_tags( $vocabulary_id, $limit = 100 $exclude_stop_words = TRUE )
+	function get_tags( $vocabulary_id, $limit = 100, $exclude_stop_words = TRUE )
 	{
 		if( $exclude_stop_words ) {
 			$this->db->where('stop_word', 0);
 		}
 		$this->db->where('vocabulary_id', $vocabulary_id);
-		$this->db->order_by('parent_id asc, slug asc, count desc');
+		$this->db->order_by('count desc, parent_id asc, slug asc');
 		if( $limit != 0 ) {
 			$this->db->limit($limit);
 		}

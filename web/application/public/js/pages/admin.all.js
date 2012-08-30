@@ -85,6 +85,7 @@ function load_tags(vocabulary_id, root, clean) {
 	}
 	var data = {};
 	data.vocabulary_id = vocabulary_id;
+	data.limit = 50;
 	api( 'get_vocabulary_tags', append_tags(root), data );
 }
 
@@ -92,10 +93,19 @@ function load_tags(vocabulary_id, root, clean) {
 function append_tags(root)
 {
 	return function(data) {
+		var first = true;
+		var max = 0;
 		$.each(data.success, function(key, val) {
 			if( typeof(val.name) != 'undefined' ) {
 				$append_list = $(root+' .parent_tag_'+val.parent_id);
-				$append_item = $('<li><span id="tag_'+val.id+'" class="child child_'+val.parent_id+' size_'+val.count+'">'+val.name+'</span></li>').append('<ul class="parent_tag_'+val.id+'"></ul>');
+				// size_* can be anything between 1 and 15, so we need to normalize val.count
+				// assuming tags are sorted by count descending
+				if( first ) {
+					first = false;
+					max = val.count;
+				}
+				var size = Math.round((val.count / max) * 14) + 1;
+				$append_item = $('<li><span id="tag_'+val.id+'" class="child child_'+val.parent_id+' size_'+size+'">'+val.name+'</span></li>').append('<ul class="parent_tag_'+val.id+'"></ul>');
 				if( val.parent_id == 0 ) {
 					$append_item.addClass('clear');
 				}

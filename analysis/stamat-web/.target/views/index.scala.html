@@ -79,7 +79,8 @@
 						</div>
 					</div>
 
-					<!-- create index -->
+					<!-- create index. seriously, we don't wanna do this, it's useless -->
+					<!-- 
 					<div class="accordion-group">
 						<div class="accordion-heading">
 							<a href="#form-newindex" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Create Index</a>
@@ -103,6 +104,7 @@
 							</div>
 						</div>
 					</div>
+					-->
 
 					<!-- index images -->
 					<div class="accordion-group">
@@ -140,14 +142,14 @@
 								<p>below a working example:</p>
 								<pre class="prettyprint">/* FROM JSON */
 {
-"index":"fashion", 
+"index":"all", 
 "images":[
 {"id":"76402","url":"https:\/\/s3.amazonaws.com\/stamat.scrape.images\/1343816402.829657.png"},
 {"id":"76229","url":"https:\/\/s3.amazonaws.com\/stamat.scrape.images\/1343805602.090142.png"}]
 }
 /* FROM DB */
 {
-"index":"fashion", 
+"index":"all", 
 "numberofresults":50
 }
 								</pre>
@@ -179,7 +181,7 @@
 								<p>below a working example</p>
 								<pre class="prettyprint">/* From URL */
 {
-"index":"all",
+"index":"split",
 "source":"url",
 "fileidentifier":"http:\/\/cdn.hypebeast.com\/image\/2012\/07\/bandit9-nero-motorcycle-1.jpg",
 "feature":"featureCEDD",
@@ -187,7 +189,7 @@
 }
 /* From Index */
 {
-"index":"all",
+"index":"split",
 "source":"index",
 "fileidentifier":"84845",
 "feature":"featureCEDD",

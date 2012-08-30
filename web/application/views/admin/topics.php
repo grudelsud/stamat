@@ -2,6 +2,16 @@
 
 	<div id="feed_container" class="span12">
 		<div id="vocabulary_detail">
+
+			<!-- as seen from diffbot -->
+			<div class="row">
+				<div class="span12">
+				<h3>keywords <button type="button" id="slide_keywords" class="slide">toggle</button></h3>
+				<div id="keywords"></div>
+				</div>
+			</div>
+
+			<!-- stamat entity extractor -->
 			<div class="row">
 				<div class="span4">
 				<h3>people <button type="button" id="slide_people" class="slide">toggle</button></h3>
@@ -19,6 +29,8 @@
 				</div>
 			</div>
 
+			<!-- other stuff, we really don't wanna show these -->
+			<!--
 			<div class="row">
 				<div class="span4">
 				<h3>teamlife<button type="button" id="slide_teamlife" class="slide">toggle</button></h3>
@@ -35,13 +47,8 @@
 				<div id="entities"></div>
 				</div>
 			</div>
+			-->
 
-			<div class="row">
-				<div class="span12">
-				<h3>keywords <button type="button" id="slide_keywords" class="slide">toggle</button></h3>
-				<div id="keywords"></div>
-				</div>
-			</div>
 		</div>
 
 		<div id="tagged_items">
