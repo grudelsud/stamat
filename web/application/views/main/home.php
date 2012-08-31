@@ -22,9 +22,9 @@
 			<div class="tab-pane active" id="tab_feed">
 				<div class="row">
 					<div id="feed_item_container" class="span6">
-						<div class="pagination"></div>
+						<div class="pagination feeditems"></div>
 						<div id="feed_directory"></div>
-						<div class="pagination"></div>
+						<div class="pagination feeditems"></div>
 					</div>
 					<div id="reaction_container" class="span4 scroll-top">
 						<div id="reaction_directory"></div>
@@ -36,7 +36,9 @@
 			<div class="tab-pane" id="tab_media">
 				<div class="row">
 					<div id="media_container" class="span6">
+						<div class="pagination mediaitems"></div>
 						<div id="media_directory"></div>
+						<div class="pagination mediaitems"></div>
 					</div>
 					<div id="similarity_container" class="span4 scroll-top">
 						<div id="similarity_directory"></div>

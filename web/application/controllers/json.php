@@ -131,7 +131,7 @@ class Json extends CI_Controller
 		$result = new stdClass();
 		$result->items = $items;
 
-		// now rebuild the query to count the results for pagination
+		// TODO: check this, I can't believe we need to rerun the query just to count the number of results
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
 
@@ -239,14 +239,17 @@ class Json extends CI_Controller
 				$min_height = empty($params['min_height']) ? null : $params['min_height'];
 				$page = empty($params['page']) ? null : $params['page'];
 				$pagesize = empty($params['pagesize']) ? 50 : $params['pagesize'];
+				$tag = empty($params['tag']) ? null : $params['tag'];
 
-				$media = $this->media_model->get_media_array($type, $primary, $flags, $min_width, $min_height, $page, $pagesize);
+				$meta = new stdClass;
+				$media = $this->media_model->get_media_array($type, $primary, $flags, $tag, $min_width, $min_height, $page, $pagesize, $meta);
 				foreach ($media as $row) {
 					$row->url_src = $row->url;
 					$row->url = $row->abs_path . $row->hash;
 				}
 				$output = new stdClass;
 				$output->media = $media;
+				$output->meta = $meta;
 				$this->_return_json_success($output);
 				break;
 			case 'read':

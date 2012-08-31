@@ -3,7 +3,6 @@
 	FeedItem.Model = Backbone.Model.extend({
 		defaults: {
 			pic: 'http://placehold.it/160x120'
-			// pic: assets_url+'img/app/feed_item_placeholder.png'
 		}
 	});
 
@@ -60,18 +59,18 @@
 			this.addPagination();
 		},
 		addPagination: function() {
-			var $pagination = $('.pagination');
+			var $pagination = $('.pagination.feeditems');
 			var $list = $('<ul></ul>');
 			if( this.collection.meta.page > 1 ) {
-				$list.append('<li><a href="#!/feeds/'+this.collection.meta.prev+'">&larr; Previous</a></li>');
+				$list.append('<li><a href="#!/feeditems/'+this.collection.meta.prev+'">&larr; Previous</a></li>');
 			} else {
-				$list.append('<li class="disabled"><a href="#!/feeds/'+this.collection.meta.prev+'">&larr; Previous</a></li>');
+				$list.append('<li class="disabled"><a href="#!/feeditems/'+this.collection.meta.prev+'">&larr; Previous</a></li>');
 			}
 			$list.append('<li class="disabled"><a href="#">'+this.collection.meta.page+'/'+this.collection.meta.count_all_pages+'</a></li>');
 			if( this.collection.meta.page < this.collection.meta.count_all_pages ) {
-				$list.append('<li><a href="#!/feeds/'+this.collection.meta.next+'">Next &rarr;</a></li>');
+				$list.append('<li><a href="#!/feeditems/'+this.collection.meta.next+'">Next &rarr;</a></li>');
 			} else {
-				$list.append('<li class="disabled"><a href="#!/feeds/'+this.collection.meta.next+'">Next &rarr;</a></li>');
+				$list.append('<li class="disabled"><a href="#!/feeditems/'+this.collection.meta.next+'">Next &rarr;</a></li>');
 			}
 			$pagination.empty().append($list);
 		}

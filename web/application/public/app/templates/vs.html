@@ -1,0 +1,32 @@
+<div id="content_vs">
+	<h3>Most similar images</h3>
+	<div class="row">
+		<div class="span2 list1">
+		<ul class="thumbnails">
+		<% var count = 0; %>
+		<% _.each(media, function(item) { %>
+			<% count++; %>
+			<% if(count % 2 == 1) { %>
+			<li class="span2">
+				<a href="<%= item.url %>" class="thumbnail"><img src="<%= item.url %>" data-id="<%= item.result %>"></a>
+			</li>
+			<% } %>
+		<% }); %>
+		</ul>
+		</div>
+
+		<div class="span2 list2">
+		<ul class="thumbnails">
+		<% var count = 0; %>
+		<% _.each(media, function(item) { %>
+			<% count++; %>
+			<% if(count % 2 == 0) { %>
+			<li class="span2">
+				<a href="<%= item.url %>" class="thumbnail"><img src="<%= item.url %>" data-id="<%= item.result %>"></a>
+			</li>
+			<% } %>
+		<% }); %>
+		</ul>
+		</div>
+	</div>
+</div>

@@ -49,7 +49,9 @@ $(function() {
 	// Defining the application router, you can attach sub routers here.
 	var Router = Backbone.Router.extend({
 		routes: {
+			'!/feeditems/*params' : 'feeditems',
 			'!/feeds/*params' : 'feeds',
+			'!/media/*params' : 'media',
 			'!/reactions/id/:id' : 'reactions',
 			'': 'index',
 			// '*': 'clear'
@@ -59,8 +61,13 @@ $(function() {
 			this.status = {};
 			this.status.feedParams = '';
 			this.status.reactionId = '';
+
+			// left column
 			this.status.fetchFeeds = true;
+			// main content
 			this.status.fetchFeedItems = true;
+			this.status.fetchMediaItems = true;
+			// stuff on the right
 			this.status.fetchFeedReactions = false;
 
 			this.views = {};
@@ -93,11 +100,15 @@ $(function() {
 				this.collections.feedItemCollection.setFilter(this.status.feedParams);
 				this.collections.feedItemCollection.fetch();
 
-				// fetch media
+				this.status.fetchFeedItems = false;
+			}
+
+			if(this.status.fetchMediaItems) {
+				// fetch media (params are the same as above)
 				this.models.mediafinderModel.set({params: this.status.feedParams});
 				this.models.mediafinderModel.fetch();
 
-				this.status.fetchFeedItems = false;
+				this.status.fetchMediaItems = false;
 			}
 
 			// reactions are generally collected on demand
@@ -110,9 +121,29 @@ $(function() {
 			}
 
 		},
+		// click on left column
 		feeds: function( params ) {
 			console.log('router - feeds ' + params);
 			this.status.fetchFeedItems = true;
+			this.status.fetchMediaItems = true;
+			this.status.feedParams = params;
+			this.status.reactionId = '';
+
+			this.setupPanels();
+		},
+		// click on pagination of feed items
+		feeditems: function( params ) {
+			console.log('router - feeditems ' + params);
+			this.status.fetchFeedItems = true;
+			this.status.feedParams = params;
+			this.status.reactionId = '';
+
+			this.setupPanels();
+		},
+		// click on pagination of media items
+		media: function( params ) {
+			console.log('router - media ' + params);
+			this.status.fetchMediaItems = true;
 			this.status.feedParams = params;
 			this.status.reactionId = '';
 
@@ -130,6 +161,7 @@ $(function() {
 			console.log('index');
 			this.status.fetchFeeds = true;
 			this.status.fetchFeedItems = true;
+			this.status.fetchMediaItems = true;
 			this.status.fetchFeedReactions = false;
 			this.status.feedParams = '';
 			this.status.reactionId = '';
