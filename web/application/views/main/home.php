@@ -40,7 +40,7 @@
 						<div id="media_directory"></div>
 						<div class="pagination mediaitems"></div>
 					</div>
-					<div id="similarity_container" class="span4 scroll-top">
+					<div id="similarity_container" class="span4">
 						<div id="similarity_directory"></div>
 					</div>
 				</div>
