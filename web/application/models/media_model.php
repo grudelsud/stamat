@@ -37,13 +37,13 @@ class Media_model extends CI_Model
 		$meta = new stdClass();
 		$meta->params = '';
 
-		$this->db->select('fim.id, fim.url, fim.type, fim.primary, fim.flags, fim.hash, fim.abs_path, fim.width, fim.height');
+		$this->db->select('fim.id, fim.url, fim.type, fim.primary, fim.flags, fim.hash, fim.abs_path, fim.width, fim.height, fi.title, fi.permalink, fi.date');
 		$this->db->from('feeditemmedia as fim');
+		$this->db->join('feeditems as fi', 'fim.feeditem_id = fi.id');
 
 		if (!empty($feeds)) {
-			$this->db->join('feeditems as fi', 'fim.feeditem_id = fi.id');
-			$this->db->where_in('fi.feed_id', $feeds);
 			$meta->params = 'tag/'.$tag.'/';
+			$this->db->where_in('fi.feed_id', $feeds);
 		}
 
 		if (!empty($type)) {
@@ -82,11 +82,11 @@ class Media_model extends CI_Model
 		$result = $query->result();
 
 		// TODO: check this, I can't believe we need to rerun the query just to count the number of results
-		$this->db->select('fim.id, fim.url, fim.type, fim.primary, fim.flags, fim.hash, fim.abs_path, fim.width, fim.height');
+		$this->db->select('fim.id');
 		$this->db->from('feeditemmedia as fim');
+		$this->db->join('feeditems as fi', 'fim.feeditem_id = fi.id');
 
 		if (!empty($feeds)) {
-			$this->db->join('feeditems as fi', 'fim.feeditem_id = fi.id');
 			$this->db->where_in('fi.feed_id', $feeds);
 		}
 

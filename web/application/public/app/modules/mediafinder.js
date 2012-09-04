@@ -42,16 +42,30 @@
 			return base_url + 'index.php/json/vs/feature/'+ this.feature +'/fileidentifier/' + this.fileidentifier;
 		},
 		parse: function(response) {
-			return response.success;
+			if(response.success) {
+				return response.success.media;
+			} else {
+				return null;
+			}
 		}
 	});
 
 	Mediafinder.Views.VSCollection = Backbone.View.extend({
 		el: '#similarity_directory',
 		template: assets_url+'app/templates/vs.html',
+		events: {
+			'mouseenter .thumbnail': 'popoverShow',
+			'mouseleave .thumbnail': 'popoverHide'
+		},
 		initialize: function() {
 			this.collection.on('reset', this.render, this);
 			this.collection.on('change', this.render, this);
+		},
+		popoverShow: function(e) {
+			$(e.target).popover('show');
+		},
+		popoverHide: function(e) {
+			$(e.target).popover('hide');
 		},
 		render: function() {
 			this.$el.empty();
@@ -60,18 +74,23 @@
 			readreactv.fetchTemplate(this.template, function(tmpl) {
 				var collection_json = {};
 				collection_json.media = view.collection.toJSON();
-				view.$el.html(tmpl(collection_json));
+				$('#similarity_container .loader').hide();
+				if(collection_json.media.length > 0) {
+					view.$el.html(tmpl(collection_json));
+				} else {
+					view.$el.append('<div class="alert alert-error"><button class="close" data-dismiss="alert">×</button> whoops! no results</div>');
+				}
 			});
 			return this;
 		},
 	});
 
 	Mediafinder.Views.Main = Backbone.View.extend({
-		template: assets_url+'app/templates/mediafinder.html',
 		el: '#media_directory',
+		template: assets_url+'app/templates/mediafinder.html',
 		events: {
 			'click .item': 'itemSelect',
-			'change #select_vs_descriptor': 'itemSelect'
+			'change #select_vs_descriptor': 'descriptorChange'
 		},
 		initialize: function() {
 			this.model.on('change', this.render, this);
@@ -88,13 +107,21 @@
 		itemSelect: function(e) {
 			e.preventDefault();
 			var $label = $(e.target);
+			$('#content_media').removeClass('selected');
+			$label.addClass('selected');
 
 			var _fileidentifier = $label.attr('data-id');
 			var _feature = $('#select_vs_descriptor').val();
 
+			$('#similarity_directory').empty();
+			$('#similarity_container .loader').show();
+
 			var vs_result = new Mediafinder.VSCollection([], {fileidentifier: _fileidentifier, feature: _feature});
 			var vs_result_view = new Mediafinder.Views.VSCollection({collection: vs_result});
 			vs_result.fetch();
+		},
+		descriptorChange: function(e) {
+			$('#content_media .selected').click();
 		},
 		addPagination: function() {
 			var $pagination = $('.pagination.mediaitems');

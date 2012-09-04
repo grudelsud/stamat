@@ -6,9 +6,16 @@
 		<% var count = 0; %>
 		<% _.each(media, function(item) { %>
 			<% count++; %>
+			<% var data_content = 'Size: '+item.width+'x'+item.height+' Date: '+item.date; %>
+			<% var url = item.abs_path + item.hash; %>
 			<% if(count % 2 == 1) { %>
 			<li class="span2">
-				<a href="<%= item.url %>" class="thumbnail"><img src="<%= item.url %>" data-id="<%= item.result %>"></a>
+				<a href="<%= item.url %>" class="thumbnail" rel="popover" data-title="<%= item.title %>" data-content="<%= data_content %>" data-trigger="hover" data-placement="left">
+					<img src="<%= url %>" data-id="<%= item.id %>">
+				</a>
+				<div class="caption">
+					<i class="icon-hand-right"></i> <a href="<%= item.permalink %>">open web page</a>
+				</div>
 			</li>
 			<% } %>
 		<% }); %>
@@ -20,9 +27,16 @@
 		<% var count = 0; %>
 		<% _.each(media, function(item) { %>
 			<% count++; %>
+			<% var data_content = 'Size: '+item.width+'x'+item.height+' Date: '+item.date; %>
+			<% var url = item.abs_path + item.hash; %>
 			<% if(count % 2 == 0) { %>
 			<li class="span2">
-				<a href="<%= item.url %>" class="thumbnail"><img src="<%= item.url %>" data-id="<%= item.result %>"></a>
+				<a href="<%= item.url %>" class="thumbnail" rel="popover" data-title="<%= item.title %>" data-content="<%= data_content %>" data-trigger="hover" data-placement="left">
+					<img src="<%= url %>" data-id="<%= item.id %>">
+				</a>
+				<div class="caption">
+					<i class="icon-hand-right"></i> <a href="<%= item.permalink %>">open web page</a>
+				</div>
 			</li>
 			<% } %>
 		<% }); %>

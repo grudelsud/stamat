@@ -5,7 +5,7 @@
 */
 class Json extends CI_Controller
 {
-	
+
 	function __construct()
 	{
 		parent::__construct();
@@ -118,12 +118,15 @@ class Json extends CI_Controller
 			$item->feed_title = $row->feed_title;
 			$item->url = $row->url;
 
+			// fetch image
 			$this->db->where('feeditem_id', $row->id);
 			$this->db->where('type', 'image');
 			$this->db->order_by('primary', 'desc');
 			$query_media = $this->db->get('feeditemmedia');
 			if($query_media->num_rows() > 0) {
-				$item->pic = $query_media->row()->url;
+				$row = $query_media->row();
+				$item->pic = $row->url;
+				$item->pic_cdn = $row->abs_path . $row->hash;
 			}
 
 			$items[] = $item;
@@ -233,7 +236,7 @@ class Json extends CI_Controller
 				if(!empty($params['flags']) && $params['flags'] == 'invalid') {
 					$flags = MEDIA_INVALID;
 				} else {
-					$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;					
+					$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;
 				}
 				$min_width = empty($params['min_width']) ? 300 : $params['min_width'];
 				$min_height = empty($params['min_height']) ? null : $params['min_height'];
@@ -290,11 +293,33 @@ class Json extends CI_Controller
 		$this->curl->post(json_encode($req_data));
 		$this->curl->http_header('Content-Type', 'application/json');
 		$response = $this->curl->execute();
+
 		if($response) {
 			$response_obj = json_decode($response);
-			$this->_return_json_success($response_obj->success);
+			$items = array();
+			$items_meta = array();
+			foreach ($response_obj->success as $item) {
+				$items[] = $item->result;
+				$items_meta[$item->result] = $item;
+			}
+			$this->db->select('fim.id, fim.url, fim.type, fim.primary, fim.flags, fim.hash, fim.abs_path, fim.width, fim.height, fi.title, fi.permalink, fi.date');
+			$this->db->from('feeditemmedia as fim');
+			$this->db->join('feeditems as fi', 'fim.feeditem_id = fi.id');
+			$this->db->where_in('fim.id', $items);
+			$query = $this->db->get();
+
+			$media = array();
+			foreach ($query->result() as $item) {
+				$item->position = $items_meta[$item->id]->position;
+				$item->similarity = $items_meta[$item->id]->similarity;
+				$media[$items_meta[$item->id]->position] = $item;
+			}
+			ksort($media);
+			$output = new stdClass;
+			$output->media = array_values($media);
+			$this->_return_json_success($output);
 		} else {
-			$this->_return_json_error('bad news buddy');
+			$this->_return_json_error('bad news buddy - '.$this->curl->error_string);
 		}
 	}
 
@@ -302,12 +327,12 @@ class Json extends CI_Controller
 	private function _return_json_success($success) {
 		$this->_return_json('success', $success);
 	}
-	
+
 	// returns error message in json
 	private function _return_json_error($error) {
 		$this->_return_json('error', $error);
 	}
-	
+
 	// returns a json array
 	private function _return_json($response, $message) {
 		$data = array(

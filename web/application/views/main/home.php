@@ -9,8 +9,8 @@
 		<!-- tabs -->
 		<div class="tabbable">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#tab_feed" data-toggle="tab">Read</a></li>
-				<li><a href="#tab_media" data-toggle="tab">View</a></li>
+				<li class="active"><a href="#tab_feed" id="tab_feed_link" data-toggle="tab">Read</a></li>
+				<li><a href="#tab_media" id="tab_media_link" data-toggle="tab">View</a></li>
 				<li><a href="#tab_map" id="tab_map_link" data-toggle="tab">Visit</a></li>
 			</ul>
 		</div>
@@ -41,6 +41,7 @@
 						<div class="pagination mediaitems"></div>
 					</div>
 					<div id="similarity_container" class="span4">
+						<div class="loader">Loading</div>
 						<div id="similarity_directory"></div>
 					</div>
 				</div>

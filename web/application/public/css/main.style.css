@@ -5,6 +5,13 @@
 	margin: 0;
 	height: 44px;
 }
+.loader {
+	background: url(../img/ajax-loader.gif) no-repeat;
+	text-indent: 24px;
+	width: 16px;
+	height: 16px;
+	display: none;
+}
 article.feed_item_container {
 	padding: 2px 0;
 	margin-bottom: 15px;

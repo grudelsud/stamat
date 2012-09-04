@@ -14,12 +14,14 @@
 		<option value="featureJpegCoeffs">Jpeg Coeffs</option>
 	</select>
 	<!-- still need to sort out creation of histograms for: featureSift, featureSurf -->
+	<!-- 
 	Size
 	<div class="btn-group" data-toggle="buttons-radio">
 	<button type="button" class="btn">All</button>
 	<button type="button" class="btn active">Medium</button>
 	<button type="button" class="btn">Big</button>
 	</div>
+	-->
 </form>
 <div id="content_media">
 	<div class="row">
@@ -32,6 +34,10 @@
 			<% if(count % 3 == 1) { %>
 			<li class="span2">
 				<a href="<%= item.get('url') %>" class="thumbnail item"><img src="<%= item.get('url') %>" data-id="<%= item.get('id') %>"></a>
+				<div class="caption">
+					<p><%= item.get('title') %> </p>
+					<small><%= item.get('date') %><br> Size:<%= item.get('width') %>x<%= item.get('height') %><br> <i class="icon-hand-right"></i> <a href="<%= item.get('permalink') %>">open web page</a></small>
+				</div>
 			</li>
 			<% } %>
 		<% }); %>
@@ -46,6 +52,10 @@
 			<% if(count % 3 == 2) { %>
 			<li class="span2">
 				<a href="<%= item.get('url') %>" class="thumbnail item"><img src="<%= item.get('url') %>" data-id="<%= item.get('id') %>"></a>
+				<div class="caption">
+					<p><%= item.get('title') %> </p>
+					<small><%= item.get('date') %><br> Size:<%= item.get('width') %>x<%= item.get('height') %><br> <i class="icon-hand-right"></i> <a href="<%= item.get('permalink') %>">open web page</a></small>
+				</div>
 			</li>
 			<% } %>
 		<% }); %>
@@ -60,6 +70,10 @@
 			<% if(count % 3 == 0) { %>
 			<li class="span2">
 				<a href="<%= item.get('url') %>" class="thumbnail item"><img src="<%= item.get('url') %>" data-id="<%= item.get('id') %>"></a>
+				<div class="caption">
+					<p><%= item.get('title') %> </p>
+					<small><%= item.get('date') %><br> Size:<%= item.get('width') %>x<%= item.get('height') %><br> <i class="icon-hand-right"></i> <a href="<%= item.get('permalink') %>">open web page</a></small>
+				</div>
 			</li>
 			<% } %>
 		<% }); %>

@@ -137,6 +137,7 @@ $(function() {
 			this.status.fetchFeedItems = true;
 			this.status.feedParams = params;
 			this.status.reactionId = '';
+			$('#tab_feed_link').tab('show');
 
 			this.setupPanels();
 		},
@@ -146,6 +147,7 @@ $(function() {
 			this.status.fetchMediaItems = true;
 			this.status.feedParams = params;
 			this.status.reactionId = '';
+			$('#tab_media_link').tab('show');
 
 			this.setupPanels();
 		},

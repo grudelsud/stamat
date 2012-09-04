@@ -29,8 +29,8 @@ case 'stamat.net':
 	$environment = 'development';
 	$fb_app_id = '105746679556989';
 	$fb_app_secret = '29759386d9ead63d70318c41e5219696';
-        $twitter_cosumerKey = 'XW7zty39b9veVxAbN444g';
-        $twitter_cosumerSecret = 'iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c';
+	$twitter_cosumerKey = 'XW7zty39b9veVxAbN444g';
+	$twitter_cosumerSecret = 'iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c';
 	break;
 case 'hack4europe.net':
 	$environment = 'hack4europe';
@@ -38,8 +38,10 @@ case 'hack4europe.net':
 case 'londondroids.com':
 default:
 	$environment = 'production';
-        $twitter_cosumerKey = 'XW7zty39b9veVxAbN444g';
-        $twitter_cosumerSecret = 'iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c';
+	$fb_app_id = '514263911923141';
+	$fb_app_secret = '854af5f5953503851c7f38e9c063e0f3';
+	$twitter_cosumerKey = 'XW7zty39b9veVxAbN444g';
+	$twitter_cosumerSecret = 'iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c';
 }
 
 define('FB_APP_ID', $fb_app_id);
