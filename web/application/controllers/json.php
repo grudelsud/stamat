@@ -236,7 +236,7 @@ class Json extends CI_Controller
 				if(!empty($params['flags']) && $params['flags'] == 'invalid') {
 					$flags = MEDIA_INVALID;
 				} else {
-					$flags = MEDIA_DOWNLOADED & MEDIA_QUEUEDFORINDEXING & MEDIA_INDEXED;
+					$flags = MEDIA_DOWNLOADED | MEDIA_QUEUEDFORINDEXING | MEDIA_INDEXED;
 				}
 				$min_width = empty($params['min_width']) ? 300 : $params['min_width'];
 				$min_height = empty($params['min_height']) ? null : $params['min_height'];
@@ -246,6 +246,7 @@ class Json extends CI_Controller
 
 				$meta = new stdClass;
 				$media = $this->media_model->get_media_array($type, $primary, $flags, $tag, $min_width, $min_height, $page, $pagesize, $meta);
+				$meta->flags = $flags;
 				foreach ($media as $row) {
 					$row->url_src = $row->url;
 					$row->url = $row->abs_path . $row->hash;
