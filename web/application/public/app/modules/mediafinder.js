@@ -89,8 +89,7 @@
 		el: '#media_directory',
 		template: assets_url+'app/templates/mediafinder.html',
 		events: {
-			'click .item': 'itemSelect',
-			'change #select_vs_descriptor': 'descriptorChange'
+			'click .item': 'itemSelect'
 		},
 		initialize: function() {
 			this.model.on('change', this.render, this);
@@ -119,9 +118,6 @@
 			var vs_result = new Mediafinder.VSCollection([], {fileidentifier: _fileidentifier, feature: _feature});
 			var vs_result_view = new Mediafinder.Views.VSCollection({collection: vs_result});
 			vs_result.fetch();
-		},
-		descriptorChange: function(e) {
-			$('#content_media .selected').click();
 		},
 		addPagination: function() {
 			var $pagination = $('.pagination.mediaitems');

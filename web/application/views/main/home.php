@@ -41,6 +41,32 @@
 						<div class="pagination mediaitems"></div>
 					</div>
 					<div id="similarity_container" class="span4">
+						<h3>Most similar images</h3>
+						<form class="form-inline well">
+							Descriptor
+							<select name="select_vs_descriptor" id="select_vs_descriptor" class="input-medium">
+								<option value="featureAutoColorCorrelogram">Auto Color</option>
+								<option value="descriptorScalableColor">Scalable Color</option>
+								<option value="featureCEDD" selected="selected">CEDD</option>
+								<option value="featureColorHistogram">Color Histogram</option>
+								<option value="descriptorColorLayout">Color Layout</option>
+								<option value="featureTAMURA">Tamura</option>
+								<option value="descriptorEdgeHistogram">Edges</option>
+								<option value="featureFCTH">FCTH</option>
+								<option value="featureGabor">Gabor</option>
+								<option value="featureJCD">JCD</option>
+								<option value="featureJpegCoeffs">Jpeg Coeffs</option>
+							</select>
+							<!-- still need to sort out creation of histograms for: featureSift, featureSurf -->
+							<!-- 
+							Size
+							<div class="btn-group" data-toggle="buttons-radio">
+							<button type="button" class="btn">All</button>
+							<button type="button" class="btn active">Medium</button>
+							<button type="button" class="btn">Big</button>
+							</div>
+							-->
+						</form>
 						<div class="loader">Loading</div>
 						<div id="similarity_directory"></div>
 					</div>
