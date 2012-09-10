@@ -30,7 +30,7 @@ class Spider:
 
 	def db_fetch_urls(self):
 		cur = self.db_con.cursor(MySQLdb.cursors.DictCursor)
-		cur.execute("SELECT id, url FROM feeditemmedia WHERE type='image' AND flags=0 ORDER BY created DESC LIMIT 3")
+		cur.execute("SELECT id, url FROM feeditemmedia WHERE type='image' AND flags=0 ORDER BY created DESC LIMIT 100")
 		return cur.fetchall()
 
 	def db_update_flag_fetched(self, data):
@@ -69,6 +69,8 @@ class Main:
 
 		dir_temp = 'tmp'
 		dir_ioerror = 'ioerrors'
+		dir_unknown = '_UNKNOWNFORMAT'
+
 		if not os.path.exists(dir_temp):
 			os.makedirs(dir_temp)
 		if not os.path.exists(dir_ioerror):
@@ -77,6 +79,7 @@ class Main:
 		rows = s.db_fetch_urls()
 		for row in rows:
 			hash = s.get_content_from_web(row['url'])
+			date_now = datetime.datetime.now().strftime('%d %b %Y %H:%M:%S')
 			file_raw = dir_temp + '/' + hash
 			file_png = file_raw + '.png'
 			shutil.move(hash, file_raw)
@@ -93,6 +96,16 @@ class Main:
 					s.store_s3(row['hash'], file_png)
 					os.remove(file_raw)
 					os.remove(file_png)
+					logging.info("[%s] stored %s" % (date_now, row['hash']))
+				else:
+					row['hash'] = hash
+					row['width'] = 0
+					row['height'] = 0
+					row['flags'] = constants.UNKNOWNFORMAT
+					row['abs_path'] = 'https://s3.amazonaws.com/'+self.aws['bucket']+'/'+dir_unknown+'/'
+					s.store_s3(row['hash'], file_raw)
+					os.remove(file_raw)
+					logging.warning("[%s] skipped %s" % (date_now, hash))
 
 			except IOError:
 				row['hash'] = 'nope'
@@ -101,10 +114,11 @@ class Main:
 				row['flags'] = constants.INVALID
 				row['abs_path'] = 'IOError'
 				shutil.move(file_raw, dir_ioerror + '/' + str(row['id']))
-				logging.error("ioerror reading file: %s" % (hash))
+				logging.error("[%s] ioe %s" % (date_now, hash))
 
 			s.db_update_flag_fetched(row)
 
+# initialize config vars and run main class
 if __name__ == '__main__':
 
 	logging.basicConfig(filename='spider.log',level=logging.WARNING)

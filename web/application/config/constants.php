@@ -73,6 +73,7 @@ define('MEDIA_INVALID', 2);
 define('MEDIA_INDEXED', 4);
 define('MEDIA_QUEUEDFORINDEXING', 8);
 define('MEDIA_INDEXINGEXCEPTION', 16);
+define('MEDIA_UNKNOWNFORMAT', 32);
 
 define('STRUCT_OBJ_FEEDITEM', 'feed-item');
 define('STRUCT_OBJ_KEYWORD', 'keyword');

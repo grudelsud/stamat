@@ -22,6 +22,7 @@ public class Constants {
 		public static final int MEDIA_INDEXED = 4;
 		public static final int	MEDIA_QUEUEDFORINDEXING = 8;
 		public static final int MEDIA_INDEXINGEXCEPTION = 16;
+		public static final int MEDIA_UNKNOWNFORMAT = 32;
 	}
 
 	public static final String FOLDER_INDICES = play.Play.application().getFile("/indices").getAbsolutePath();
