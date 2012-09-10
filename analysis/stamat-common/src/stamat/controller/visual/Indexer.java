@@ -121,7 +121,7 @@ public class Indexer {
 	public void updateSplitIndex(InputStream is, Map<String, String> indexedFields) throws StamatException
 	{
 		long startTime = System.currentTimeMillis();
-	
+		
 		String identifier = indexedFields.remove(DocumentBuilder.FIELD_NAME_IDENTIFIER);
 		if( identifier == null ) {
 			throw new StamatException("parameter indexedFields must contain at least one key with name " + DocumentBuilder.FIELD_NAME_IDENTIFIER);
@@ -139,10 +139,12 @@ public class Indexer {
 				Document doc;
 				IndexWriter iw = null;
 
+				// for some reasons this is throwing a lot of exceptions, and lire docs blame it on java...
+				// check this out: https://groups.google.com/forum/#!topic/lire-dev/F0jEzsNGu3E
 				try {
 					doc = docBuilder.createDocument(img, identifier);
-				} catch (IOException e1) {
-					throw new StamatException("ioexception while creating indexwriter and document");
+				} catch (Exception e) {
+					throw new StamatException(e.getClass().getName() + " while creating lire document "+featureName+" for file " + identifier + "["+img.getWidth()+"x"+img.getHeight()+"]" );
 				}
 
 				try {					
@@ -170,6 +172,7 @@ public class Indexer {
 						throw new StamatException("ioexception while closing index, weird...");
 					}					
 				}
+
 			}
 		}
 	}
@@ -178,10 +181,20 @@ public class Indexer {
 	 * @param URL
 	 * @param indexedFields
 	 * @throws StamatException
+	 * @throws  
 	 * @throws IOException
 	 */
 	public void updateSplitIndexFromURL(String URL, Map<String, String> indexedFields) throws StamatException, IOException
 	{
+		java.net.URL url = null;
+		try {
+			url = new java.net.URL(URL);
+		} catch (MalformedURLException e) {
+			logger.warning("malformed url while updating index from " + URL + " - " + e.getMessage());
+		}
+		if( !indexedFields.containsKey(DocumentBuilder.FIELD_NAME_IDENTIFIER) ) {
+			indexedFields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, url.getFile().length() > 0 ? url.getFile() : URL);
+		}
 		InputStream is = (new java.net.URL(URL)).openStream();
 		updateSplitIndex(is, indexedFields);
 	}
@@ -194,6 +207,9 @@ public class Indexer {
 	 */
 	public void updateSplitIndexFromPath(String imagePath, Map<String, String> indexedFields) throws StamatException, IOException
 	{
+		if( !indexedFields.containsKey(DocumentBuilder.FIELD_NAME_IDENTIFIER) ) {
+			indexedFields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, imagePath);
+		}
 		FileInputStream fis = new FileInputStream(imagePath);
 		updateSplitIndex(fis, indexedFields);
 	}

@@ -465,6 +465,12 @@ public class Analyser {
 	 */
 	public static class visual {
 
+		/**
+		 * utility method, created to split indices where all the lire descriptors are merged together. use it once, then forget it
+		 * 
+		 * @param indexPath
+		 * @throws IOException
+		 */
 		public static void splitIndex(String indexPath) throws IOException
 		{
 			Indexer indexing = new Indexer(indexPath);
@@ -548,17 +554,14 @@ public class Analyser {
 			Indexer indexer = new Indexer(indexPath);
 			HashMap<String, String> fields = new HashMap<String, String>();
 			fields.putAll(indexedFields);
+			if( !fields.containsKey(Analyser.constants.SEARCH_URL) ) {
+				fields.put(Analyser.constants.SEARCH_URL, URL);
+			}
 			try {
-				java.net.URL url = new java.net.URL(URL);
-				if( !fields.containsKey(DocumentBuilder.FIELD_NAME_IDENTIFIER) ) {
-					fields.put(DocumentBuilder.FIELD_NAME_IDENTIFIER, url.getFile().length() > 0 ? url.getFile() : URL);
-				}
-				if( !fields.containsKey(Analyser.constants.SEARCH_URL) ) {
-					fields.put(Analyser.constants.SEARCH_URL, URL);
-				}
 				indexer.updateSplitIndexFromURL(URL, fields);
 			} catch (IOException e) {
-				logger.log(Level.SEVERE, "updateIndexfromURL ioe:" + e.getMessage());
+				logger.warning("ioe while updating index from " + URL + " - " + e.getMessage());
+				throw new StamatException("url-related exception caught while updating index from url");
 			}
 		}
 
