@@ -78,6 +78,12 @@ public class Searcher {
 			doc = luceneSearcher.doc(rs.scoreDocs[0].doc);
 		} catch (IOException e) {
 			throw new StamatException("search from index ioe while finding doc: " + e.getMessage() + ". weird...");
+		} finally {
+			try {
+				luceneSearcher.close();
+			} catch (IOException e) {
+				throw new StamatException("search from index ioe while closing lucene searcher");
+			}
 		}
 		// then find all similar documents according to fieldName descriptor
 		ImageSearcher lireSearcher = constants.getSearcherFromFieldName(fieldName, numberOfResults);

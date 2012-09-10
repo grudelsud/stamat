@@ -406,7 +406,7 @@ public class Main {
 			while((ch = fis.read()) != -1) {
 				sb.append((char)ch);
 			}
-			
+			fis.close();
 		} catch(Exception e) {
 			throw new HomerException(e);
 		}

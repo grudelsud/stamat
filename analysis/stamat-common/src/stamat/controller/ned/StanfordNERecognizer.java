@@ -38,9 +38,9 @@ public class StanfordNERecognizer {
 		return instance;
 	}
 
+	@SuppressWarnings("unchecked")
 	public String extractEntity2XML(String text, ArrayList<KeywordType> type)
 	{
-		ArrayList<NamedEntity> entities = new ArrayList<NamedEntity>();
 		AbstractSequenceClassifier<CoreLabel> classifier = CRFClassifier.getClassifierNoExceptions(StanfordNERecognizer.serializedClassifier);
 		String out = "<xml>" + classifier.classifyWithInlineXML(text).replaceAll("(\\[|\\])", "") + "</xml>";
 		return out;

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -137,13 +136,10 @@ public class Indexer {
 				String featureName = constants.featureArray[i];
 				DocumentBuilder docBuilder = constants.getDocBuilderFromFieldName(featureName);
 
-				// creating feature indices as subfolders
-				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
-				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-				IndexWriter iw;
 				Document doc;
+				IndexWriter iw = null;
+
 				try {
-					iw = new IndexWriter(FSDirectory.open(new File(indexPath, featureName)), conf);
 					doc = docBuilder.createDocument(img, identifier);
 				} catch (IOException e1) {
 					throw new StamatException("ioexception while creating indexwriter and document");
@@ -157,9 +153,13 @@ public class Indexer {
 					for(String key : indexedFields.keySet()) {
 						doc.add(new Field(key, indexedFields.get(key), Field.Store.YES, Field.Index.ANALYZED));
 					}
+					// creating feature indices as subfolders
+					IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+					conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+					iw = new IndexWriter(FSDirectory.open(new File(indexPath, featureName)), conf);
 					iw.addDocument(doc);				
 				} catch(IOException e) {
-					String msg = "ioexception while writing "+featureName+" for id:" + identifier;
+					String msg = "ioexception while writing "+featureName+" for id:" + identifier + " with msg: " + e.getMessage();
 					logger.log(Level.SEVERE, msg);
 					throw new StamatException(msg);
 				} finally {
@@ -211,12 +211,9 @@ public class Indexer {
 	public void updateIndex(InputStream is, Map<String, String> indexedFields) throws StamatException, IOException
 	{
 		long startTime = System.currentTimeMillis();
-		IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
-		conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-		IndexWriter iw = new IndexWriter(FSDirectory.open(new File(indexPath)), conf);
-
 		ChainedDocumentBuilder docBuilder = new ChainedDocumentBuilder();
-	
+		IndexWriter iw = null;
+		
 		docBuilder.addBuilder(DocumentBuilderFactory.getAutoColorCorrelogramDocumentBuilder());
 		docBuilder.addBuilder(DocumentBuilderFactory.getScalableColorBuilder());
 		docBuilder.addBuilder(DocumentBuilderFactory.getCEDDDocumentBuilder());
@@ -247,6 +244,9 @@ public class Indexer {
 				for(String key : indexedFields.keySet()) {
 					doc.add(new Field(key, indexedFields.get(key), Field.Store.YES, Field.Index.ANALYZED));
 				}
+				IndexWriterConfig conf = new IndexWriterConfig(Version.LUCENE_36, new WhitespaceAnalyzer(Version.LUCENE_36));
+				conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+				iw = new IndexWriter(FSDirectory.open(new File(indexPath)), conf);
 				iw.addDocument(doc);				
 			} catch(Exception e) {
 				String msg = "id:" + identifier + " threw an exception during the indexing process, please check: " + e.getLocalizedMessage();
