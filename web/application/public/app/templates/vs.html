@@ -2,6 +2,7 @@
 	<div class="row">
 		<div class="span2 list1">
 		<ul class="thumbnails">
+		<% var re = /[^a-z0-9\s-_.,]/i; %>
 		<% var count = 0; %>
 		<% _.each(media, function(item) { %>
 			<% count++; %>
@@ -9,7 +10,7 @@
 			<% var url = item.abs_path + item.hash; %>
 			<% if(count % 2 == 1) { %>
 			<li class="span2">
-				<a href="<%= item.url %>" class="thumbnail" rel="popover" data-title="<%= item.title %>" data-content="<%= data_content %>" data-trigger="hover" data-placement="left">
+				<a href="<%= item.url %>" class="thumbnail" rel="popover" data-title="<%= item.title.replace(re, '') %>" data-content="<%= data_content %>" data-trigger="hover" data-placement="left">
 					<img src="<%= url %>" data-id="<%= item.id %>">
 				</a>
 				<div class="caption">
@@ -30,7 +31,7 @@
 			<% var url = item.abs_path + item.hash; %>
 			<% if(count % 2 == 0) { %>
 			<li class="span2">
-				<a href="<%= item.url %>" class="thumbnail" rel="popover" data-title="<%= item.title %>" data-content="<%= data_content %>" data-trigger="hover" data-placement="left">
+				<a href="<%= item.url %>" class="thumbnail" rel="popover" data-title="<%= item.title.replace(re, '') %>" data-content="<%= data_content %>" data-trigger="hover" data-placement="left">
 					<img src="<%= url %>" data-id="<%= item.id %>">
 				</a>
 				<div class="caption">

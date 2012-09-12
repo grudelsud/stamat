@@ -34,12 +34,19 @@ class Json extends CI_Controller
 		$this->db->select('f.id, f.title, f.url, t.id as tag_id, t.name as tag_name, t.slug');
 		$this->db->from('feeds as f');
 
+		$this->db->join('feeds_users as fu', 'f.id = fu.feed_id');
+
 		$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
 		$this->db->join('tags as t', 't.id = ft.tag_id');
 
-		if( $this->logged_in ) {
-			$this->db->where('f.user_id', $this->logged_user['id'] );
+		$this->db->where('f.show', 1);
+
+		if( $this->logged_in && $this->logged_user['id'] != 1) {
+			$this->db->where_in('fu.user_id', array(1,$this->logged_user['id']));
+		} else {
+			$this->db->where('fu.user_id', 1);
 		}
+
 		if( !empty($params['tag']) ) {
 			$this->db->where('t.slug', $params['tag']);
 		}
@@ -75,6 +82,7 @@ class Json extends CI_Controller
 		$this->db->select('fi.id, fi.feed_id, fi.title, fi.permalink, fi.date, fi.description, f.title as feed_title, f.url');
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
+		$this->db->join('feeds_users as fu', 'f.id = fu.feed_id');
 
 		$meta = new stdClass();
 		$meta->params = '';
@@ -88,8 +96,10 @@ class Json extends CI_Controller
 			$this->db->where('f.id', $params['id']);
 			$meta->params = 'id/'.$params['id'].'/';
 		}
-		if( $this->logged_in ) {
-			$this->db->where('f.user_id', $this->logged_user['id'] );
+		if( $this->logged_in && $this->logged_user['id'] != 1 ) {
+			$this->db->where_in('fu.user_id', array(1, $this->logged_user['id']) );
+		} else {
+			$this->db->where('fu.user_id', 1 );
 		}
 		$this->db->order_by('date', 'desc');
 
@@ -137,6 +147,7 @@ class Json extends CI_Controller
 		// TODO: check this, I can't believe we need to rerun the query just to count the number of results
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
+		$this->db->join('feeds_users as fu', 'f.id = fu.feed_id');
 
 		if(!empty($params['tag'])) {
 			$this->db->join('feeds_tags as ft', 'f.id = ft.feed_id');
@@ -146,8 +157,10 @@ class Json extends CI_Controller
 		if(!empty($params['id'])) {
 			$this->db->where('f.id', $params['id']);
 		}
-		if( $this->logged_in ) {
-			$this->db->where('f.user_id', $this->logged_user['id'] );
+		if( $this->logged_in && $this->logged_user['id'] != 1 ) {
+			$this->db->where_in('fu.user_id', array(1, $this->logged_user['id']) );
+		} else {
+			$this->db->where('fu.user_id', 1 );
 		}
 		$meta->count_all_results = $this->db->count_all_results();
 		$meta->count_all_pages = ceil($meta->count_all_results / $meta->pagesize);
