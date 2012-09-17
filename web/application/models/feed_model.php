@@ -16,13 +16,23 @@ class Feed_model extends CI_Model
 		$this->db->or_where('url', $url );
 		$query = $this->db->get('feeds');
 		if( $query->num_rows() > 0 ) {
-			$row = $query->row();
-			return $row->id;
+			$feed = $query->row();
+			$data = array('user_id' => $user_id, 'feed_id' => $feed->id);
+			$this->db->where($data);
+			$query = $this->db->get('feeds_users');
+			if($query->num_rows() == 0) {
+				$this->db->insert('feeds_users', $data);
+			}
+			$output = $feed->id;
 		} else {
-			$data = array( 'title'=>$title, 'url'=>$url, 'user_id'=>$user_id );
-			$query = $this->db->insert( 'feeds', $data );
-			return $this->db->insert_id();
+			$data = array( 'title'=>$title, 'url'=>$url );
+			$this->db->insert( 'feeds', $data );
+			$output = $this->db->insert_id();
+
+			$data = array('user_id' => $user_id, 'feed_id' => $output);
+			$this->db->insert('feeds_users', $data);
 		}
+		return $output;
 	}
 	
 	// add feed/tag associations, to add tags in general use vocabulary_model->add_tags
@@ -63,11 +73,15 @@ class Feed_model extends CI_Model
 	// user_id set to NULL will return all the feeds
 	function get_feeds( $add_tags = FALSE, $user_id = NULL )
 	{
+		$this->db->select('*');
+		$this->db->from('feeds as f');
+
 		if( $user_id ) {
-			$this->db->where('user_id', $user_id );			
+			$this->db->join('feeds_users as fu', 'f.id = fu.user_id');
+			$this->db->where('fu.user_id', $user_id );			
 		}
-		$this->db->where('show', 1 );
-		$query = $this->db->get('feeds');
+		$this->db->where('f.show', 1 );
+		$query = $this->db->get();
 		if( $add_tags ) {
 			$result = array();
 			foreach( $query->result() as $row ) {
@@ -100,6 +114,7 @@ class Feed_model extends CI_Model
 	{
 		$this->db->delete('feeds', array('id'=>$feed_id));
 		$this->db->delete('feeds_tags', array('feed_id'=>$feed_id));
+		$this->db->delete('feeds_users', array('feed_id'=>$feed_id));
 		return true;
 	}
 
