@@ -46,7 +46,7 @@ class Main extends CI_Controller {
 				// Proceed knowing you have a logged in user who's authenticated.
 				$profile = $this->facebook->api('/me?fields=id,name,link,email');
 				$this->load->library('ion_auth');
-
+                                
 				$login = $this->ion_auth->login($profile['email'], $profile['id']);
 
 				if( !$login ) {
@@ -122,20 +122,30 @@ class Main extends CI_Controller {
 			$profile['name']=$user_info->screen_name;
 			$profile['email']=$user_info->screen_name . '@twitter.com';
 			$profile['id'] = $user_info->id;            
-
-			$twitter_token = array(
+                        $twitter_token = array(
 				'oauth_token' => $oauth_token,
 				'oauth_token_secret' => $oauth_token_secret);
+                        
+                   
+			
+                        $this->tables  = $this->config->item('tables', 'ion_auth');
+                        $query = $this->db->select('username, email, id, password, active, last_login')
+		                  ->where(sprintf("(username = '%1\$s' OR email = '%1\$s')", $this->db->escape_str($profile['name'])))
+		                  ->limit(1)
+		                  ->get($this->tables['users']);
 
-			$login = $this->ion_auth->login($profile['email'], $profile['id']);
-
+                        $user = $query->row();
+                        xdebug_break();
+                        // my problem
+                        $login = $this->ion_auth->login($user->username, 'password');
+                	
 			if( !$login ) {
 				$this->ion_auth->register($profile['name'], $profile['id'], $profile['email'],$twitter_token);
 				$this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
 			}
 
                         $home_timeline = $this->twitteroauth->get('statuses/home_timeline',array('count' => 200)); 
-			//print_r($home_timeline);
+			print_r($home_timeline);
                         $timeline_content = null;
                         foreach ($home_timeline as &$tweet) {
                             $timeline_content = $timeline_content . $tweet->text;
