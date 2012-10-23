@@ -17,7 +17,15 @@ class Main extends CI_Controller {
 		// set default options & output template
 		$this->data['logged_user'] = $logged_user;
 		$this->data['logged_admin'] = empty($logged_user['groups']) ? false : in_array( $admin_group, $logged_user['groups']);
+
+		/**
+		 * controlla che l'utente abbia i dati personali completi, se sono completi allora carica home
+		 */
 		$this->data['template'] = 'home';
+		/**
+		 * altrimenti carica il template user_detail (dentro views/main)
+		 * $this->data['template'] = 'user_detail';
+		 */
 	}
 
 	function index()
@@ -26,6 +34,11 @@ class Main extends CI_Controller {
 			redirect('/auth/login', 'refresh');
 		}
 		$this->load->view('main_template', $this->data);
+	}
+
+	function update_user() {
+		// fai tutte le tue belle cosine sul database e poi
+		redirect('/', 'refresh');
 	}
 
 	// this clearly is not the right place for this function, it's just that I don't want to add code to someone else's classes for maintenance (ion_auth in this case)
