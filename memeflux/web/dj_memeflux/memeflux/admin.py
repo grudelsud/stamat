@@ -8,7 +8,7 @@ from memeflux.models import Puddle
 from django.contrib import admin
 
 class SubstanceAdmin(admin.ModelAdmin):
-	list_display = ('name', 'slug', 'essence', 'parent', 'count')
+	list_display = ('name', 'slug', 'essence', 'parent', 'user', 'count')
 	search_fields = ['name', 'slug', 'essence']
 
 class SpringAdmin(admin.ModelAdmin):
