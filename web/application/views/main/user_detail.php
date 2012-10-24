@@ -1,15 +1,15 @@
 <div class="row">
 	<div class="span12" id="auth_traditional">
-		    
+		<p>Additional Info</p>
+                <p>Please enter the users information below.</p>
+                <div id="infoMessage"><?php echo $message;?></div>
+                
                 <?php echo form_open("main/update_user");?>
-                <p>First Name:<br />
-                <?php echo form_input($first_name);?>
+                
+                <p>Username:<br />
+                <?php echo form_input($username);?>
                 </p>
-      
-                <p>Last Name:<br />
-                <?php echo form_input($last_name);?>
-                </p>
-      
+                
                 <p>Email:<br />
                 <?php echo form_input($email);?>
                 </p>

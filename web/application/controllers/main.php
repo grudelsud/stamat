@@ -20,54 +20,17 @@ class Main extends CI_Controller {
 
 		
 		if ($this->session->userdata('detail_needed')){
-                    
-                    
                     $this->data['template'] = 'user_detail';
-                    
-                    $this->load->library('form_validation');
-                    
-                    $this->data['first_name'] = array('name' => 'first_name',
-				'id' => 'first_name',
-				'type' => 'text',
-				'value' => $this->form_validation->set_value('first_name'),
-			);
-			$this->data['last_name'] = array('name' => 'last_name',
-				'id' => 'last_name',
-				'type' => 'text',
-				'value' => $this->form_validation->set_value('last_name'),
-			);
-			$this->data['email'] = array('name' => 'email',
-				'id' => 'email',
-				'type' => 'text',
-				'value' => $this->form_validation->set_value('email'),
-			);
-			
-			$this->data['password'] = array('name' => 'password',
-				'id' => 'password',
-				'type' => 'password',
-				'value' => $this->form_validation->set_value('password'),
-			);
-			$this->data['password_confirm'] = array('name' => 'password_confirm',
-				'id' => 'password_confirm',
-				'type' => 'password',
-				'value' => $this->form_validation->set_value('password_confirm'),
-			);
-
+                    $this->update_user();
+                    $this->session->set_userdata('detail_needed', false);
                     
                 }else{
                     $this->data['template'] = 'home';
                 }
-                
-		/**
-		 * controlla che l'utente abbia i dati personali completi, se sono completi allora carica home
-		 * altrimenti carica il template user_detail (dentro views/main)
-		 * $this->data['template'] = 'user_detail';
-		 */
-	}
+   	}
 
 	function index()
 	{
-                $this->session->set_userdata('detail_needed', false);
 		if ( !$this->logged_in ) {
 			redirect('/auth/login', 'refresh');
 		}
@@ -75,62 +38,44 @@ class Main extends CI_Controller {
 	}
 
 	function update_user() {
-		// fai tutte le tue belle cosine sul database e poi
-            
-             
-            //$this->data['title'] = "Create User";
-            
+	     
+            $this->load->library('ion_auth');
             $this->load->library('form_validation');
             
             //validate form input
-            $this->form_validation->set_rules('first_name', 'First Name', 'required|xss_clean');
-            $this->form_validation->set_rules('last_name', 'Last Name', 'required|xss_clean');
+            $this->form_validation->set_rules('username', 'Username', 'required|xss_clean');
             $this->form_validation->set_rules('email', 'Email Address', 'required|valid_email');
             $this->form_validation->set_rules('password', 'Password', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
             $this->form_validation->set_rules('password_confirm', 'Password Confirmation', 'required');
 
 		if ($this->form_validation->run() == true)
 		{
-			$username = strtolower($this->input->post('first_name')) . ' ' . strtolower($this->input->post('last_name'));
+			$username = $this->input->post('username');
 			$email = $this->input->post('email');
 			$password = $this->input->post('password');
-
-			$additional_data = array('first_name' => $this->input->post('first_name'),
-				'last_name' => $this->input->post('last_name'),
-			);
+                        
                         $id = $this->session->userdata('user_id');
                         $data = array(
-					'email' => $email,
+					'username' => $username,
+                                        'email' => $email,
 					'password' => $password,
+                                        
 					 );
                         $this->ion_auth->update($id, $data);
                         $this->logged_in = $this->ion_auth->login($email, $password);
                         redirect('/', 'refresh');
 		}
-                
-                /*
-		if ($this->form_validation->run() == true && $this->ion_auth->register($username, $password, $email, $additional_data))
-		{ //check to see if we are creating the user
-			//redirect them back to the admin page
-                        $this->logged_in = $this->ion_auth->login($email, $password);
-			$this->session->set_flashdata('message', "User Created");
-			redirect('/', 'refresh');
-        	}*/
-		else
-		{ //display the create user form
+                else
+		{       //display the create user form
 			//set the flash data error message if there is one
 			$this->data['message'] = (validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')));
 
-			$this->data['first_name'] = array('name' => 'first_name',
-				'id' => 'first_name',
+                        $this->data['username'] = array('name' => 'username',
+				'id' => 'username',
 				'type' => 'text',
-				'value' => $this->form_validation->set_value('first_name'),
+				'value' => $this->form_validation->set_value('username'),
 			);
-			$this->data['last_name'] = array('name' => 'last_name',
-				'id' => 'last_name',
-				'type' => 'text',
-				'value' => $this->form_validation->set_value('last_name'),
-			);
+                        
 			$this->data['email'] = array('name' => 'email',
 				'id' => 'email',
 				'type' => 'text',
@@ -147,11 +92,19 @@ class Main extends CI_Controller {
 				'type' => 'password',
 				'value' => $this->form_validation->set_value('password_confirm'),
 			);
-			$this->load->view('main/user_detail', $this->data);
+                        
+                        // set username equal to the screen_name of the twitter account
+                        if ($this->session->userdata('detail_needed')){
+                                $this->data['username']['value']=$this->data['logged_user']['username'];
+                        }
+                            
+                        
+                        $this->data['template'] = 'user_detail';
+                        if ($this->data['message']!=false){
+                            $this->load->view('main_template', $this->data);
+                        }
 		}
         
-        
-		redirect('/', 'refresh');
 	}
 
 	// this clearly is not the right place for this function, it's just that I don't want to add code to someone else's classes for maintenance (ion_auth in this case)
@@ -280,14 +233,6 @@ class Main extends CI_Controller {
                             
                             
                             $this->session->set_userdata('detail_needed', true);
-                            /*
-                            $session_data = array(
-                                'username'             => $screen_name,
-                                 'user_id'             => $user_info->id
-                                 );
-                            $this->session->set_userdata($session_data);
-                            */
-                            
                             $this->ion_auth->register($profile['name'], $profile['id'], $profile['email'],$additional_info);
                             $this->logged_in = $this->ion_auth->login($profile['email'], $profile['id']);
                         }
