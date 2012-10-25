@@ -23,6 +23,7 @@ import net.semanticmetadata.lire.impl.SurfDocumentBuilder;
 import net.semanticmetadata.lire.impl.VisualWordsImageSearcher;
 
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +41,7 @@ import stamat.model.SemanticKeyword;
 import stamat.model.Topic;
 import stamat.model.TopicWord;
 import stamat.util.StamatException;
+import stamat.controller.Ranking.newsTweets;
 
 /**
  * 
@@ -443,6 +445,23 @@ public class Analyser {
 				System.err.println(e.getMessage());
 			}
 			return result;
+		}
+	}
+	
+	public static class Ranking{
+		
+		public static void newsRanking()  
+		{
+			try {
+				newsTweets ciaoRank = new newsTweets();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	

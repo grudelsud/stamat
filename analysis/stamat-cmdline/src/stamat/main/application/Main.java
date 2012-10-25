@@ -94,6 +94,13 @@ public class Main {
 				.withDescription("query for visual similarity, requires options -iI -iP and -n")
 				.withLongOpt("visual-query")
 				.create("Vq"));
+		// news ranking
+		ogMain.addOption( OptionBuilder
+				.hasArg(false)
+				.withDescription("news ranking, requires options ....")
+				.withLongOpt("news-ranking")
+				.create("Nr"));
+		
 		options.addOptionGroup(ogMain);
 
 		/******************************************************************
@@ -391,6 +398,16 @@ public class Main {
 				JSONObject result = Analyser.language.detection2JSON(text, langModels, langStopwords);
 				System.out.println(result.toString());
 			}
+			return;
+			
+		// news ranking
+		} else if( line.hasOption("Nr")) {
+			//if( texts.size() < 1 | langModels == null | langStopwords == null ) {
+			//	System.out.println("With -Nr use options: (-t | -tp) -lm -ls");
+			//} else {			
+				Analyser.Ranking.newsRanking();
+			//	System.out.println(result.toString());
+			//}
 			return;
 		} else {
 			System.out.println("Type 'java -jar stamat.main-cmdline.jar -h' for help");			
