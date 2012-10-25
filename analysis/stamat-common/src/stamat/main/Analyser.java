@@ -41,7 +41,7 @@ import stamat.model.SemanticKeyword;
 import stamat.model.Topic;
 import stamat.model.TopicWord;
 import stamat.util.StamatException;
-import stamat.controller.Ranking.newsTweets;
+import stamat.controller.Ranking.NewsTweets;
 
 /**
  * 
@@ -453,7 +453,7 @@ public class Analyser {
 		public static void newsRanking()  
 		{
 			try {
-				newsTweets ciaoRank = new newsTweets();
+				NewsTweets ciaoRank = new NewsTweets();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
