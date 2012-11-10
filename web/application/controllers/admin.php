@@ -33,6 +33,12 @@ class Admin extends CI_Controller
 		$this->load->view('admin_template', $this->data);
 	}
 
+	function logodetection()
+	{
+		$this->data['template'] = 'logodetection';
+		$this->index();
+	}
+
 	function feed()
 	{
 		$this->data['template'] = 'feed';
