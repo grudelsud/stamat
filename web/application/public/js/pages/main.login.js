@@ -12,7 +12,6 @@ $(function() {
 		}, {scope: 'email'});
 	});   
 	$('#twitter_login').click(function() {
-              window.location = base_url + 'index.php/main/login_twitter';
+		window.location = base_url + 'index.php/main/login_twitter';
 	});
-    
 });

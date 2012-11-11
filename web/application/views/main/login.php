@@ -12,7 +12,6 @@
 		<p>
 			<button id="twitter_login" type="button">Login with Twitter</button>
 		</p>
-		<p>Login with Google (still baking off)</p>
 	</div>
 
 	<!--
