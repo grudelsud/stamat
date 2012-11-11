@@ -10,9 +10,12 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.PersistenceException;
+
 import models.Constants;
 import models.Utils;
 import models.dbo.Feeditemmedia;
+import models.dbo.Users;
 import models.requests.EntitiesExtract;
 import net.semanticmetadata.lire.DocumentBuilder;
 
@@ -30,6 +33,11 @@ import stamat.controller.visual.SearchResult;
 import stamat.main.Analyser;
 import stamat.model.NamedEntity;
 import stamat.util.StamatException;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 import views.html.index;
 
 public class Application extends Controller {
@@ -37,6 +45,63 @@ public class Application extends Controller {
 	public static Result index()
 	{
 		return ok(index.render("STAMAT - API Backend"));
+	}
+
+	public static Result rankNews()
+	{
+		JsonNode json = request().body().asJson();
+		if(json == null) {
+			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
+		} else {
+			String user_name = "";
+			String user_auth = "";
+			Users user_auth_data = null;
+			try {
+				user_name = json.get(Constants.json_fields.TWITTER_USER_NAME).getTextValue();				
+				user_auth = json.get(Constants.json_fields.TWITTER_AUTH_NAME).getTextValue();				
+				user_auth_data = Users.find.where().eq("screen_name", user_auth).findUnique();
+			} catch(NullPointerException e) {
+				return badRequest(Utils.returnError("missing either "+Constants.json_fields.TWITTER_USER_NAME+" or "+Constants.json_fields.TWITTER_AUTH_NAME+" fields"));
+			} catch(PersistenceException pe) {
+				return badRequest(Utils.returnError("field "+Constants.json_fields.TWITTER_AUTH_NAME+" didn't return exactly 1 result"));
+			}
+			if(user_auth_data != null && !user_auth_data.oauth_token.isEmpty() ) {
+				ConfigurationBuilder cb = new ConfigurationBuilder();
+				cb.setOAuthConsumerKey("XW7zty39b9veVxAbN444g");
+				cb.setOAuthConsumerSecret("iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c");
+				TwitterFactory tf = new TwitterFactory(cb.build());
+				AccessToken at = new AccessToken(user_auth_data.oauth_token, user_auth_data.oauth_token_secret);
+				Twitter twitter = tf.getInstance(at);
+
+				try {
+					String output = "";
+					List<twitter4j.Status> result = null;
+					if(user_name.length() > 0) {
+						result = twitter.getUserTimeline(user_name);							
+					} else {
+						result = twitter.getHomeTimeline();							
+					}
+					for(twitter4j.Status status : result) {
+						output += "[" + status.getUser().getScreenName() + " - " + status.getText() + ", " + status.getCreatedAt() + "] ";
+					}
+					return ok(Utils.returnSuccess(output));
+				} catch (TwitterException e) {
+					return ok(Utils.returnError("not really your lucky day, got a twitter exception " + e.getMessage()));
+				}
+
+			} else {
+				return badRequest(Utils.returnError("User [" + user_auth + "] doesn't have rights to access the Twitter API"));
+			}
+			
+//			JsonNode imageListJson = json.findValue(Constants.json_fields.INDEX_FIELD_IMAGES);
+//			if( imageListJson != null ) {
+//				Iterator<JsonNode> imageListJsonIterator = imageListJson.getElements();
+//				String message = "indices added to " + indexPath + ": ";
+//				while(imageListJsonIterator.hasNext()) {
+//					
+//				}
+//			}
+		}
 	}
 
 	public static Result entitiesExtractGATE()

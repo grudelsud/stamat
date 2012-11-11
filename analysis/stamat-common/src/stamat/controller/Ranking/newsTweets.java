@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -27,71 +28,78 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 
+import stamat.util.StamatException;
+
 
 public class NewsTweets {
 
-	Map<String,String> mpTweets;
-	Map<String,String> mpNews;
+	private static String FIELD_KEY = "key";
+	private static String FIELD_VAL = "value";
 
+	private static Logger logger = Logger.getLogger(NewsTweets.class.getName());
 
-	public  NewsTweets() throws IOException, ParseException{
-		// import tweets
-		mpTweets = createTweets();
+	private NewsTweets() {
+	}
 
+	private static Directory createIndex(Map<String, String> content) throws IOException
+	{
 		//create tweets index
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
 		Directory index = new RAMDirectory();
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
 		IndexWriter w = new IndexWriter(index, config);
 
-		Set<Entry<String, String>> sTweets=mpTweets.entrySet();
-		Iterator<Entry<String, String>> itTweets=sTweets.iterator();
-
-		while(itTweets.hasNext())
-		{
-			// key=value separator this by Map.Entry to get key and value
-			Map.Entry m =(Map.Entry)itTweets.next();
-			// getValue is used to get value of key in Map
-			String tweet=(String)m.getValue();
-			// add tweets to the index
-			addDoc(w, tweet);
+		for(String key : content.keySet()) {
+			String val = content.get(key);
+			Document doc = new Document();
+			doc.add(new Field(FIELD_KEY, key, Field.Store.YES, Field.Index.NOT_ANALYZED));
+			doc.add(new Field(FIELD_VAL, val, Field.Store.YES, Field.Index.ANALYZED));
+			w.addDocument(doc);
 		}
 		w.close();
-
-		// import news
-		mpNews = createNews();
-		Set<Entry<String, String>> sNews=mpNews.entrySet();
-		Iterator<Entry<String, String>> itNews=sNews.iterator();
-
-		HashMap<String,Float> mScore = new HashMap<String,Float>();
-		ValueComparator bvc =  new ValueComparator(mScore);
-		TreeMap<String,Float> sortedScore = new TreeMap<String,Float>(bvc);
-
-
-		while(itNews.hasNext())
-		{
-			Map.Entry m =(Map.Entry)itNews.next();
-			String idNews=(String)m.getKey();
-			String titleNews=(String)m.getValue();
-			float scoreNews=computeTweetsRelevance(titleNews,index,analyzer);
-			mScore.put(idNews,scoreNews);
-		}
-
-		sortedScore.putAll(mScore);
-
-		System.out.println("results: "+sortedScore);
-
+		return index;
 	}
 
+	public static Map<String, Float> rankNews(Map<String,String> news, Map<String,String> tweets) throws IOException, StamatException {
+		return rankCorpus(news, tweets);
+	}
 
-	class ValueComparator implements Comparator<String> {
+	public static Map<String, Float> rankTweets(Map<String,String> tweets, Map<String,String> news) throws IOException, StamatException {
+		return rankCorpus(tweets, news);
+	}
 
-		Map<String, Float> base;
+	public static Map<String, Float> rankCorpus(Map<String,String> corpus, Map<String,String> referees) throws IOException, StamatException
+	{
+		Directory refereesIndex = createIndex(referees);
+		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+
+		// let's go with the news
+		HashMap<String,Float> mScore = new HashMap<String,Float>();
+		ValueComparator bvc =  new ValueComparator(mScore);
+
+		for(String key : corpus.keySet()) {
+			String val = corpus.get(key);
+			try {
+				mScore.put(key, computeRelevance(val, refereesIndex, analyzer));
+			} catch (ParseException e) {
+				throw new StamatException("Parse exception while computing news item " + key);
+			}
+		}
+
+		TreeMap<String,Float> sortedScore = new TreeMap<String,Float>(bvc);
+		sortedScore.putAll(mScore);
+		return sortedScore;
+	}
+
+	private static class ValueComparator implements Comparator<String> 
+	{
+		private Map<String, Float> base;
+
 		public ValueComparator(Map<String, Float> base) {
 			this.base = base;
 		}
 
-		// Note: this comparator imposes orderings that are inconsistent with equals.    
+		// Note: this comparator imposes orderings that are inconsistent with equals.
 		public int compare(String a, String b) {
 			if (base.get(a) >= base.get(b)) {
 				return -1;
@@ -101,15 +109,10 @@ public class NewsTweets {
 		}
 	}
 
-	private void addDoc(IndexWriter w, String value) throws IOException {
-		Document doc = new Document();
-		doc.add(new Field("title", value, Field.Store.YES, Field.Index.ANALYZED));
-		w.addDocument(doc);
-	}
-	private  float computeTweetsRelevance(String queryStr,Directory index, StandardAnalyzer analyzer) throws IOException, ParseException {
-		// the "title" arg specifies the default field to use
-		// when no field is explicitly specified in the query.
-		Query q = new QueryParser(Version.LUCENE_35, "title", analyzer).parse(queryStr);
+	private static float computeRelevance(String source, Directory index, StandardAnalyzer analyzer) throws IOException, ParseException 
+	{
+		// the "title" arg specifies the default field to use when no field is explicitly specified in the query.
+		Query q = new QueryParser(Version.LUCENE_36, FIELD_VAL, analyzer).parse(source);
 
 		int hitsPerPage = 10;
 		IndexReader reader = IndexReader.open(index);
@@ -118,28 +121,21 @@ public class NewsTweets {
 		searcher.search(q, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-		// 4. display results
-		System.out.println("Found " + hits.length + " hits.");
+		logger.info("Found " + hits.length + " hits.");
+
 		float totScore=0;
-		for(int i=0;i<hits.length;++i) {
-			int docId = hits[i].doc;
-			float docScore = hits[i].score;
-			totScore = totScore + docScore;
-			Document d = searcher.doc(docId);
-			//System.out.println((i + 1) + ". " + d.get("title") + " " + docScore);
+		for(int i=0; i<hits.length; ++i) {
+			totScore += hits[i].score;
+			// Document d = searcher.doc(hits[i].doc);
 		}
 
-		//System.out.println("Score totale: " + totScore);
-		// searcher can only be closed when there
-		// is no need to access the documents any more. 
+		// searcher can only be closed when there is no need to access the documents any more. 
 		searcher.close();
-
 		return totScore;
-
 	}
 
-
-	public Map<String,String> createTweets(){
+	public static Map<String,String> createTestTweets()
+	{
 		Map<String,String> mp=new HashMap<String, String>();
 
 		// adding or set elements in Map by put method key and value pair
@@ -151,7 +147,8 @@ public class NewsTweets {
 		return mp;
 	}
 
-	public Map<String,String> createNews(){
+	public static Map<String,String> createTestNews()
+	{
 		Map<String,String> mp=new HashMap<String, String>();
 
 		// adding or set elements in Map by put method key and value pair

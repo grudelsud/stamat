@@ -448,22 +448,32 @@ public class Analyser {
 		}
 	}
 	
-	public static class Ranking{
+	public static class ranking {
 		
-		public static void newsRanking()  
-		{
+		public static Map<String, Float> news(Map<String, String> news, Map<String, String> tweets) {
+			Map<String, Float> result = null;
 			try {
-				NewsTweets ciaoRank = new NewsTweets();
+				result = NewsTweets.rankNews(news, tweets);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warning(e.getMessage());
+			} catch (StamatException e) {
+				logger.warning(e.getMessage());
 			}
-			
+			return result;
 		}
-	}
+
+		public static Map<String, Float> tweets(Map<String, String> tweets, Map<String, String> news) {
+			Map<String, Float> result = null;
+			try {
+				result = NewsTweets.rankNews(tweets, news);
+			} catch (IOException e) {
+				logger.warning(e.getMessage());
+			} catch (StamatException e) {
+				logger.warning(e.getMessage());
+			}
+			return result;
+		}
+}
 	
 	/**
 	 * class visual

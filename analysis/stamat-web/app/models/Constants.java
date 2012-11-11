@@ -13,6 +13,9 @@ public class Constants {
 		public static final String QUERY_FIELD_FILEID = "fileidentifier";
 		public static final String QUERY_FIELD_FEATURE = "feature";
 		public static final String QUERY_FIELD_NUMOFRESULT = "numberofresults";
+
+		public static final String TWITTER_USER_NAME = "user_name";
+		public static final String TWITTER_AUTH_NAME = "user_auth";
 	}
 
 	public static class db_fields 

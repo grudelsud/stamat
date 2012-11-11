@@ -6,6 +6,11 @@
 GET     /                           controllers.Application.index()
 
 #########################################################################
+## NEWSRANK
+##
+POST    /rankNews        controllers.Application.rankNews()
+
+#########################################################################
 ## ENTITIES
 ##
 POST    /entitiesExtractSNER        controllers.Application.entitiesExtractSNER()
