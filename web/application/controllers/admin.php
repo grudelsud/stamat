@@ -22,6 +22,11 @@ class Admin extends CI_Controller
 		$this->data['logged_admin'] = empty($logged_user['groups']) ? false : in_array( $admin_group, $logged_user['groups']);
 		// set default output template
 		$this->data['template'] = 'feed';
+                
+                
+                $this->data['results']=$this->checkStatus();
+                
+                 
 	}
 	
 	function index()
@@ -36,7 +41,7 @@ class Admin extends CI_Controller
 	function logodetection()
 	{
 		$this->data['template'] = 'logodetection';
-		$this->index();
+                $this->index();
 	}
 
 	function feed()
@@ -96,6 +101,30 @@ class Admin extends CI_Controller
 		}
 		$this->load->view('permalink', $data);
 	}
+        
+        public function checkStatus(){
+        
+            $this->load->database();
+            $queryString = "SELECT process.idProcessNum AS idProcess, logo.url AS logoUrl, video.url AS videoUrl, processstatus.name As status, process.detection 
+                              FROM process JOIN logo ON process.id_logo = logo.id JOIN video ON process.id_video = video.id JOIN processstatus on processstatus.idProcessStatus = process.idProcessStatus";
+            $query=$this->db->query($queryString);
+            $num=$query->num_rows();
+            $results= array();
+            foreach ($query->result() as $row)
+            {
+                $resultRow = array(
+                    'idProcess' => $row->idProcess,
+                    'logoUrl'  => $row->logoUrl,
+                    'videoUrl' => $row->videoUrl,
+                    'status' => $row->status,
+                    'detection' => $row->detection
+                    );
+                array_push($results,$resultRow);
+            
+            }
+            return  $results;
+        }
+        
 }
 
 /* end of admin.php */
