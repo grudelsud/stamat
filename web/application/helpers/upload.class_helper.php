@@ -17,7 +17,7 @@ class UploadHandler
     function __construct($options=null) {
         $this->options = array(
             'script_url' => $this->getFullUrl().'/',
-            'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/files/',
+            'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/application/public/files/',
             'upload_url' => $this->getFullUrl().'/application/public/files/',
             'param_name' => 'files',
             // Set the following option to 'POST', if your server does not support
@@ -53,7 +53,7 @@ class UploadHandler
                 ),
                 */
                 'thumbnail' => array(
-                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/thumbnails/',
+                    'upload_dir' => dirname($_SERVER['SCRIPT_FILENAME']).'/application/public/thumbnails/',
                     'upload_url' => $this->getFullUrl().'/application/public/thumbnails/',
                     'max_width' => 80,
                     'max_height' => 80
