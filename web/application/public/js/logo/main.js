@@ -19,7 +19,7 @@ $(function () {
 
 
    function chechStatus(){
-        $.getJSON('../../logo/checkStatusJSON', function(data) {
+        $.getJSON('../logo/checkStatusJSON', function(data) {
             if (data.length>0){
                 $('#tableProcess').empty();
                 var table = document.getElementById("tableProcess");
