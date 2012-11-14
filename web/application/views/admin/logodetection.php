@@ -28,7 +28,7 @@
 <!-- Bootstrap Image Gallery styles -->
 <link rel="stylesheet" href="http://blueimp.github.com/Bootstrap-Image-Gallery/css/bootstrap-image-gallery.min.css">
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-<link rel="stylesheet" href="<?=base_url()?>css/jquery.fileupload-ui.css">
+<link rel="stylesheet" href="<?=base_url()?>/application/public/css/jquery.fileupload-ui.css">
 <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
 <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
