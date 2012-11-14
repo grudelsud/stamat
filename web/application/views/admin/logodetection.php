@@ -100,7 +100,7 @@
     </form>
     <br>
     
-   <form method="post" action="home/upload" id="process_form">
+   <form method="post" action="logo/upload" id="process_form">
         <input type="submit" class="btn btn-primary run" value="Process" name="btncreate" id="btncreate" />        
     </form>
     
@@ -278,7 +278,7 @@
             <td colspan="2"></td>
         {% } %}
         <td class="delete">
-            <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%='http://stamat.net/serra/logoDetection/index.php/home/upload' %}">
+            <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%='http://stamat.net/index.php/logo/upload' %}">
                 <i class="icon-trash icon-white"></i>
                 <span>{%=locale.fileupload.destroy%}</span>
             </button>

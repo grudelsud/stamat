@@ -439,7 +439,7 @@ class UploadHandler
         echo json_encode($success);
     }
     
-    public function getFullFilename()
+    public function getFullFilenameUrl()
     {
        
         $uploadFile = isset($_FILES[$this->options['param_name']]) ?
@@ -447,8 +447,24 @@ class UploadHandler
         $urlString = $this->options['upload_url'] . $uploadFile['name'][0];
                     
         return $urlString;
+    
+    }
+    
+     public function getFullFilename()
+        {
+       
+        $uploadFile = isset($_FILES[$this->options['param_name']]) ?
+                                $_FILES[$this->options['param_name']] : null;
+        $urlString = $this->options['upload_dir'] . $uploadFile['name'][0];
+                    
+        return $urlString;
+    
+    }
+    
+    public function getFullFilenameUrlDelete(){
+        $file_name = isset($_REQUEST['file']) ? basename(stripslashes($_REQUEST['file'])) : null;
+        $file_path = $this->options['upload_url'].$file_name;
         
-    
-    
+        return $file_path;
     }
 }

@@ -298,7 +298,7 @@
                 }
   
                 $.ajax({
-                    url: "index.php/home/upload",
+                    url: "../logo/upload",
                     type: "post",
                     data: {
                         "_method" : "DELETE", 

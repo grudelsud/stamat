@@ -15,7 +15,7 @@
 $(function () {
     'use strict';
 
-    // setInterval(chechStatus, 5000);
+   setInterval(chechStatus, 5000);
 
 
    function chechStatus(){
@@ -41,6 +41,7 @@ $(function () {
                  
                 rowCount = table.rows.length;
                 row = table.insertRow(rowCount);
+                row.setAttribute('id',entry['idProcess']);
                 cell1=row.insertCell(0);
                 cell2=row.insertCell(1);
                 cell3=row.insertCell(2);
@@ -51,7 +52,7 @@ $(function () {
                 cell1.innerHTML=logoUrl;
                 cell2.innerHTML=videoUrl;
                 cell3.innerHTML=entry['status'];
-                cell4.innerHTML="0";
+                cell4.innerHTML=entry['detection'];
                 
              });
          }); 
@@ -76,8 +77,9 @@ $(function () {
         var urlsString = urls.join(",");
        
        
-        $.post('index.php/logo/process', {'urls': urlsString}, function(data) {
+        $.post('../logo/process', {'urls': urlsString}, function(data) {
             console.log("You sent: " + data);
+            chechStatus();
         });
         
         
