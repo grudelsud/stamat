@@ -16,8 +16,8 @@ class Admin extends CI_Controller
 
 		$logged_user = array();
 		$this->logged_in = $this->user_model->logged_in( $logged_user );
-
-		// set default options & output template
+                
+                // set default options & output template
 		$this->data['logged_user'] = $logged_user;
 		$this->data['logged_admin'] = empty($logged_user['groups']) ? false : in_array( $admin_group, $logged_user['groups']);
 		// set default output template
@@ -25,6 +25,7 @@ class Admin extends CI_Controller
                 
                 
                 $this->data['results']=$this->checkStatus();
+		
                 
                  
 	}
@@ -112,13 +113,25 @@ class Admin extends CI_Controller
             $results= array();
             foreach ($query->result() as $row)
             {
+                $scoreFrame=0.75;
+                $scoreVideo=5;
+                $queryString="SELECT numFrame FROM processResults WHERE idProcessNum =" .$row->idProcess ." AND score >= ". $scoreFrame;
+                $query=$this->db->query($queryString);
+                $num=$query->num_rows();
+                if ($num>=$scoreVideo){
+                    $detection ="true";
+                }
+                else {
+                    $detection="false";
+                }
                 $resultRow = array(
                     'idProcess' => $row->idProcess,
                     'logoUrl'  => $row->logoUrl,
                     'videoUrl' => $row->videoUrl,
                     'status' => $row->status,
-                    'detection' => $row->detection
-                    );
+                    //'detection' => $row->detection
+                    'detection' => $detection
+                );
                 array_push($results,$resultRow);
             
             }
