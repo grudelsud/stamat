@@ -119,10 +119,10 @@ class Admin extends CI_Controller
                 $query=$this->db->query($queryString);
                 $num=$query->num_rows();
                 if ($num>=$scoreVideo){
-                    $detection ="true";
+                    $detection =$num;
                 }
                 else {
-                    $detection="false";
+                    $detection=$num;
                 }
                 $resultRow = array(
                     'idProcess' => $row->idProcess,
