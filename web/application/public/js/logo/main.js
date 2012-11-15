@@ -15,7 +15,7 @@
 $(function () {
     'use strict';
 
-   setInterval(checkStatus, 5000);
+   //setInterval(checkStatus, 5000);
 
 
    function checkStatus(){
