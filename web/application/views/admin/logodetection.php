@@ -38,7 +38,6 @@
     <div class="page-header">
         <h3>Logo Detection</h3>
     </div>
-    <br>
     
      <!-- The file upload form used as target for the file upload widget -->
     <h4>Logo Images</h4>
