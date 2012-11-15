@@ -113,7 +113,7 @@ class Admin extends CI_Controller
             $results= array();
             foreach ($query->result() as $row)
             {
-                $scoreFrame=0.75;
+                $scoreFrame=0.2;
                 $scoreVideo=5;
                 $queryString="SELECT numFrame FROM processResults WHERE idProcessNum =" .$row->idProcess ." AND score >= ". $scoreFrame;
                 $query=$this->db->query($queryString);
