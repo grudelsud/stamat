@@ -116,21 +116,26 @@ class logo extends CI_Controller {
         $row = $query->result();
         $id_video = $row[0]->id;
         $path_video = $row[0]->path;
+       
         
+        // local
+        $execString = "java -jar /Users/serra/git/stamat/web/application/public/scripts/waitTime.jar " . $path_logo . " " . $path_video ." > /dev/null 2>&1 & echo $!; " ;
+        $cvsFile ="/Users/serra/git/stamat/web/application/public/logoResults/test.csv";
+        $javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
+       
+        // telecom server
         
         $match_params = "-S -e SIFT -d PyramidSIFT -m FlannBased -v -f 2  -R -s ";
         $result_path = "../test/results/";
         $LOGORECOG_BIN = "/home/ubuntu/STAMAT/logorecog-tmp/src/bresci";
 
-        $execLogoString = $LOGORECOG_BIN . "-q  ". $path_logo . " -V " . $path_video . " " . $match_params . " " .$result_path ;
+       
+        $execString = $LOGORECOG_BIN . "-q  ". $path_logo . " -V " . $path_video . " " . $match_params . " " .$result_path ;
+        $cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
+        $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/logoDetectionCSVtelecom.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
         
         
-        //$execString = "java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionOnly.jar " . $imageUrl . " " . $videoUrl . ' > /dev/null &';
-        $execString = "java -jar /Users/serra/git/stamat/web/application/public/scripts/waitTime.jar " . $path_logo . " " . $path_video ." > /dev/null 2>&1 & echo $!; " ;
-        //exec($execString,$output,$returnValue);
         
-        $cvsFile ="/Users/serra/git/stamat/web/application/public/logoResults/test.csv";
-        $javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
         $execString = $execString . $javaCVSreader;
         //xdebug_break();
         $queryString = 'INSERT INTO process (name, idProcessStatus, id_logo, id_video, command) VALUES("Logo Detection",1,'. $id_logo . ',' . $id_video . ',"'.$execString.'")';
