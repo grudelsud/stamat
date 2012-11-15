@@ -13,3 +13,13 @@
 body{
   padding-top: 60px;
 }
+table#tableProcess td {
+    padding: 3px;
+    border: 1px solid lightgrey;
+}
+table#tableProcess tr.row_selected td {
+    background: lightyellow;
+}
+table#tableProcess .odd {
+    background: #FFF;
+}

@@ -140,7 +140,7 @@ class logo extends CI_Controller {
         $fileNameCSV = "q_" . basename($path_logo) . "--_t_" . basename($path_video) . ".csv";
         $cvsFile = "/var/www/stamat/application/public/logoResults/". $id_process . "/" . $fileNameCSV;
         //$cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
-        $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/logoDetectionCSVtelecom.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
+        $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/importLogoDetectionCSV.jar " . $id_process . " " . $cvsFile;
         
         
         //xdebug_break();

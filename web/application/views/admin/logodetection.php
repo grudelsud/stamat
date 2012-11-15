@@ -111,15 +111,15 @@
             <h4 id="processListString"></h4>
         <?php } ?>
             
-    <table id="tableProcess">
+    <table class="table table-striped" id="tableProcess">
         
         <?php //xdebug_break(); 
         if(count($results)>0){ ?>
             <tr>
-            <td>Logo</td>
-            <td>Video</td>
-            <td>Status</td>
-            <td>Detection result</td>
+            <td><h5>Logo</h5></td>
+            <td><h5>Video</h5></td>
+            <td><h5>Status</h5></td>
+            <td><h5>Detection result</h5></td>
             </tr>
         <?php }?>
         
