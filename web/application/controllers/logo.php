@@ -143,11 +143,11 @@ class logo extends CI_Controller {
         $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/importlogoDetectionCSV.jar " . $id_process . " " . $cvsFile;
         
         
-        //xdebug_break();
+        xdebug_break();
         
         $execString = $execString . $javaCVSreader;
-        $queryString = "UPDATE process SET command='".$execString."'  WHERE idProcessNum=" . $id_process;
-        $query=$this->db->query($queryString);
+        $queryStringID = 'UPDATE process SET command="'.$execString.'"  WHERE  idProcessNum=' . $id_process;
+        $query=$this->db->query($queryStringID);
         
     }
     
