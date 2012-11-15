@@ -153,9 +153,10 @@ class logo extends CI_Controller {
     
     public function checkStatus(){
         
+        xdebug_break();
         $this->load->database();
         $queryString = "SELECT process.idProcessNum AS idProcess, logo.url AS logoUrl, video.url AS videoUrl, processstatus.name As status, process.detection 
-                        FROM process JOIN logo ON process.id_logo = logo.id JOIN video ON process.id_video = video.id JOIN processstatus on processstatus.idProcessStatus = process.idProcessStatus";
+                        FROM process JOIN logo ON process.id_logo = logo.id JOIN video ON process.id_video = video.id JOIN processstatus on processstatus.idProcessStatus = process.idProcessStatus ORDER BY process.idProcessNum ASC";
         $query=$this->db->query($queryString);
         $num=$query->num_rows();
         $results= array();
