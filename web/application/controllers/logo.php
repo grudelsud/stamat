@@ -124,7 +124,6 @@ class logo extends CI_Controller {
         //$javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
        
         // telecom server
-        //xdebug_break();
         
         $queryString = 'INSERT INTO process (name, idProcessStatus, id_logo, id_video) VALUES("Logo Detection",1,'. $id_logo . ',' . $id_video . ')';
         $query=$this->db->query($queryString);
@@ -144,9 +143,10 @@ class logo extends CI_Controller {
         $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/logoDetectionCSVtelecom.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
         
         
+        //xdebug_break();
         
         $execString = $execString . $javaCVSreader;
-        $queryString = "UPDATE process SET command=".$execString. "  WHERE id=" . $id_process;
+        $queryString = "UPDATE process SET command='".$execString."'  WHERE id=" . $id_process;
         $query=$this->db->query($queryString);
         
     }
