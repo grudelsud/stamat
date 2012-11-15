@@ -124,22 +124,29 @@ class logo extends CI_Controller {
         //$javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
        
         // telecom server
+        //xdebug_break();
         
-        $match_params = "-S -e SIFT -d PyramidSIFT -m FlannBased -v -f 2  -R -s ";
-        $result_path = "/var/www/stamat/application/public/logoResults/";
-        $LOGORECOG_BIN = "/home/ubuntu/STAMAT/logorecog-tmp/src/bresci";
+        $queryString = 'INSERT INTO process (name, idProcessStatus, id_logo, id_video) VALUES("Logo Detection",1,'. $id_logo . ',' . $id_video . ')';
+        $query=$this->db->query($queryString);
+        $id_process = $this->db->insert_id();
+        
+        $match_params = "-S -e SIFT -d PyramidSIFT -m FlannBased -v -f 2  -R";
+        $resultImage_path = "/var/www/stamat/application/public/logoResults/" . $id_process . "/";
+        $resultCVS_path = "/var/www/stamat/application/public/logoResults/". $id_process . "/";
+        $LOGORECOG_BIN = "/var/www/stamat/application/public/scripts/logorecog";
 
-       
-        $execString = $LOGORECOG_BIN . "-q  ". $path_logo . " -V " . $path_video . " " . $match_params . " " .$result_path ;
-        $cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
+        mkdir($resultImage_path, 0775);
+        
+        $execString = $LOGORECOG_BIN . " -q  ". $path_logo . " -V " . $path_video . " " . $match_params . " -s ". $resultImage_path ." -u " . $resultCVS_path ."; ";
+        $fileNameCSV = "q_" . basename($path_logo) . "--t_" . basename($path_video) . ".csv";
+        $cvsFile = "/home/STAMAT/logorecog-tmp/test/results/csv/" . $fileNameCSV;
         //$cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
         $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/logoDetectionCSVtelecom.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
         
         
         
         $execString = $execString . $javaCVSreader;
-        //xdebug_break();
-        $queryString = 'INSERT INTO process (name, idProcessStatus, id_logo, id_video, command) VALUES("Logo Detection",1,'. $id_logo . ',' . $id_video . ',"'.$execString.'")';
+        $queryString = "UPDATE process SET command=".$execString. "  WHERE id=" . $id_process;
         $query=$this->db->query($queryString);
         
     }
