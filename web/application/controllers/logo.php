@@ -119,19 +119,20 @@ class logo extends CI_Controller {
        
         
         // local
-        $execString = "java -jar /Users/serra/git/stamat/web/application/public/scripts/waitTime.jar " . $path_logo . " " . $path_video ." > /dev/null 2>&1 & echo $!; " ;
-        $cvsFile ="/Users/serra/git/stamat/web/application/public/logoResults/test.csv";
-        $javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
+        //$execString = "java -jar /Users/serra/git/stamat/web/application/public/scripts/waitTime.jar " . $path_logo . " " . $path_video ." > /dev/null 2>&1 & echo $!; " ;
+        //$cvsFile ="/Users/serra/git/stamat/web/application/public/logoResults/test.csv";
+        //$javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
        
         // telecom server
         
         $match_params = "-S -e SIFT -d PyramidSIFT -m FlannBased -v -f 2  -R -s ";
-        $result_path = "../test/results/";
+        $result_path = "/var/www/stamat/application/public/logoResults/";
         $LOGORECOG_BIN = "/home/ubuntu/STAMAT/logorecog-tmp/src/bresci";
 
        
         $execString = $LOGORECOG_BIN . "-q  ". $path_logo . " -V " . $path_video . " " . $match_params . " " .$result_path ;
         $cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
+        //$cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
         $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/logoDetectionCSVtelecom.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
         
         
