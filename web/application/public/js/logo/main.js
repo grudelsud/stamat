@@ -15,10 +15,10 @@
 $(function () {
     'use strict';
 
-   setInterval(chechStatus, 5000);
+   setInterval(checkStatus, 5000);
 
 
-   function chechStatus(){
+   function checkStatus(){
         $.getJSON('../logo/checkStatusJSON', function(data) {
             if (data.length>0){
                 $('#tableProcess').empty();
@@ -79,7 +79,7 @@ $(function () {
        
         $.post('../logo/process', {'urls': urlsString}, function(data) {
             console.log("You sent: " + data);
-            chechStatus();
+            checkStatus;
         });
         
         
