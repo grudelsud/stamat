@@ -134,7 +134,7 @@ class logo extends CI_Controller {
         $resultCVS_path = "/var/www/stamat/application/public/logoResults/". $id_process . "/";
         $LOGORECOG_BIN = "/var/www/stamat/application/public/scripts/logorecog";
 
-        mkdir($resultImage_path, 0775);
+        //mkdir($resultImage_path, 0775);
         
         $execString = $LOGORECOG_BIN . " -q  ". $path_logo . " -V " . $path_video . " " . $match_params . " -s ". $resultImage_path ." -u " . $resultCVS_path ."; ";
         $fileNameCSV = "q_" . basename($path_logo) . "--t_" . basename($path_video) . ".csv";
@@ -146,7 +146,7 @@ class logo extends CI_Controller {
         //xdebug_break();
         
         $execString = $execString . $javaCVSreader;
-        $queryString = "UPDATE process SET command='".$execString."'  WHERE id=" . $id_process;
+        $queryString = "UPDATE process SET command='".$execString."'  WHERE idProcessNum=" . $id_process;
         $query=$this->db->query($queryString);
         
     }
