@@ -136,7 +136,7 @@ class logo extends CI_Controller {
 
         mkdir($resultImage_path, 0777);
         
-        $execString = $LOGORECOG_BIN . " -q  ". $path_logo . " -V " . $path_video . " " . $match_params . " -s ". $resultImage_path ." -u " . $resultCVS_path ."; ";
+        $execString = $LOGORECOG_BIN . " -q  ". $path_logo . " -V " . $path_video . " " . $match_params . " -s ". $resultImage_path ." -u " . $resultCVS_path ." > /dev/null 2>&1 & echo $!; ";
         $fileNameCSV = "q_" . basename($path_logo) . "--_t_" . basename($path_video) . ".csv";
         $cvsFile = "/var/www/stamat/application/public/logoResults/". $id_process . "/" . $fileNameCSV;
         //$cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
