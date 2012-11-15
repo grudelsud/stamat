@@ -138,7 +138,7 @@ class logo extends CI_Controller {
         
         $execString = $LOGORECOG_BIN . " -q  ". $path_logo . " -V " . $path_video . " " . $match_params . " -s ". $resultImage_path ." -u " . $resultCVS_path ."; ";
         $fileNameCSV = "q_" . basename($path_logo) . "--t_" . basename($path_video) . ".csv";
-        $cvsFile = "/home/STAMAT/logorecog-tmp/test/results/csv/" . $fileNameCSV;
+        $cvsFile = "/var/www/stamat/application/public/logoResults/". $id_process . "/" . $fileNameCSV;
         //$cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
         $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/logoDetectionCSVtelecom.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
         
