@@ -79,7 +79,7 @@ $(function () {
        
         $.post('../logo/process', {'urls': urlsString}, function(data) {
             console.log("You sent: " + data);
-            checkStatus;
+            checkStatus();
         });
         
         
