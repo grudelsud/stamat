@@ -90,6 +90,7 @@ $(function () {
         $.post('../logo/process', {'urls': urlsString}, function(data) {
             console.log("You sent: " + data);
             checkStatus();
+            $('input:checkbox').removeAttr('checked');
         });
         
         
