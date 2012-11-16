@@ -15,7 +15,6 @@ body{
 }
 table#tableProcess td {
     padding: 3px;
-    border: 1px solid lightgrey;
 }
 table#tableProcess tr.row_selected td {
     background: lightyellow;

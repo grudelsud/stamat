@@ -119,6 +119,7 @@
             <td><h5>Video</h5></td>
             <td><h5>Status</h5></td>
             <td><h5>Detection result</h5></td>
+            <td></td>
             </tr>
         <?php }?>
         
@@ -128,6 +129,11 @@
             <td><?php echo  basename($results[$i]['videoUrl']) ?></td>
             <td class="status"> <?php echo $results[$i]['status'] ?> </td>
             <td class="detection"><?php echo  $results[$i]['detection'] ?></td>
+            <td class="delete">
+            <button class="btn btn-danger deleteProcess" data-idProcess=<?php echo  $results[$i]['idProcess'] ?>>
+                <i class="icon-trash icon-white"></i>
+                <span>Delete</span>
+            </button>  </td>
             </tr>
               
         <?php }?>

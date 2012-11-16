@@ -153,6 +153,20 @@ class logo extends CI_Controller {
         
     }
     
+    public function deleteProcess(){
+        //xdebug_break();
+        $idProcessNum = $_REQUEST['idProcess'];
+        $queryString = "DELETE FROM process WHERE idProcessNum=".$idProcessNum ;
+        $query=$this->db->query($queryString);
+        
+        $queryString = "DELETE FROM processResults WHERE idProcessNum=".$idProcessNum ;
+        $query=$this->db->query($queryString);
+        
+        $resultImage_path = "/var/www/stamat/application/public/logoResults/" . $idProcessNum . "/";
+        rmdir($resultImage_path);
+    }
+
+
     public function checkStatus(){
         
         $this->load->database();

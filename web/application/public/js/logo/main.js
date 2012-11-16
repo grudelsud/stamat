@@ -15,7 +15,7 @@
 $(function () {
     'use strict';
 
-   setInterval(checkStatus, 5000);
+   //setInterval(checkStatus, 5000);
 
 
    function checkStatus(){
@@ -30,10 +30,12 @@ $(function () {
                 var cell2=row.insertCell(1);
                 var cell3=row.insertCell(2);
                 var cell4=row.insertCell(3);
+                var cell5=row.insertCell(4);
                 cell1.innerHTML="<h5>Logo</h5>";
                 cell2.innerHTML="<h5>Video</h5>";
                 cell3.innerHTML="<h5>Status</h5>";
                 cell4.innerHTML="<h5>Detection result</h5>";
+                cell5.innerHTML="";
             }
             if (data.length==0){
                 $('#tableProcess').empty();
@@ -50,6 +52,7 @@ $(function () {
                 cell2=row.insertCell(1);
                 cell3=row.insertCell(2);
                 cell4=row.insertCell(3);
+                cell5=row.insertCell(4);
                 
                 var logoUrl = entry['logoUrl'].replace(/^.*[\\\/]/, '');
                 var videoUrl = entry['videoUrl'].replace(/^.*[\\\/]/, '');
@@ -57,11 +60,14 @@ $(function () {
                 cell2.innerHTML=videoUrl;
                 cell3.innerHTML=entry['status'];
                 cell4.innerHTML=entry['detection'];
+                cell5.innerHTML='<button class="btn btn-danger deleteProcess" data-idProcess='+ entry['idProcess'] +'> <i class="icon-trash icon-white"></i> <span>Delete</span></button>';
                 
              });
          }); 
    }
    
+    
+
     
     $('#process_form').submit(function(e) {
         console.log("click");    
@@ -90,7 +96,20 @@ $(function () {
         return false;
     });
     
-    
+
+  
+    $('.deleteProcess').live("click",function(e) {
+        console.log("clickDelete");    
+        var idProcess = [];
+        idProcess=$(this).data('idprocess');        
+        $.post('../logo/deleteProcess', {'idProcess': idProcess}, function(data) {
+            console.log("Delete: " + data);
+            checkStatus();
+        });
+        
+        return false;
+    });
+
     
 
     // Initialize the jQuery File Upload widget:
