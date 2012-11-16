@@ -147,9 +147,10 @@ class logo extends CI_Controller {
         
         $execString = $execString . $javaCVSreader;
         $queryStringID = 'UPDATE process SET command="'.$execString.'"  WHERE  idProcessNum=' . $id_process;
+        echo $queryStringID;
         $query=$this->db->query($queryStringID);
         
-        echo $queryStringID;
+        //echo $queryStringID;
         
     }
     
