@@ -163,10 +163,24 @@ class logo extends CI_Controller {
         $query=$this->db->query($queryString);
         
         $resultImage_path = "/var/www/stamat/application/public/logoResults/" . $idProcessNum . "/";
-        rmdir($resultImage_path);
+        
+        
+        rrmdir($resultImage_path);
     }
 
 
+    # recursively remove a directory
+    public function rrmdir($dir) {
+        foreach(glob($dir . '/*') as $file) {
+            if(is_dir($file))
+                rrmdir($file);
+            else
+                unlink($file);
+        }
+        rmdir($dir);
+    }
+
+    
     public function checkStatus(){
         
         $this->load->database();
