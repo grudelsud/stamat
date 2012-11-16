@@ -8,19 +8,19 @@ define("EW_PROJECT", "test", TRUE);
 // Database connection
 define("EW_CONN_HOST", "localhost", TRUE);
 define("EW_CONN_PORT", 3306, TRUE);
-//define("EW_CONN_USER", "root", TRUE);
-//define("EW_CONN_PASS", "root", TRUE);
-//define("EW_CONN_DB", "_stamat", TRUE);
-define("EW_CONN_USER", "fom", TRUE);
-define("EW_CONN_PASS", "f0m?fom!", TRUE);
-define("EW_CONN_DB", "fom_stamat", TRUE);
+define("EW_CONN_USER", "root", TRUE);
+define("EW_CONN_PASS", "root", TRUE);
+define("EW_CONN_DB", "_stamat", TRUE);
+//define("EW_CONN_USER", "fom", TRUE);
+//define("EW_CONN_PASS", "f0m?fom!", TRUE);
+//define("EW_CONN_DB", "fom_stamat", TRUE);
 
 
 
 
 
 //numero massimo di processi in esecuzione contemporanea
-define("EW_MAX_PROCESS_IN_EXECUTION", 1, TRUE);
+define("EW_MAX_PROCESS_IN_EXECUTION", 2, TRUE);
 
 
 
