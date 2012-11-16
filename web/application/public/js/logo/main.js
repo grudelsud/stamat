@@ -35,6 +35,10 @@ $(function () {
                 cell3.innerHTML="<h5>Status</h5>";
                 cell4.innerHTML="<h5>Detection result</h5>";
             }
+            if (data.length==0){
+                $('#tableProcess').empty();
+                $('#processListString').html("");
+            }
             
             $.each(data, function(entryIndex, entry) {
                 console.log("the entry: " + entry);
