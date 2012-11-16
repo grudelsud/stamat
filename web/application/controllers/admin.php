@@ -124,6 +124,7 @@ class Admin extends CI_Controller
                 else {
                     $detection=$num;
                 }
+                if ($row->status<7) $detection="";
                 $resultRow = array(
                     'idProcess' => $row->idProcess,
                     'logoUrl'  => $row->logoUrl,
