@@ -180,13 +180,6 @@ if($num_process_running < EW_MAX_PROCESS_IN_EXECUTION)  { // caso di nessun proc
 						while(!$rswrk->EOF){// esiste un processo da eseguire
 						
 						
-						//controllo se il processo non � un sotto processo di una coda gi� in esecuzione
-						$pending_previous = ew_ExecuteScalar("SELECT count(*) FROM process WHERE  (idProcessStatus = 2 OR idProcessStatus = 3) ");
-						
-						if($pending_previous) {
-							$rswrk->MoveNext();
-							 continue;
-						}
 						
 						//metto il servizio su starting
 						$query_update_status = "UPDATE process set idProcessStatus = 3, start = now() WHERE idProcessNum = ".$rswrk->fields("idProcessNum");
