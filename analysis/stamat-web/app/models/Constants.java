@@ -16,6 +16,9 @@ public class Constants {
 
 		public static final String TWITTER_USER_NAME = "user_name";
 		public static final String TWITTER_AUTH_NAME = "user_auth";
+		public static final String RANKNEWS_NEWS = "news";
+		public static final String RANKNEWS_NEWS_ID = "id";
+		public static final String RANKNEWS_NEWS_TEXT = "text";
 	}
 
 	public static class db_fields 

@@ -205,6 +205,41 @@
 						</div>
 					</div>
 
+					<!-- rank news -->
+					<div class="accordion-group">
+						<div class="accordion-heading">
+							<a href="#form-newsrank" data-parent="#form-group" data-toggle="collapse" class="accordion-toggle">Rank News</a>
+						</div>
+						<div class="accordion-body collapse" id="form-newsrank">
+							<div class="accordion-inner">
+								<form action="/rankNews" class="form-horizontal" method="post">
+									<fieldset>
+										<div class="control-group">
+											<label class="control-label" for="">Query<br>(Endpoint expects JSON Format)</label>
+											<div class="controls">
+												<textarea class="span4" id="ranknews-body" name="body" rows="6"></textarea>
+											</div>
+										</div>
+										<div class="form-actions">
+											<button type="submit" class="btn btn-primary">Search</button>
+											<button class="btn">Cancel</button>
+										</div>
+									</fieldset>
+								</form>
+								<p>below a working example</p>
+								<pre class="prettyprint">{
+"user_name":"grudelsud",
+"user_auth":"grudelsud",
+"news":[
+{"id":"76402","text":"bla bla"},
+{"id":"76229","text":"bla"}]
+}
+								</pre>
+								<p><span class="label label-info">user_auth</span> must be the name of a twitter-authenticated user</p>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +21,7 @@ import models.requests.EntitiesExtract;
 import net.semanticmetadata.lire.DocumentBuilder;
 
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
 import play.data.DynamicForm;
@@ -27,6 +29,7 @@ import play.data.Form;
 import play.libs.Akka;
 import play.libs.F.Function;
 import play.libs.F.Promise;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import stamat.controller.visual.SearchResult;
@@ -55,13 +58,22 @@ public class Application extends Controller {
 		} else {
 			String user_name = "";
 			String user_auth = "";
+			Map<String, String> news = new HashMap<String, String>();
 			Users user_auth_data = null;
 			try {
-				user_name = json.get(Constants.json_fields.TWITTER_USER_NAME).getTextValue();				
-				user_auth = json.get(Constants.json_fields.TWITTER_AUTH_NAME).getTextValue();				
+				user_name = json.get(Constants.json_fields.TWITTER_USER_NAME).getTextValue();
+				user_auth = json.get(Constants.json_fields.TWITTER_AUTH_NAME).getTextValue();
+				Iterator<JsonNode> newsIterator = json.get(Constants.json_fields.RANKNEWS_NEWS).getElements();
+				while(newsIterator.hasNext()) {
+					JsonNode imageJson = newsIterator.next();
+					// field id might be an integer, using "asText" to stay on a safe side
+					String id = imageJson.get(Constants.json_fields.RANKNEWS_NEWS_ID).asText();
+					String text = imageJson.get(Constants.json_fields.RANKNEWS_NEWS_TEXT).getTextValue();
+					news.put(id, text);
+				}
 				user_auth_data = Users.find.where().eq("screen_name", user_auth).findUnique();
 			} catch(NullPointerException e) {
-				return badRequest(Utils.returnError("missing either "+Constants.json_fields.TWITTER_USER_NAME+" or "+Constants.json_fields.TWITTER_AUTH_NAME+" fields"));
+				return badRequest(Utils.returnError("wrong json structure"));
 			} catch(PersistenceException pe) {
 				return badRequest(Utils.returnError("field "+Constants.json_fields.TWITTER_AUTH_NAME+" didn't return exactly 1 result"));
 			}
@@ -74,17 +86,21 @@ public class Application extends Controller {
 				Twitter twitter = tf.getInstance(at);
 
 				try {
-					String output = "";
 					List<twitter4j.Status> result = null;
 					if(user_name.length() > 0) {
 						result = twitter.getUserTimeline(user_name);							
 					} else {
 						result = twitter.getHomeTimeline();							
 					}
+					Map<String, String> tweets = new HashMap<String, String>();
 					for(twitter4j.Status status : result) {
-						output += "[" + status.getUser().getScreenName() + " - " + status.getText() + ", " + status.getCreatedAt() + "] ";
+						tweets.put(Long.toString(status.getId()), status.getText());
 					}
-					return ok(Utils.returnSuccess(output));
+					Map<String, Float> ranking = Analyser.ranking.news(news, tweets);
+					ObjectNode container = Json.newObject();
+					container.put("ranking", Utils.mapSF2JSON(ranking));
+					container.put("tweets", Utils.mapSS2JSON(tweets));
+					return ok(Utils.returnSuccess(container));
 				} catch (TwitterException e) {
 					return ok(Utils.returnError("not really your lucky day, got a twitter exception " + e.getMessage()));
 				}

@@ -80,7 +80,7 @@ public class NewsTweets {
 		for(String key : corpus.keySet()) {
 			String val = corpus.get(key);
 			try {
-				mScore.put(key, computeRelevance(val, refereesIndex, analyzer));
+				mScore.put(key, new Float(computeRelevance(val, refereesIndex, analyzer)));
 			} catch (ParseException e) {
 				throw new StamatException("Parse exception while computing news item " + key);
 			}

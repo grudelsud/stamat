@@ -1,6 +1,9 @@
 package models;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import models.dbo.Feeditemmedia;
 
@@ -64,6 +67,32 @@ public class Utils {
 			semKeywordNode.put("confidence", semanticKeyword.getConfidence());
 			semKeywordNode.put("num_occurences", semanticKeyword.getNumOccurrences());
 			semKeywordNode.put("tf", semanticKeyword.getTf());
+		}
+		return result;
+	}
+	
+	@Deprecated
+	public static JsonNode mapSS2JSON(Map<String, String> map)
+	{
+		ObjectNode dummyObject = Json.newObject();
+		ArrayNode result = dummyObject.putArray("dummyKey");
+		for(String key : map.keySet()) {
+			ObjectNode mapElementNode = result.addObject();
+			mapElementNode.put(key, map.get(key));
+		}
+		return result;
+	}
+
+	@Deprecated
+	public static JsonNode mapSF2JSON(Map<String, Float> map)
+	{
+		ObjectNode dummyObject = Json.newObject();
+		ArrayNode result = dummyObject.putArray("dummyKey");
+		Iterator<Entry<String, Float>> it = map.entrySet().iterator();
+		while(it.hasNext()) {
+			Entry<String, Float> entry = it.next();
+			ObjectNode mapElementNode = result.addObject();
+			mapElementNode.put(entry.getKey(), entry.getValue());
 		}
 		return result;
 	}
