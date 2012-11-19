@@ -118,7 +118,7 @@
             <td><h5>Logo</h5></td>
             <td><h5>Video</h5></td>
             <td><h5>Status</h5></td>
-            <td><h5>Detection result</h5></td>
+            <td><h5>Detected frames</h5></td>
             <td></td>
             </tr>
         <?php }?>

@@ -34,7 +34,7 @@ $(function () {
                 cell1.innerHTML="<h5>Logo</h5>";
                 cell2.innerHTML="<h5>Video</h5>";
                 cell3.innerHTML="<h5>Status</h5>";
-                cell4.innerHTML="<h5>Detection result</h5>";
+                cell4.innerHTML="<h5>Detected frames</h5>";
                 cell5.innerHTML="";
             }
             if (data.length==0){
