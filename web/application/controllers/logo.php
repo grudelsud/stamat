@@ -71,6 +71,10 @@ class logo extends CI_Controller {
                         $query=$this->db->query($queryString);
                     }
                     elseif ($form_type ==2)   {
+                        $queryString ='DELETE FROM logoModel WHERE url="'. $file_path . '"';
+                        $query=$this->db->query($queryString);
+                    }
+                    elseif ($form_type ==3)   {
                         $queryString ='DELETE FROM video WHERE url="'. $file_path . '"';
                         $query=$this->db->query($queryString);
                     }
@@ -85,9 +89,14 @@ class logo extends CI_Controller {
                         $query=$this->db->query($queryString);
                     }
                     elseif ($form_type ==2)   {
+                        $queryString = 'INSERT INTO logoModel (url,path) VALUES("'. $urlString . '" , "' . $pathString . '")';
+                        $query=$this->db->query($queryString);
+                    }
+                    elseif ($form_type ==3)   {
                         $queryString = 'INSERT INTO video (url,path) VALUES("'. $urlString . '" , "' . $pathString . '")';
                         $query=$this->db->query($queryString);
                     }
+                   
                 }
                 break;
             case 'DELETE':
@@ -160,7 +169,7 @@ class logo extends CI_Controller {
         $results= array();
         $logoResultUrl = base_url() . "application/public/logoResults/" . $idProcessNum . "/";
         foreach ($query->result() as $row){
-          if ($row->score>0){  
+          if ($row->score>0.2){  
               $imageFrameUrlFull=$logoResultUrl . $row->imageFrame . ".jpg";
               $imageFrameThumbUrlFull=$logoResultUrl . $row->imageFrame . "_thumb.jpg";
               $resultRow = array(
