@@ -15,6 +15,38 @@
 $(function () {
     'use strict';
 
+	
+	// Load dialog on click
+	//$('.detailedResuls').click(function (e) {
+	 $('.detailedResuls').live("click",function(e) {	
+                var idProcess = [];
+                idProcess=$(this).data('idprocess'); 
+                $.getJSON('../logo/getDetectedImages', {'idProcess': idProcess}, function(data) {
+                    console.log("getImages: " + data);
+                    $('#galleria').empty();
+                    $.each(data, function(entryIndex, entry) {
+                        var html=""; 
+                        //html += '<style> #galleria{height:320px} </style> ';
+                        html += '<a href="' +  entry['imageFrameUrl'] + '"> ';
+                        html += '<img data-title="Frame"';
+                        //html += ' data-description="Steam locomotives of the Chicago &amp; North Western Railway."'
+                        html += ' src="' + entry['imageFramethumbUrl'] + '"> </a> '
+                         $('#galleria').append(html);
+                    });    
+                 
+                    //Galleria.loadTheme('<?=base_url()?>application/public/js/logo/galleria.classic.min.js');
+
+                    Galleria.run('#galleria');
+
+            
+
+                    $('#galleria').modal();
+                    //checkStatus();
+                });
+		return false;
+	});
+
+
    setInterval(checkStatus, 5000);
 
 
@@ -31,11 +63,13 @@ $(function () {
                 var cell3=row.insertCell(2);
                 var cell4=row.insertCell(3);
                 var cell5=row.insertCell(4);
+                var cell6=row.insertCell(5);
                 cell1.innerHTML="<h5>Logo</h5>";
                 cell2.innerHTML="<h5>Video</h5>";
                 cell3.innerHTML="<h5>Status</h5>";
                 cell4.innerHTML="<h5>Detected frames</h5>";
-                cell5.innerHTML="";
+                cell5.innerHTML="<h5>Detailed results</h5>";
+                cell6.innerHTML="";
             }
             if (data.length==0){
                 $('#tableProcess').empty();
@@ -53,6 +87,7 @@ $(function () {
                 cell3=row.insertCell(2);
                 cell4=row.insertCell(3);
                 cell5=row.insertCell(4);
+                cell6=row.insertCell(5);
                 
                 var logoUrl = entry['logoUrl'].replace(/^.*[\\\/]/, '');
                 var videoUrl = entry['videoUrl'].replace(/^.*[\\\/]/, '');
@@ -60,7 +95,8 @@ $(function () {
                 cell2.innerHTML=videoUrl;
                 cell3.innerHTML=entry['status'];
                 cell4.innerHTML=entry['detection'];
-                cell5.innerHTML='<button class="btn btn-danger deleteProcess" data-idProcess='+ entry['idProcess'] +'> <i class="icon-trash icon-white"></i> <span>Delete</span></button>';
+                cell5.innerHTML='<input type="button" name="basic" value="more Details" class="btn btn-primary detailedResuls" data-idProcess="' + entry['idProcess'] +'"/>';
+                cell6.innerHTML='<button class="btn btn-danger deleteProcess" data-idProcess='+ entry['idProcess'] +'> <i class="icon-trash icon-white"></i> <span>Delete</span></button>';
                 
              });
          }); 

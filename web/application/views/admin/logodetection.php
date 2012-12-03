@@ -1,26 +1,17 @@
 <!DOCTYPE HTML>
-<!--
-/*
- * jQuery File Upload Plugin Demo 6.8
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2010, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- */
--->
+
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Logo Detection</title>
-<meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bar and preview images for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.">
+<meta name="description" content="logo detection, MICC">
 <meta name="viewport" content="width=device-width">
 <!-- Bootstrap CSS Toolkit styles -->
 <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
 <!-- Generic page styles -->
 <link rel="stylesheet" href="<?=base_url()?>/application/public/css/style.css">
+<!-- dialog styles -->
+<link rel="stylesheet" href="<?=base_url()?>/application/public/css/basic.css">
 <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
 <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-responsive.min.css">
 <!-- Bootstrap CSS fixes for IE6 -->
@@ -31,8 +22,14 @@
 <link rel="stylesheet" href="<?=base_url()?>/application/public/css/jquery.fileupload-ui.css">
 <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
 <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<style>
+    /* This rule is read by Galleria to define the gallery height: */
+    #galleria{height:320px}
+</style>
 </head>
 <body>
+<!-- load Galleria -->
+<script src="<?=base_url()?>application/public/js/logo/galleria-1.2.8.min.js"></script>
 
 <div class="container">
     <div class="page-header">
@@ -68,6 +65,40 @@
         <!-- The table listing the files available for upload/download -->
         <table class="table table-striped"><tbody class="files1" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
     </form>
+    
+    <br>
+     <!-- The file upload form used as target for the file upload widget -->
+    <h4>Logo Models</h4>
+    <form class="fileupload"  action="<?=base_url()?>index.php/logo/upload" method="POST" enctype="multipart/form-data">
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="span7">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <span class="btn btn-success fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <span>Add files...</span>
+                    <input type="file" name="files[]" multiple>
+                </span>
+            </div>
+            <!-- The global progress information -->
+            <div class="span5 fileupload-progress fade">
+                <!-- The global progress bar -->
+                <div class="progress progress-success progress-striped active">
+                    <div class="bar" style="width:0%;"></div>
+                </div>
+                <!-- The extended global progress information -->
+                <div class="progress-extended">&nbsp;</div>
+            </div>
+        </div>
+        <!-- The loading indicator is shown during file processing -->
+        <div class="fileupload-loading"></div>
+        <br>
+        <!-- The table listing the files available for upload/download -->
+        <table class="table table-striped"><tbody class="files2" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+    </form>
+    
+    <br>
+    
     <br>
     <h4>Videos to test</h4>
     <form class="fileupload" action="<?=base_url()?>index.php/logo/upload" method="POST" enctype="multipart/form-data" >
@@ -95,7 +126,7 @@
         <div class="fileupload-loading"></div>
         <br>
         <!-- The table listing the files available for upload/download -->
-        <table class="table table-striped"><tbody class="files2" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
+        <table class="table table-striped"><tbody class="files3" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody></table>
     </form>
     <br>
     
@@ -119,6 +150,7 @@
             <td><h5>Video</h5></td>
             <td><h5>Status</h5></td>
             <td><h5>Detected frames</h5></td>
+            <td><h5>Detailed results</h5></td>
             <td></td>
             </tr>
         <?php }?>
@@ -129,6 +161,9 @@
             <td><?php echo  basename($results[$i]['videoUrl']) ?></td>
             <td class="status"> <?php echo $results[$i]['status'] ?> </td>
             <td class="detection"><?php echo  $results[$i]['detection'] ?></td>
+            <td class="detailedResuls">
+                <input type='button' name='basic' value='more Details' class='btn btn-primary detailedResuls' data-idProcess="<?php echo  $results[$i]['idProcess'] ?>"/>
+            </td>
             <td class="delete">
             <button class="btn btn-danger deleteProcess" data-idProcess=<?php echo  $results[$i]['idProcess'] ?>>
                 <i class="icon-trash icon-white"></i>
@@ -139,7 +174,24 @@
         <?php }?>
     </table>
     
-    
+    		<!-- modal content -->
+		<div id="galleria">
+                </div>
+
+            <script>
+
+            // Load the classic theme
+            Galleria.loadTheme('<?=base_url()?>application/public/js/logo/galleria.classic.min.js');
+
+            // Initialize Galleria
+            //Galleria.run('#galleria');
+
+            </script>	
+            <!-- preload the images -->
+		<div style='display:none'>
+			<img src='<?=base_url()?>/application/public/img/x.png' alt='' -->
+		</div>
+
     
     
 </div>
@@ -353,6 +405,69 @@
     </tr>
 {% } %}
 </script>
+<!-- The template to display files available for upload -->
+<script id="template-upload3" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td>
+                <div class="progress progress-success progress-striped active"><div class="bar" style="width:0%;"></div></div>
+            </td>
+            <td class="start">{% if (!o.options.autoUpload) { %}
+                <button class="btn btn-primary">
+                    <i class="icon-upload icon-white"></i>
+                    <span>{%=locale.fileupload.start%}</span>
+                </button>
+            {% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel">{% if (!i) { %}
+            <button class="btn btn-warning">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>{%=locale.fileupload.cancel%}</span>
+                
+            </button>
+        {% } %}</td>
+        
+    </tr>
+{% } %}
+</script>
+<!-- The template to display files available for download -->
+<script id="template-download3" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-download fade">
+        <td><input type="checkbox" value="1"></td>
+        {% if (file.error) { %}
+            <td></td>
+            <td class="name"><span>{%=file.name%}</span></td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        {% } else { %}
+            <td class="preview">{% if (file.thumbnail_url) { %}
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}"><img src="{%=file.thumbnail_url%}"></a>
+            {% } %}</td>
+            <td class="name">
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+            </td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td colspan="2"></td>
+        {% } %}
+        <td class="delete">
+            <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%='http://stamat.net/index.php/logo/upload' %}">
+                <i class="icon-trash icon-white"></i>
+                <span>{%=locale.fileupload.destroy%}</span>
+            </button>
+            
+        </td>
+    </tr>
+{% } %}
+</script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="<?=base_url()?>application/public/js/logo/vendor/jquery.ui.widget.js"></script>
@@ -377,6 +492,8 @@
 <script src="<?=base_url()?>application/public/js/logo/locale.js"></script>
 <!-- The main application script -->
 <script src="<?=base_url()?>application/public/js/logo/main.js"></script>
+<!-- simple Modal -->
+<script src="<?=base_url()?>application/public/js/logo/jquery.simplemodal.js"></script>
 <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
 <!--[if gte IE 8]><script src="js/cors/jquery.xdr-transport.js"></script><![endif]-->
 </body> 

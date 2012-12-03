@@ -153,6 +153,30 @@ class logo extends CI_Controller {
         
     }
     
+    public function getDetectedImages(){
+        $idProcessNum = $_REQUEST['idProcess'];
+        $queryString = "SELECT id, idProcessNum, imageFrame, score  FROM processResults WHERE idProcessNum=".$idProcessNum ;
+        $query=$this->db->query($queryString);
+        $results= array();
+        $logoResultUrl = base_url() . "application/public/logoResults/" . $idProcessNum . "/";
+        foreach ($query->result() as $row){
+          if ($row->score>0){  
+              $imageFrameUrlFull=$logoResultUrl . $row->imageFrame . ".jpg";
+              $imageFrameThumbUrlFull=$logoResultUrl . $row->imageFrame . "_thumb.jpg";
+              $resultRow = array(
+                    'id' => $row->id,
+                    'idProcess' => $row->idProcessNum,
+                    'imageFrameUrl' => $imageFrameUrlFull,
+                    'imageFramethumbUrl' =>   $imageFrameThumbUrlFull 
+                );  
+                array_push($results,$resultRow);
+          }
+        }
+        $this->output->set_content_type('application/json')
+                 ->set_output(json_encode($results));
+        
+    }
+    
     public function deleteProcess(){
         $idProcessNum = $_REQUEST['idProcess'];
         $queryString = "DELETE FROM process WHERE idProcessNum=".$idProcessNum ;
@@ -211,6 +235,7 @@ class logo extends CI_Controller {
                'detection' => $detection
                );
             array_push($results,$resultRow);
+            
             
         }
         return  $results;
