@@ -169,7 +169,7 @@ class logo extends CI_Controller {
         $results= array();
         $logoResultUrl = base_url() . "application/public/logoResults/" . $idProcessNum . "/";
         foreach ($query->result() as $row){
-          if ($row->score>0.2){  
+          if ($row->score>=0.2){  
               $imageFrameUrlFull=$logoResultUrl . $row->imageFrame . ".jpg";
               $imageFrameThumbUrlFull=$logoResultUrl . $row->imageFrame . "_thumb.jpg";
               $resultRow = array(
