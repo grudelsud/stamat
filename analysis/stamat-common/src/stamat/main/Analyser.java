@@ -448,9 +448,10 @@ public class Analyser {
 		}
 	}
 	
-	public static class ranking {
-		
-		public static Map<String, Float> news(Map<String, String> news, Map<String, String> tweets) {
+	public static class ranking 
+	{
+		public static Map<String, Float> news(Map<String, String> news, Map<String, String> tweets) 
+		{
 			Map<String, Float> result = null;
 			try {
 				result = NewsTweets.rankNews(news, tweets);
@@ -462,7 +463,22 @@ public class Analyser {
 			return result;
 		}
 
-		public static Map<String, Float> tweets(Map<String, String> tweets, Map<String, String> news) {
+		public static Map<String, Float> news(Map<String, String> news, Map<String, String> tweets, Map<String, Float> tweetBoosts) 
+		{
+			Map<String, Float> result = null;
+			try {
+				result = NewsTweets.rankNews(news, tweets, tweetBoosts);
+			} catch (IOException e) {
+				logger.warning(e.getMessage());
+			} catch (StamatException e) {
+				logger.warning(e.getMessage());
+			}
+			return result;
+			
+		}
+
+		public static Map<String, Float> tweets(Map<String, String> tweets, Map<String, String> news) 
+		{
 			Map<String, Float> result = null;
 			try {
 				result = NewsTweets.rankNews(tweets, news);
@@ -473,7 +489,7 @@ public class Analyser {
 			}
 			return result;
 		}
-}
+	}
 	
 	/**
 	 * class visual

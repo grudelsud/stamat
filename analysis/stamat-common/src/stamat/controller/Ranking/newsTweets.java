@@ -49,11 +49,40 @@ public class NewsTweets {
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
 		IndexWriter w = new IndexWriter(index, config);
 
-		for(String key : content.keySet()) {
-			String val = content.get(key);
+		for (Entry<String, String> entry : content.entrySet()) 
+		{
+			String key = entry.getKey();
+			String val = entry.getValue();
 			Document doc = new Document();
 			doc.add(new Field(FIELD_KEY, key, Field.Store.YES, Field.Index.NOT_ANALYZED));
 			doc.add(new Field(FIELD_VAL, val, Field.Store.YES, Field.Index.ANALYZED));
+			w.addDocument(doc);
+		}
+		w.close();
+		return index;
+	}
+
+	private static Directory createIndex(Map<String, String> content, Map<String, Float> contentBoost) throws IOException
+	{
+		//create tweets index
+		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
+		Directory index = new RAMDirectory();
+		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+		IndexWriter w = new IndexWriter(index, config);
+
+		for (Entry<String, String> entry : content.entrySet()) 
+		{
+			String key = entry.getKey();
+			String val = entry.getValue();
+			Document doc = new Document();
+			doc.add(new Field(FIELD_KEY, key, Field.Store.YES, Field.Index.NOT_ANALYZED));
+			doc.add(new Field(FIELD_VAL, val, Field.Store.YES, Field.Index.ANALYZED));
+
+			Float boost = contentBoost.get(key);
+			if (boost != null)
+			{
+				doc.setBoost(boost);
+			}
 			w.addDocument(doc);
 		}
 		w.close();
@@ -64,48 +93,74 @@ public class NewsTweets {
 		return rankCorpus(news, tweets);
 	}
 
-	public static Map<String, Float> rankTweets(Map<String,String> tweets, Map<String,String> news) throws IOException, StamatException {
+	public static Map<String, Float> rankNews(Map<String,String> news, Map<String,String> tweets, Map<String,Float> tweetBoosts) throws IOException, StamatException 
+	{
+		return rankCorpus(news, tweets, tweetBoosts);
+	}
+
+	public static Map<String, Float> rankTweets(Map<String,String> tweets, Map<String,String> news) throws IOException, StamatException 
+	{
 		return rankCorpus(tweets, news);
 	}
 
-	public static Map<String, Float> rankCorpus(Map<String,String> corpus, Map<String,String> referees) throws IOException, StamatException
+	public static Map<String, Float> rankCorpus(Map<String,String> corpus, Directory refereesIndex) throws IOException, StamatException
 	{
-		Directory refereesIndex = createIndex(referees);
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_36);
 
-		// let's go with the news
 		HashMap<String,Float> mScore = new HashMap<String,Float>();
 		ValueComparator bvc =  new ValueComparator(mScore);
 
-		for(String key : corpus.keySet()) {
-			String val = corpus.get(key);
-			try {
+		for (Entry<String, String> entry : corpus.entrySet()) 
+		{
+			String key = entry.getKey();
+			String val = entry.getValue();
+			try 
+			{
 				mScore.put(key, new Float(computeRelevance(val, refereesIndex, analyzer)));
-			} catch (ParseException e) {
+			} 
+			catch (ParseException e) 
+			{
 				throw new StamatException("Parse exception while computing news item " + key);
 			}
 		}
 
 		TreeMap<String,Float> sortedScore = new TreeMap<String,Float>(bvc);
 		sortedScore.putAll(mScore);
-		return sortedScore;
+		return sortedScore;		
+	}
+
+	public static Map<String, Float> rankCorpus(Map<String,String> corpus, Map<String,String> referees) throws IOException, StamatException
+	{
+		Directory refereesIndex = createIndex(referees);
+		return rankCorpus(corpus, refereesIndex);
+	}
+
+	public static Map<String, Float> rankCorpus(Map<String,String> corpus, Map<String,String> referees, Map<String,Float> refereeBoosts) throws IOException, StamatException
+	{
+		Directory refereesIndex = createIndex(referees, refereeBoosts);
+		return rankCorpus(corpus, refereesIndex);		
 	}
 
 	private static class ValueComparator implements Comparator<String> 
 	{
 		private Map<String, Float> base;
 
-		public ValueComparator(Map<String, Float> base) {
+		public ValueComparator(Map<String, Float> base) 
+		{
 			this.base = base;
 		}
 
 		// Note: this comparator imposes orderings that are inconsistent with equals.
-		public int compare(String a, String b) {
-			if (base.get(a) >= base.get(b)) {
+		public int compare(String a, String b) 
+		{
+			if (base.get(a) >= base.get(b)) 
+			{
 				return -1;
-			} else {
+			} 
+			else 
+			{
 				return 1;
-			} // returning 0 would merge keys
+			}
 		}
 	}
 
@@ -124,7 +179,8 @@ public class NewsTweets {
 		logger.info("Found " + hits.length + " hits.");
 
 		float totScore=0;
-		for(int i=0; i<hits.length; ++i) {
+		for (int i = 0; i < hits.length; ++i) 
+		{
 			totScore += hits[i].score;
 			// Document d = searcher.doc(hits[i].doc);
 		}

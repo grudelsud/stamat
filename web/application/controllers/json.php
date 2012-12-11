@@ -11,6 +11,8 @@ class Json extends CI_Controller
 		parent::__construct();
 		$this->load->model('user_model');
 
+		// $this->output->enable_profiler(TRUE);
+
 		$logged_user = array();
 		$this->logged_in = $this->user_model->logged_in( $logged_user );
 		$this->logged_user = $logged_user;
@@ -128,23 +130,23 @@ class Json extends CI_Controller
 			$item->feed_title = $row->feed_title;
 			$item->url = $row->url;
 
-			// fetch image
-			$this->db->where('feeditem_id', $row->id);
-			$this->db->where('type', 'image');
-			$this->db->order_by('primary', 'desc');
-			$query_media = $this->db->get('feeditemmedia');
-			if($query_media->num_rows() > 0) {
-				$row = $query_media->row();
-				$item->pic = $row->url;
-				$item->pic_cdn = $row->abs_path . $row->hash;
-			}
+			// fetch image - these adding quite a lot of processing time (it was massive before adding a few indices on feeditemmedia)
+			// $this->db->where('feeditem_id', $row->id);
+			// $this->db->where('type', 'image');
+			// $this->db->order_by('primary', 'desc');
+			// $query_media = $this->db->get('feeditemmedia');
+			// if($query_media->num_rows() > 0) {
+			// 	$row = $query_media->row();
+			// 	$item->pic = $row->url;
+			// 	$item->pic_cdn = $row->abs_path . $row->hash;
+			// }
 
 			$items[] = $item;
 		}
 		$result = new stdClass();
 		$result->items = $items;
 
-		// TODO: check this, I can't believe we need to rerun the query just to count the number of results
+		// performance check: this quey only takes 1/100 of the main one (around 0.01 sec against 1 sec)
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
 		$this->db->join('feeds_users as fu', 'f.id = fu.feed_id');

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-BASE_DIR="/home/ubuntu/FOM2/server"
+BASE_DIR="/home/ubuntu/STAMAT/server"
 cd $BASE_DIR
 
 # without slashes as it's used for java execution

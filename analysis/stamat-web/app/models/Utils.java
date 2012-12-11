@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import models.dbo.Feeditemmedia;
 
@@ -70,15 +71,23 @@ public class Utils {
 		}
 		return result;
 	}
-	
-	@Deprecated
-	public static JsonNode mapSS2JSON(Map<String, String> map)
+
+	public static JsonNode map2JSON(Map<? extends Object, ? extends Object> map)
 	{
 		ObjectNode dummyObject = Json.newObject();
 		ArrayNode result = dummyObject.putArray("dummyKey");
-		for(String key : map.keySet()) {
+		for(Entry<?, ?> entry : map.entrySet()) {
 			ObjectNode mapElementNode = result.addObject();
-			mapElementNode.put(key, map.get(key));
+			if(entry.getKey().getClass() == String.class) {
+				String key = (String)entry.getKey();
+				if(entry.getValue().getClass() == Float.class) {
+					Float val = (Float)entry.getValue();
+					mapElementNode.put(key, val);
+				} else if(entry.getValue().getClass() == String.class) {
+					String val = (String)entry.getValue();
+					mapElementNode.put(key, val);
+				}
+			}
 		}
 		return result;
 	}
@@ -88,11 +97,9 @@ public class Utils {
 	{
 		ObjectNode dummyObject = Json.newObject();
 		ArrayNode result = dummyObject.putArray("dummyKey");
-		Iterator<Entry<String, Float>> it = map.entrySet().iterator();
-		while(it.hasNext()) {
-			Entry<String, Float> entry = it.next();
+		for(String key : map.keySet()) {
 			ObjectNode mapElementNode = result.addObject();
-			mapElementNode.put(entry.getKey(), entry.getValue());
+			mapElementNode.put(key, map.get(key));
 		}
 		return result;
 	}

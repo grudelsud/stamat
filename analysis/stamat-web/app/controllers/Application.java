@@ -53,18 +53,23 @@ public class Application extends Controller {
 	public static Result rankNews()
 	{
 		JsonNode json = request().body().asJson();
-		if(json == null) {
+		if (json == null) 
+		{
 			return badRequest(Utils.returnError("expecting JSON request. please check that content-type is set to \"application/json\" and request body is properly encoded (e.g. JSON.stringify(data))"));
-		} else {
+		} 
+		else 
+		{
 			String user_name = "";
 			String user_auth = "";
 			Map<String, String> news = new HashMap<String, String>();
 			Users user_auth_data = null;
-			try {
+			try 
+			{
 				user_name = json.get(Constants.json_fields.TWITTER_USER_NAME).getTextValue();
 				user_auth = json.get(Constants.json_fields.TWITTER_AUTH_NAME).getTextValue();
 				Iterator<JsonNode> newsIterator = json.get(Constants.json_fields.RANKNEWS_NEWS).getElements();
-				while(newsIterator.hasNext()) {
+				while (newsIterator.hasNext()) 
+				{
 					JsonNode imageJson = newsIterator.next();
 					// field id might be an integer, using "asText" to stay on a safe side
 					String id = imageJson.get(Constants.json_fields.RANKNEWS_NEWS_ID).asText();
@@ -72,12 +77,17 @@ public class Application extends Controller {
 					news.put(id, text);
 				}
 				user_auth_data = Users.find.where().eq("screen_name", user_auth).findUnique();
-			} catch(NullPointerException e) {
+			} 
+			catch (NullPointerException e) 
+			{
 				return badRequest(Utils.returnError("wrong json structure"));
-			} catch(PersistenceException pe) {
+			} 
+			catch (PersistenceException pe) 
+			{
 				return badRequest(Utils.returnError("field "+Constants.json_fields.TWITTER_AUTH_NAME+" didn't return exactly 1 result"));
 			}
-			if(user_auth_data != null && !user_auth_data.oauth_token.isEmpty() ) {
+			if (user_auth_data != null && !user_auth_data.oauth_token.isEmpty() ) 
+			{
 				ConfigurationBuilder cb = new ConfigurationBuilder();
 				cb.setOAuthConsumerKey("XW7zty39b9veVxAbN444g");
 				cb.setOAuthConsumerSecret("iw8tJREZoAsoBFMignPwDyCmgKvdFbr255WNcP9a7c");
@@ -85,27 +95,51 @@ public class Application extends Controller {
 				AccessToken at = new AccessToken(user_auth_data.oauth_token, user_auth_data.oauth_token_secret);
 				Twitter twitter = tf.getInstance(at);
 
-				try {
+				try 
+				{
 					List<twitter4j.Status> result = null;
-					if(user_name.length() > 0) {
-						result = twitter.getUserTimeline(user_name);							
-					} else {
-						result = twitter.getHomeTimeline();							
+					boolean homeTimeline = false;
+					if (user_name.length() > 0) 
+					{
+						// user_name specified, we're pulling content from the timeline specified
+						result = twitter.getUserTimeline(user_name);
+					}
+					else
+					{
+						// user_name is empty, we're pulling tweets from users followed by authenticating user
+						homeTimeline = true;
+						result = twitter.getHomeTimeline();
 					}
 					Map<String, String> tweets = new HashMap<String, String>();
-					for(twitter4j.Status status : result) {
-						tweets.put(Long.toString(status.getId()), status.getText());
+					Map<String, Float> tweetBoosts = new HashMap<String, Float>();
+					for (twitter4j.Status status : result) 
+					{
+						String statusId = Long.toString(status.getId());
+						float boost = (float)(1 + Math.log(1.0d + (double)status.getRetweetCount()));
+						if (homeTimeline) 
+						{
+							twitter4j.User user = status.getUser();
+							int followers = user.getFollowersCount();
+							int friends = user.getFriendsCount();
+							boost += (float)(1 + Math.log(1.0d + (double)followers / (double)friends));
+						}
+						tweets.put(statusId, status.getText());
+						tweetBoosts.put(statusId, boost);
 					}
-					Map<String, Float> ranking = Analyser.ranking.news(news, tweets);
+					Map<String, Float> ranking = Analyser.ranking.news(news, tweets, tweetBoosts);
 					ObjectNode container = Json.newObject();
-					container.put("ranking", Utils.mapSF2JSON(ranking));
-					container.put("tweets", Utils.mapSS2JSON(tweets));
+					container.put("ranking", Utils.map2JSON(ranking));
+					container.put("tweets", Utils.map2JSON(tweets));
+					container.put("tweetboosts", Utils.map2JSON(tweetBoosts));
 					return ok(Utils.returnSuccess(container));
-				} catch (TwitterException e) {
+				} 
+				catch (TwitterException e) 
+				{
 					return ok(Utils.returnError("not really your lucky day, got a twitter exception " + e.getMessage()));
 				}
-
-			} else {
+			} 
+			else 
+			{
 				return badRequest(Utils.returnError("User [" + user_auth + "] doesn't have rights to access the Twitter API"));
 			}
 			

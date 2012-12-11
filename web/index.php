@@ -25,7 +25,7 @@ $twitter_cosumerKey = '';
 $twitter_cosumerSecret = '';
 
 switch ($_SERVER['SERVER_NAME']) {
-case 'stamat.net':
+case 'stamat.local':
 	$environment = 'development';
 	$fb_app_id = '105746679556989';
 	$fb_app_secret = '29759386d9ead63d70318c41e5219696';
