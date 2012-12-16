@@ -232,6 +232,30 @@ class Json extends CI_Controller
 		return $this->_return_json_success( $result );
 	}
 
+	public function tagcloud()
+	{
+		$tags = array();
+
+		$this->db->select('t.id, t.name, t.slug, v.name as type');
+		$this->db->from('tags as t');
+		$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
+		$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
+		$this->db->where('t.stop_word', 0);
+		$this->db->order_by('t.created', 'desc');
+		$this->db->limit(50);
+
+		$query = $this->db->get();
+		foreach ($query->result() as $row) 
+		{
+			$tags[] = $row;
+		}
+
+		$result = new stdClass;
+		$result->tags = $tags;
+		$this->_return_json_success($result);
+	}
+
+
 	/**
 	 * Media related, pure REST!
 	 */

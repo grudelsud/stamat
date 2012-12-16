@@ -26,9 +26,13 @@
 						<div id="feed_directory"></div>
 						<div class="pagination feeditems"></div>
 					</div>
-					<!-- <div id="reaction_container" class="span4 scroll-top">
-						Moved inside feed_directory>article <div id="reaction_directory"></div>
-					</div> -->
+					<div id="tweet_feed_container" class="span4">
+						<form class="well">
+							<input type="text" class="span3" placeholder="Type keywords or select tags below">
+							<button type="submit" class="btn btn-primary rank">Rank News</button>
+						</form>
+						<div id="tweet_feed_directory"></div>
+					</div>
 				</div>
 			</div><!-- #tab_feed -->
 

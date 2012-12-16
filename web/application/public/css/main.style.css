@@ -39,12 +39,12 @@ article.feed_item_container {
 	color: white;
 }
 
-	.reaction #content_media {
+	.reaction .content_media {
 		max-height: 300px;
 		overflow-y: scroll;
 	}
 
-	.reaction #content_tweets {
+	.reaction .content_tweets {
 		border: 1px solid #ccc;
 		border-radius: 5px;
 		padding: 5px;
@@ -53,21 +53,25 @@ article.feed_item_container {
 		overflow-y: scroll;
 	}
 
-	.reaction #content_tweets img {
+	#tweetfeed_tweets img,
+	.reaction .content_tweets img {
 		position: absolute;
 		top: 5px;
 		left: 0;
 	}
 
+	#tweetfeed_tweets .tweet,
 	.reaction .tweet {
 		position: relative;
 		min-height: 60px;
 	}
 
+	#tweetfeed_tweets .tweet_head, #tweetfeed_tweets .tweet_content,
 	.reaction .tweet_head, .reaction .tweet_content {
 		margin-left: 54px;
 	}
 
+	#tweetfeed_tweets .tweet_meta,
 	.reaction .tweet_meta {
 		font-size: 11px;
 		color: #666;

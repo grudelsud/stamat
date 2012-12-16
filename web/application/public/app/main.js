@@ -44,6 +44,7 @@ $(function() {
 	var feedModule = readreactv.module('feed');
 	var feedItemModule = readreactv.module('feeditem');
 	var reactionModule = readreactv.module('reaction');
+	var tweetFeedModule = readreactv.module('tweetfeed');
 	var mediafinderModule = readreactv.module('mediafinder');
 
 	// Defining the application router, you can attach sub routers here.
@@ -67,8 +68,9 @@ $(function() {
 			// main content
 			this.status.fetchFeedItems = true;
 			this.status.fetchMediaItems = true;
-			// stuff on the right
 			this.status.fetchFeedReactions = false;
+			// stuff on the right
+			this.status.fetchTagCloud = true;
 
 			this.views = {};
 			this.models = {};
@@ -78,24 +80,35 @@ $(function() {
 			this.collections.feedCollection = new feedModule.Collection();
 			this.collections.feedItemCollection = new feedItemModule.Collection();
 			this.models.reactionModel = new reactionModule.Model();
+			this.models.tweetFeedModel = new tweetFeedModule.Model();
 			this.models.mediafinderModel = new mediafinderModule.Model();
 
 			// then fire views associated to the instantiated models/collections
 			this.views.feedCollectionView = new feedModule.Views.Collection({collection: this.collections.feedCollection});
 			this.views.feedItemCollectionView = new feedItemModule.Views.Collection({collection: this.collections.feedItemCollection});
 			this.views.reactionView = new reactionModule.Views.Main({model: this.models.reactionModel});
+			this.views.tweetFeedView = new tweetFeedModule.Views.Main({model: this.models.tweetFeedModel});
 			this.views.mediafinderView = new mediafinderModule.Views.Main({model: this.models.mediafinderModel});
 		},
 		setupPanels: function() {
 
 			// collect feeds, will populate left sidebar
-			if(this.status.fetchFeeds) {
+			if (this.status.fetchFeeds) 
+			{
 				this.collections.feedCollection.fetch();
 				this.status.fetchFeeds = false;
 			}
 
+			// collect feeds, will populate left sidebar
+			if (this.status.fetchTagCloud) 
+			{
+				this.models.tweetFeedModel.fetch();
+				this.status.fetchTagCloud = false;
+			}
+
 			// collect feed items & media, shown in tabbed navigation, central part of the page
-			if(this.status.fetchFeedItems) {
+			if (this.status.fetchFeedItems) 
+			{
 				// fetch feed items
 				this.collections.feedItemCollection.setFilter(this.status.feedParams);
 				this.collections.feedItemCollection.fetch();
@@ -103,7 +116,8 @@ $(function() {
 				this.status.fetchFeedItems = false;
 			}
 
-			if(this.status.fetchMediaItems) {
+			if (this.status.fetchMediaItems) 
+			{
 				// fetch media (params are the same as above)
 				this.models.mediafinderModel.set({params: this.status.feedParams});
 				this.models.mediafinderModel.fetch();
@@ -112,11 +126,14 @@ $(function() {
 			}
 
 			// reactions are generally collected on demand
-			if(this.status.fetchFeedReactions) {
+			if (this.status.fetchFeedReactions) 
+			{
 				this.models.reactionModel.set({id: this.status.reactionId});
 				this.models.reactionModel.fetch();
 				this.status.fetchFeedReactions = false;
-			} else {
+			} 
+			else 
+			{
 				this.views.reactionView.empty();
 			}
 
@@ -164,6 +181,7 @@ $(function() {
 			this.status.fetchFeeds = true;
 			this.status.fetchFeedItems = true;
 			this.status.fetchMediaItems = true;
+			this.status.fetchTagCloud = true;
 			this.status.fetchFeedReactions = false;
 			this.status.feedParams = '';
 			this.status.reactionId = '';

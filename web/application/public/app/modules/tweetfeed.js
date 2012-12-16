@@ -22,8 +22,9 @@
 	TweetFeed.Views.Main = Backbone.View.extend({
 		template: assets_url+'app/templates/tweetfeed.html',
 		templateTweet: assets_url+'app/templates/tweet.html',
-		el: '#tweetfeed',
+		el: '#tweet_feed_directory',
 		events: {
+			'click .label': 'tagSelect',
 			'click .rank': 'rankNews'
 		},
 		initialize: function() {
@@ -35,6 +36,7 @@
 			view.$el.empty();
 		},
 		render: function() {
+			var view = this;
 			readreactv.fetchTemplate(this.template, function(tmpl) {
 				view.$el.html(tmpl(view.model.toJSON()));
 			});
@@ -55,7 +57,7 @@
 			tweet_collection.query = query_terms.join('+');
 			tweet_collection.fetch({
 				success: function(tweets) {
-					var $tweet_list = $('#content_tweets').empty();
+					var $tweet_list = $('#tweetfeed_tweets').empty();
 					_.each(tweets.models, function(tweet) {
 						$tweet_list.append(tweet_template(tweet.toJSON()));
 					});
@@ -84,6 +86,9 @@
 			this.model.get('tweets').reset();
 			this.model.get('tweets').page = 1;
 			this.loadTweets();
+		},
+		rankNews: function() {
+			console.log('sending stuff to server for ranking');
 		}
 	});
 

@@ -29,6 +29,7 @@
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/feed.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/feeditem.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/reaction.js"></script>
+		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/tweetfeed.js"></script>
 		<script type="text/javascript" src="<?php echo ASSETS_URL; ?>app/modules/mediafinder.js"></script>
 	</head>
 	<body id="main" class="<?php echo $template; ?>">

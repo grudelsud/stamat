@@ -64,10 +64,11 @@
 			_.each(selected_tags, function(tag) { query_terms.push(encodeURI(tag.get('name'))); });
 
 			var tweet_collection = this.model.get('tweets');
+			var reaction_id = this.model.id;
 			tweet_collection.query = query_terms.join('+');
 			tweet_collection.fetch({
 				success: function(tweets) {
-					var $tweet_list = $('#content_tweets').empty();
+					var $tweet_list = $('.content_tweets_'+reaction_id).empty();
 					_.each(tweets.models, function(tweet) {
 						$tweet_list.append(tweet_template(tweet.toJSON()));
 					});
