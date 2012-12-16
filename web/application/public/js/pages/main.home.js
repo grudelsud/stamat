@@ -10,12 +10,14 @@ $(function() {
 
 	$('#tab_map_link').on('show', function(e) {
 		if( map == undefined) {
-			map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+			// commented to disable map
+			// map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 		}
 	});
 
 	// crappy patch, this should be defined in one of the mediafinder views, poorly designed at the moment
 	$('#select_vs_descriptor').on('change', function(e) {
-		$('#content_media .selected').click();
+		// commented to disable map
+		// $('#content_media .selected').click();
 	});
 })

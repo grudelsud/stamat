@@ -81,7 +81,7 @@ class Json extends CI_Controller
 	{
 		$params = $this->uri->uri_to_assoc();
 
-		$this->db->select('fi.id, fi.feed_id, fi.title, fi.permalink, fi.date, fi.description, f.title as feed_title, f.url');
+		$this->db->select('fi.id, fi.feed_id, fi.title, fi.permalink, fi.date, fi.abstract, f.title as feed_title, f.url');
 		$this->db->from('feeditems as fi');
 		$this->db->join('feeds as f', 'fi.feed_id = f.id');
 		$this->db->join('feeds_users as fu', 'f.id = fu.feed_id');
@@ -126,7 +126,7 @@ class Json extends CI_Controller
 			$item->title = strip_tags($row->title);
 			$item->permalink = $row->permalink;
 			$item->date = $row->date;
-			$item->description = strip_tags( $row->description, '<div><p><a>');
+			$item->abstract = strip_tags( $row->abstract, '<div><p><a>');
 			$item->feed_title = $row->feed_title;
 			$item->url = $row->url;
 

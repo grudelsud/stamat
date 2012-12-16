@@ -17,33 +17,58 @@ article.feed_item_container {
 	margin-bottom: 15px;
 	border-bottom: 1px solid #ddd;
 }
-	article div.featured {
-		height: 100px;
+	article h3 {
+		line-height: 30px;
+	}
+	article div.meta {
+		margin: -10px 0 10px;
+		color: #999;
+		font-size: 13px;
+	}
+		article div.meta a {
+			color: #666;
+		}
+		article div.meta a:hover {
+			text-decoration: underline;
+		}
+	article div.content {
+		margin-bottom: 10px;
 	}
 
-#reaction_directory span.label a {
+.reaction span.label a {
 	color: white;
 }
 
-	#reaction_directory #content_media, #reaction_directory #content_tweets {
+	.reaction #content_media {
 		max-height: 300px;
-		overflow: scroll;
+		overflow-y: scroll;
 	}
-	#reaction_directory .tweet {
-		padding: 3px 3px 8px 0;
-		border-bottom: 1px solid #EEE;
-		position: relative;
+
+	.reaction #content_tweets {
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		padding: 5px;
+		margin-bottom: 10px;
+		max-height: 200px;
+		overflow-y: scroll;
 	}
-	#reaction_directory #content_tweets img {
+
+	.reaction #content_tweets img {
 		position: absolute;
-		top: 24px
+		top: 5px;
+		left: 0;
 	}
-	#reaction_directory .tweet_content {
+
+	.reaction .tweet {
+		position: relative;
+		min-height: 60px;
+	}
+
+	.reaction .tweet_head, .reaction .tweet_content {
 		margin-left: 54px;
 	}
 
-	#reaction_directory .tweet_meta {
-		margin-left: 54px;
+	.reaction .tweet_meta {
 		font-size: 11px;
 		color: #666;
 	}

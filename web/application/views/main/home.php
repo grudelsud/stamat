@@ -11,7 +11,7 @@
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#tab_feed" id="tab_feed_link" data-toggle="tab">Read</a></li>
 				<li><a href="#tab_media" id="tab_media_link" data-toggle="tab">View</a></li>
-				<li><a href="#tab_map" id="tab_map_link" data-toggle="tab">Visit</a></li>
+				<!-- <li><a href="#tab_map" id="tab_map_link" data-toggle="tab">Visit</a></li> -->
 			</ul>
 		</div>
 
@@ -26,9 +26,9 @@
 						<div id="feed_directory"></div>
 						<div class="pagination feeditems"></div>
 					</div>
-					<div id="reaction_container" class="span4 scroll-top">
-						<div id="reaction_directory"></div>
-					</div>
+					<!-- <div id="reaction_container" class="span4 scroll-top">
+						Moved inside feed_directory>article <div id="reaction_directory"></div>
+					</div> -->
 				</div>
 			</div><!-- #tab_feed -->
 
@@ -74,9 +74,10 @@
 			</div><!-- #tab_media -->
 
 			<!-- #tab_map -->
-			<div class="tab-pane" id="tab_map">
+			<!-- <div class="tab-pane" id="tab_map">
 				<div id="map_canvas"></div>
-			</div><!-- #tab_map -->
+			</div> -->
+			<!-- #tab_map -->
 		</div>
 	</div>
 </div>
