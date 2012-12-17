@@ -481,7 +481,7 @@ class UploadHandler
             //header('Content-type: text/plain');
             header('Content-type: application/json');
         }
-        
+        print_r($json);
         echo $json;
     }
     
