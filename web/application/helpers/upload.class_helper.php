@@ -490,7 +490,6 @@ class UploadHandler
         $file->name = $this->trim_file_name($name, $type, $index);
         $file->size = intval($size);
         $file->type = $type;
-        print_r($file);
         if ($this->validate($uploaded_file, $file, $error, $index)) {
             $this->handle_form_data($file, $index);
             $file_path = $this->options['upload_dir'].$file->name;
@@ -515,7 +514,7 @@ class UploadHandler
                             $file->{$version.'_url'} = $options['upload_url']
                                 .rawurlencode($file->name);
                         } else {
-                            clearstatcache();
+                 print_r($file);           clearstatcache();
                             $file_size = filesize($file_path);
                         }
                     }
@@ -528,6 +527,7 @@ class UploadHandler
             $file->delete_url ="http://stamat.net/?file=".$file->name ;
             $file->delete= "DELETE";
             //$this->set_file_delete_url($uploaded_file);
+            print_r($file);
         }
         return $file;
     }
