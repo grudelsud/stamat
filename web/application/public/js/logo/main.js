@@ -17,7 +17,6 @@ $(function () {
 
 	
 	// Load dialog on click
-	//$('.detailedResuls').click(function (e) {
 	 $('.detailedResuls').live("click",function(e) {	
                 var idProcess = [];
                 idProcess=$(this).data('idprocess'); 
@@ -26,22 +25,13 @@ $(function () {
                     $('#galleria').empty();
                     $.each(data, function(entryIndex, entry) {
                         var html=""; 
-                        //html += '<style> #galleria{height:320px} </style> ';
                         html += '<a href="' +  entry['imageFrameUrl'] + '"> ';
                         html += '<img data-title="Frame"';
-                        //html += ' data-description="Steam locomotives of the Chicago &amp; North Western Railway."'
                         html += ' src="' + entry['imageFramethumbUrl'] + '"> </a> '
                          $('#galleria').append(html);
                     });    
-                 
-                    //Galleria.loadTheme('<?=base_url()?>application/public/js/logo/galleria.classic.min.js');
-
                     Galleria.run('#galleria');
-
-            
-
-                    $('#galleria').modal();
-                    //checkStatus();
+            $('#galleria').modal();
                 });
 		return false;
 	});
@@ -87,7 +77,9 @@ $(function () {
                 cell3=row.insertCell(2);
                 cell4=row.insertCell(3);
                 cell5=row.insertCell(4);
+                cell5.setAttribute('class','detailedResuls');
                 cell6=row.insertCell(5);
+                cell6.setAttribute('class','delete');
                 
                 var logoUrl = entry['logoUrl'].replace(/^.*[\\\/]/, '');
                 var videoUrl = entry['videoUrl'].replace(/^.*[\\\/]/, '');
@@ -147,8 +139,32 @@ $(function () {
         return false;
     });
 
-    
+ 
 
+     $('.upLoadURL').live("click",function(e) {
+        console.log("upLoadURL");    
+        //var idProcess = [];
+        var url=jQuery("#urlFile").val(); 
+        $.post('../logo/upload', {'urlFile': url, "form_type": 3}, function(data) {
+            console.log("Upload urlFile: " + data);
+            $.each(data, function(entryIndex, entry) {
+                var html = '';
+                html += '<tr class="template-download fade in"><td><input type="checkbox" value="1"></td><td class="preview"></td>';
+                html += '<td class="name"><a href="' + entry['url'] + '" title="' + entry['name']+'" rel="" download="'+ entry['name'] +'">'+entry['name']+'</a></td>'
+                html += '<td class="size"><span>'+ entry['size'] + ' MB</span></td><td colspan="2"></td>';
+                html += '<td class="delete"> <button class="btn btn-danger" data-type="DELETE" data-url="http://stamat.net/index.php/logo/upload">';
+                html += '<i class="icon-trash icon-white"></i> <span>Delete</span> </button> </td></tr>';
+            
+                $('.files3').prepend(html);
+            });
+
+            checkStatus();
+        });
+        
+        return false;
+    });
+    
+   
     // Initialize the jQuery File Upload widget:
     //$('#fileupload').fileupload();
 

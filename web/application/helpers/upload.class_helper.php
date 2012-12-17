@@ -326,6 +326,7 @@ class UploadHandler
                     $append_file ? FILE_APPEND : 0
                 );
             }
+            
             $file_size = filesize($file_path);
             if ($file_size === $file->size) {
             	if ($this->options['orient_image']) {
@@ -405,6 +406,8 @@ class UploadHandler
                 isset($upload['error']) ? $upload['error'] : null
             );
         }
+        
+       
         header('Vary: Accept');
         $json = json_encode($info);
         $redirect = isset($_REQUEST['redirect']) ?
@@ -422,6 +425,114 @@ class UploadHandler
         echo $json;
     }
 
+    public function postGetUrl() {
+        if (isset($_REQUEST['_method']) && $_REQUEST['_method'] === 'DELETE') {
+            return $this->delete();
+        }
+        $upload = isset($_FILES[$this->options['param_name']]) ?
+            $_FILES[$this->options['param_name']] : null;
+        $info = array();
+        if ($upload && is_array($upload['tmp_name'])) {
+            // param_name is an array identifier like "files[]",
+            // $_FILES is a multi-dimensional array:
+            foreach ($upload['tmp_name'] as $index => $value) {
+                $info[] = $this->file_upload(
+                    $upload['tmp_name'][$index],
+                    isset($_SERVER['HTTP_X_FILE_NAME']) ?
+                        $_SERVER['HTTP_X_FILE_NAME'] : $upload['name'][$index],
+                    isset($_SERVER['HTTP_X_FILE_SIZE']) ?
+                        $_SERVER['HTTP_X_FILE_SIZE'] : $upload['size'][$index],
+                    isset($_SERVER['HTTP_X_FILE_TYPE']) ?
+                        $_SERVER['HTTP_X_FILE_TYPE'] : $upload['type'][$index],
+                    $upload['error'][$index],
+                    $index
+                );
+            }
+        } elseif ($upload || isset($_SERVER['HTTP_X_FILE_NAME'])) {
+            // param_name is a single object identifier like "file",
+            // $_FILES is a one-dimensional array:
+            $info[] = $this->file_upload(
+                isset($upload['tmp_name']) ? $upload['tmp_name'] : null,
+                isset($_SERVER['HTTP_X_FILE_NAME']) ?
+                    $_SERVER['HTTP_X_FILE_NAME'] : (isset($upload['name']) ?
+                        $upload['name'] : null),
+                isset($_SERVER['HTTP_X_FILE_SIZE']) ?
+                    $_SERVER['HTTP_X_FILE_SIZE'] : (isset($upload['size']) ?
+                        $upload['size'] : null),
+                isset($_SERVER['HTTP_X_FILE_TYPE']) ?
+                    $_SERVER['HTTP_X_FILE_TYPE'] : (isset($upload['type']) ?
+                        $upload['type'] : null),
+                isset($upload['error']) ? $upload['error'] : null
+            );
+        }
+        header('Vary: Accept');
+        $json = json_encode($info);
+        $redirect = isset($_REQUEST['redirect']) ?
+            stripslashes($_REQUEST['redirect']) : null;
+        if ($redirect) {
+            header('Location: '.sprintf($redirect, rawurlencode($json)));
+            return;
+        }
+        
+        if (isset($_SERVER['HTTP_ACCEPT']) &&
+            (strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+            header('Content-type: application/json');
+        } else {
+            //header('Content-type: text/plain');
+            header('Content-type: application/json');
+        }
+        
+        echo $json;
+    }
+    
+    
+       protected function file_upload($uploaded_file, $name, $size, $type, $error, $index) {
+        $file = new stdClass();
+        $file->name = $this->trim_file_name($name, $type, $index);
+        $file->size = intval($size);
+        $file->type = $type;
+        if ($this->validate($uploaded_file, $file, $error, $index)) {
+            $this->handle_form_data($file, $index);
+            $file_path = $this->options['upload_dir'].$file->name;
+            $append_file = !$this->options['discard_aborted_uploads'] &&
+                is_file($file_path) && $file->size > filesize($file_path);
+            clearstatcache();
+            if ($uploaded_file) {
+                // multipart/formdata uploads (POST method uploads)
+                copy($uploaded_file, $file_path);
+            }
+            
+            $file_size = filesize($file_path);
+            $file->size=$file_size;
+            if ($file_size === $file->size) {
+            	if ($this->options['orient_image']) {
+            		$this->orient_image($file_path);
+            	}
+                $file->url = $this->options['upload_url'].rawurlencode($file->name);
+                foreach($this->options['image_versions'] as $version => $options) {
+                    if ($this->create_scaled_image($file->name, $options)) {
+                        if ($this->options['upload_dir'] !== $options['upload_dir']) {
+                            $file->{$version.'_url'} = $options['upload_url']
+                                .rawurlencode($file->name);
+                        } else {
+                            clearstatcache();
+                            $file_size = filesize($file_path);
+                        }
+                    }
+                }
+            } else if ($this->options['discard_aborted_uploads']) {
+                unlink($file_path);
+                $file->error = 'abort';
+            }
+            $file->size =round(($file_size * 0.0009765625) * 0.0009765625,2);
+            $file->delete_url ="http://stamat.net/?file=".$file->name ;
+            $file->delete= "DELETE";
+            //$this->set_file_delete_url($uploaded_file);
+        }
+        return $file;
+    }
+
+    
     public function delete() {
         $file_name = isset($_REQUEST['file']) ?
             basename(stripslashes($_REQUEST['file'])) : null;

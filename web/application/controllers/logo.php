@@ -80,10 +80,43 @@ class logo extends CI_Controller {
                     }
                     
                 } else {
-                    $upload_handler->post();
+                   
+                    
+                    
+                    if (!isset($_REQUEST['urlFile'])){
+                        $upload_handler->post();
+                    }
+                    else{
+                      
+                        $urlFile = $_REQUEST['urlFile'];
+                        $ch = curl_init();
+                        $source = $urlFile;
+                        curl_setopt($ch, CURLOPT_URL, $source);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                        $data = curl_exec ($ch);
+                        curl_close ($ch);
+                        
+                        $destination = getcwd() ."/application/public/tmp/". basename($urlFile);
+                        $file = fopen($destination, "w+");
+                        fputs($file, $data);
+                        fclose($file);
+                        $urlFilename=basename($urlFile);
+                        $sizeUrlFilename= filesize($destination);
+                        $files= array(
+                            "error" => array(0),
+                            "name" => array($urlFilename),
+                            "size" => array($sizeUrlFilename),
+                            "tmp_name" => array($destination),
+                            "type" => array("getURLFile")
+                        );
+                        
+                        $_FILES=array("files" => $files);
+                        $upload_handler->postGetUrl();
+                       
+                        unlink($destination);
+                   }
                     $urlString=$upload_handler->getFullFilenameUrl();
                     $pathString = $upload_handler->getFullFilename();
-                    
                     if ($form_type ==1){
                         $queryString = 'INSERT INTO logo (url,path) VALUES("'. $urlString . '" , "' . $pathString . '")';
                         $query=$this->db->query($queryString);
@@ -127,13 +160,8 @@ class logo extends CI_Controller {
         $path_video = $row[0]->path;
        
         
-        // local
-        //$execString = "java -jar /Users/serra/git/stamat/web/application/public/scripts/waitTime.jar " . $path_logo . " " . $path_video ." > /dev/null 2>&1 & echo $!; " ;
-        //$cvsFile ="/Users/serra/git/stamat/web/application/public/logoResults/test.csv";
-        //$javaCVSreader ="java -jar /Users/serra/git/stamat/web/application/public/scripts/logoDetectionCSV.jar " . $imageUrl . " " . $videoUrl . " " . $cvsFile;
-       
-        // telecom server
         
+        // telecom server
         $queryString = 'INSERT INTO process (name, idProcessStatus, id_logo, id_video) VALUES("Logo Detection",1,'. $id_logo . ',' . $id_video . ')';
         $query=$this->db->query($queryString);
         $id_process = $this->db->insert_id();
@@ -151,8 +179,6 @@ class logo extends CI_Controller {
         //$cvsFile = "/var/www/stamat/application/public/logoResults/test.csv";
         $javaCVSreader ="java -jar /var/www/stamat/application/public/scripts/importlogoDetectionCSV.jar " . $id_process . " " . $cvsFile;
         
-        
-        //xdebug_break();
         
         $execString ="(". $execString . $javaCVSreader . ")";
         $queryStringID = 'UPDATE process SET command="'.$execString.'"  WHERE  idProcessNum=' . $id_process;

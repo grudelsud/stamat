@@ -6,10 +6,10 @@
 <title>Logo Detection</title>
 <meta name="description" content="logo detection, MICC">
 <meta name="viewport" content="width=device-width">
-<!-- Bootstrap CSS Toolkit styles -->
-<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
 <!-- Generic page styles -->
 <link rel="stylesheet" href="<?=base_url()?>/application/public/css/style.css">
+<!-- Bootstrap CSS Toolkit styles -->
+<link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
 <!-- dialog styles -->
 <link rel="stylesheet" href="<?=base_url()?>/application/public/css/basic.css">
 <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
@@ -111,7 +111,12 @@
                     <span>Add files...</span>
                     <input type="file" name="files[]" multiple>
                 </span>
-            </div>
+                 <input id="urlFile" type="text" name="user">
+                <button class="btn btn-success upLoadURL" >
+                    <i class="icon-white"></i>
+                    <span>Get from URL</span>
+                </button>    
+             </div>
             <!-- The global progress information -->
             <div class="span5 fileupload-progress fade">
                 <!-- The global progress bar -->
@@ -143,7 +148,7 @@
             
     <table class="table table-striped" id="tableProcess">
         
-        <?php //xdebug_break(); 
+        <?php 
         if(count($results)>0){ ?>
             <tr>
             <td><h5>Logo</h5></td>
@@ -174,23 +179,23 @@
         <?php }?>
     </table>
     
-    		<!-- modal content -->
-		<div id="galleria">
-                </div>
+    <!-- modal content -->
+    <div id="galleria">
+    </div>
 
-            <script>
+    <script>
 
-            // Load the classic theme
-            Galleria.loadTheme('<?=base_url()?>application/public/js/logo/galleria.classic.min.js');
+        // Load the classic theme
+        Galleria.loadTheme('<?= base_url() ?>application/public/js/logo/galleria.classic.min.js');
 
-            // Initialize Galleria
-            //Galleria.run('#galleria');
+        // Initialize Galleria
+        //Galleria.run('#galleria');
 
-            </script>	
-            <!-- preload the images -->
-		<div style='display:none'>
-			<img src='<?=base_url()?>/application/public/img/x.png' alt='' -->
-		</div>
+    </script>	
+    <!-- preload the images -->
+    <div style='display:none'>
+        <img src='<?= base_url() ?>/application/public/img/x.png' alt='' -->
+    </div>
 
     
     
