@@ -481,7 +481,6 @@ class UploadHandler
             //header('Content-type: text/plain');
             header('Content-type: application/json');
         }
-        print_r($json);
         echo $json;
     }
     
@@ -491,6 +490,7 @@ class UploadHandler
         $file->name = $this->trim_file_name($name, $type, $index);
         $file->size = intval($size);
         $file->type = $type;
+        print_r($files);
         if ($this->validate($uploaded_file, $file, $error, $index)) {
             $this->handle_form_data($file, $index);
             $file_path = $this->options['upload_dir'].$file->name;
