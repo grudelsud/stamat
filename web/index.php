@@ -35,7 +35,7 @@ case 'stamat.local':
 case 'hack4europe.net':
 	$environment = 'hack4europe';
 	break;
-case 'londondroids.com':
+case 'fom.londondroids.com':
 default:
 	$environment = 'production';
 	$fb_app_id = '514263911923141';
