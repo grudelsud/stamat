@@ -113,7 +113,8 @@ class logo extends CI_Controller {
                         $_FILES=array("files" => $files);
                         $upload_handler->postGetUrl();
                        
-                        unlink($destination);
+                        //unlink($destination);
+                        print_r($files);
                    }
                     $urlString=$upload_handler->getFullFilenameUrl();
                     $pathString = $upload_handler->getFullFilename();
