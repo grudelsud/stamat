@@ -96,7 +96,7 @@ class logo extends CI_Controller {
                         $data = curl_exec ($ch);
                         curl_close ($ch);
                         
-                        $destination = getcwd() ."/application/public/tmp/". basename($urlFile);
+                        $destination = "/var/www/stamat/application/public/tmp/". basename($urlFile);
                         $file = fopen($destination, "w+");
                         fputs($file, $data);
                         fclose($file);
