@@ -241,6 +241,7 @@ class Json extends CI_Controller
 		$this->db->join('tagtriples as tt', 't.id = tt.object_entity_id');
 		$this->db->join('vocabularies as v', 't.vocabulary_id = v.id');
 		$this->db->where('t.stop_word', 0);
+		$this->db->where_in('v.name', array(VOCABULARY_EXTRACTED_PEOPLE, VOCABULARY_EXTRACTED_ORGANIZATIONS, VOCABULARY_EXTRACTED_LOCATIONS));
 		$this->db->order_by('t.created', 'desc');
 		$this->db->limit(50);
 
