@@ -296,6 +296,10 @@
                 {
                     form_type ="2";
                 }
+                else if (form=="files3")
+                {
+                    form_type ="3";
+                }
   
                 $.ajax({
                     url: "../logo/upload",
